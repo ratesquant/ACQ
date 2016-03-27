@@ -10,7 +10,7 @@ namespace ACQ.Math.Interpolation
     /// </summary>
     public class HermiteInterpolation : InterpolationBase
     {
-        private readonly double[] m_c;
+        protected readonly double[] m_c;
 
         public HermiteInterpolation(double[] x, double[] y, bool bounds = true)
             : base(x, y, bounds)
@@ -31,8 +31,7 @@ namespace ACQ.Math.Interpolation
                 double y0 = m_y[index - 1];
                 double y1 = m_y[index];
                 double dx = x1 - x0;
-                double a = (x1 - x) / dx;
-                double b = 1.0 - a;
+                double b = (x - x0) / dx;
 
                 double h1, h2, h3, h4;
 
@@ -54,28 +53,28 @@ namespace ACQ.Math.Interpolation
             h2 = 1.0 - h1; // h01 = t^2*(3-2t)    
         }
 
-        private static void compute_coefficients(double[] x, double[] y, out double[] a)
+        protected virtual void compute_coefficients(double[] x, double[] y, out double[] a)
         {
             int n = x.Length;
 
             a = new double[n];
 
-            if (n == 2)
+           
+            for (int i = 1; i < n - 1; i++)
             {
-                a[0] = a[1] = (y[0] - y[1]) / (x[0] - x[1]);
-            }
-            else
-            {
+                double dx = x[i + 1] - x[i - 1];
+                double dx0 = x[i] - x[i - 1];
+                double dx1 = x[i + 1] - x[i];
 
-                for (int i = 1; i < n - 1; i++)
-                {
-                    a[i] = 0.5 * ((y[i + 1] - y[i]) / (x[i + 1] - x[i]) + (y[i] - y[i - 1]) / (x[i] - x[i - 1]));
-                }
+                double dy0 = (y[i] - y[i - 1])/dx0;
+                double dy1 = (y[i + 1] - y[i])/dx1;
 
-                a[0] = 1.5 * (y[0] - y[1]) / (x[0] - x[1]) - 0.5 * a[1];
-                a[n - 1] = 1.5 * (y[n - 1] - y[n - 2]) / (x[n - 1] - x[n - 2]) - 0.5 * a[n - 2];
+                a[i] = (dy0 * dx1 + dy1 * dx0) / dx;
             }
 
+            a[0] = (y[0] - y[1]) / (x[0] - x[1]);
+            a[n - 1] = (y[n-1] - y[n-1]) / (x[n-1] - x[n-2]);
+          
         }
     }
 }

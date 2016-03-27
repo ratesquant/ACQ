@@ -57,14 +57,14 @@ namespace ACQ.Math.Interpolation
 
             c = new double[n];
 
-            //there are n-2 equations, that can be written as symmetric tridiagonal matrix 
+            //there are n-2 equations, that can be written as symmetric tri-diagonal matrix 
             //2 equations at the boundary are given by natural conditions 
             // dx[i] = x[i+1] - x[i]
             // k[0] + 0.5 * k[1] = 1.5 * dy[0] /dx[0]
             // k[i-1] * dx[i] + k[i] * 2 * (dx[i] + dx[i-1]) + k[i+1] * dx[i-1] = 3 * (dy[i-1]*dx[i]/dx[x-1] + dy[i]*dx[i-1]/dx[i])
             // k[n-2] + 0.5 * k[n-1] = 1.5 * dy[n-2]/dx[n-2]
 
-            double[] g = new double[n]; //diag elements
+            double[] g = new double[n]; //rhs elements
 
             c[0] = 0.5;
             g[0] = 1.5 * (y[1] - y[0])/(x[1] - x[0]);
@@ -81,14 +81,14 @@ namespace ACQ.Math.Interpolation
                 double dy0 = y[i] - y[i - 1];
                 double dy1 = y[i + 1] - y[i];
 
-                double di = 2 * (dx0 + dx1);
-                double ei = c[i-1];
-                double ec = dx1;
-                double gi = 3 * (dy0 * dx1 / dx0 + dy1 * dx0 / dx1);
+                double di = 2.0 * (dx0 + dx1); //original diagonal element
+                double ei = c[i - 1];        //element right above diagonal
+                double ec = dx1;             //element to the left of diagonal
+                double gi = 3.0 * (dy0 * dx1 / dx0 + dy1 * dx0 / dx1); //right hand side
 
-                double scale = 1.0/(di - ei * ec);
-                g[i] = (gi - g[i - 1] * ec) * scale;
-                c[i] = dx0 * scale; 
+                double scale = 1.0 / (di - ei * ec); //substruct row and scale diagonal element to 1.0
+                g[i] = (gi - g[i - 1] * ec) * scale; //apply the same to the rhs
+                c[i] = dx0 * scale; //scale element to the right of diagonal element (i.e. above diagonal for the next row)
             }
 
 
