@@ -9,7 +9,7 @@ namespace ACQ.Excel
 {
     public static class DateUtils
     {
-        [ExcelFunction(Description = "acq_convert_todate", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "acq_convert_todate", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_convert_todate(object date)
         {
             if (date is ExcelMissing || date is ExcelEmpty)
@@ -61,8 +61,7 @@ namespace ACQ.Excel
             int day = value % 100;
             int month = (value - year * 10000)/100;
 
-            return new DateTime(year, month, day);
- 
+            return new DateTime(year, month, day); 
         }
     }
 }

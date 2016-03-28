@@ -434,6 +434,10 @@ namespace ACQ.Math
                 return -abs; 
             }
         }
+        public static double Sign(double a)
+        {
+            return (a >= 0.0) ? 1.0 : -1.0;
+        }
 
         public static double Hypotenuse(double a, double b)
         {

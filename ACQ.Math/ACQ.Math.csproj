@@ -50,6 +50,7 @@
     <Compile Include="Interpolation\NearestInterpolation.cs" />
     <Compile Include="Interpolation\QuadraticInterpolation.cs" />
     <Compile Include="Interpolation\RbfInterpolation.cs" />
+    <Compile Include="Interpolation\SteffenInterpolation.cs" />
     <Compile Include="Linalg\CholeskyDecomposition.cs" />
     <Compile Include="Linalg\EigenvalueDecomposition.cs" />
     <Compile Include="Linalg\LuDecomposition.cs" />

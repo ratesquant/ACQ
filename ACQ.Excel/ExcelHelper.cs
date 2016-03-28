@@ -7,6 +7,14 @@ using ExcelDna.Integration;
 
 namespace ACQ.Excel
 {
+    /*
+     * ExcelError.ExcelErrorNum -  Problem with a number in the formula
+     * ExcelError.ExcelErrorNull - Null range is specified as an input
+     * ExcelError.ExcelErrorRef -  	Invalid cell reference
+     * ExcelError.ExcelErrorValue - Wrong type of argument in a function or wrong type of operator
+     * ExcelError.ExcelErrorNA - No value available (for Nan use Num error)
+     * 
+     */
     static class ExcelHelper
     {
         internal static object CheckNan(double value)
