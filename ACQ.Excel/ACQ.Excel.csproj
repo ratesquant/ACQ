@@ -55,22 +55,28 @@
     <Compile Include="DateUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ACQ.Excel64.dna">
+    <ProjectReference Include="..\ACQ.Math\ACQ.Math.csproj">
+      <Project>{92EBDA1C-6085-4A88-A0FB-757E2F375EBC}</Project>
+      <Name>ACQ.Math</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ACQ.Excel.dna">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ACQ.Excel32.xll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="ACQ.Excel64.xll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ACQ.Math\ACQ.Math.csproj">
-      <Project>{92EBDA1C-6085-4A88-A0FB-757E2F375EBC}</Project>
-      <Name>ACQ.Math</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ.Excel64_packed.xll
+    <PostBuildEvent>copy ACQ.Excel.dna ACQ.Excel64.dna
+copy ACQ.Excel.dna ACQ.Excel32.dna
+"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ64.xll
+"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel32.dna /Y /O ACQ32.xll
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
