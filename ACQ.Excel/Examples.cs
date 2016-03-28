@@ -10,7 +10,7 @@ namespace ACQ.Excel
 {
     public class Examples
     {
-        [ExcelFunction(Description = "acq_sum")]
+        [ExcelFunction(Description = "acq_sum", Category = AddInInfo.Category)]
         public static double acq_sum(double a, double b)
         {
             return a + b;

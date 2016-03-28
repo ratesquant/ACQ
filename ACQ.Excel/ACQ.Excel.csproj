@@ -52,6 +52,7 @@
     <Compile Include="Objects\ExcelInterpolator.cs" />
     <Compile Include="Objects\ExcelVector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DateUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ACQ.Excel64.dna">
@@ -69,7 +70,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ.Excel64_packed.xll</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ.Excel64_packed.xll
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
