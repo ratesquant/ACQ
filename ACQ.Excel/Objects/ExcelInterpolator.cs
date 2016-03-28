@@ -14,7 +14,11 @@ namespace ACQ.Excel.Objects
         private static readonly string m_defaultInterpolator = "Linear";
 
         [ExcelFunction(Description = "Create Interpolator object", Category = AddInInfo.Category)]
-        public static object acq_interpolator_create(double[] x, double[] y, object method, object bounds)
+        public static object acq_interpolator_create(
+            [ExcelArgument(Description = "Array of nodes")] double[] x,
+            [ExcelArgument(Description = "Array of values")]  double[] y,
+            [ExcelArgument(Description = "linear, quadratic, cubic, hermite, akima, steffen etc")] object method,
+            [ExcelArgument(Description = "Out of range value: false (num error), true (closest)")] object bounds)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
                 return ExcelError.ExcelErrorRef;
@@ -35,7 +39,9 @@ namespace ACQ.Excel.Objects
        
 
         [ExcelFunction(Description = "Evaluate interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = true)]
-        public static object acq_interpolator_eval(string handle, double x)
+        public static object acq_interpolator_eval(
+            [ExcelArgument(Description = "Interpolator object")] string handle,
+            [ExcelArgument(Description = "Interpolation point")] double x)
         {
             ACQ.Math.Interpolation.InterpolationInterface interpolator;
 
