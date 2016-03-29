@@ -11,6 +11,7 @@ namespace ACQ.Excel
     public static class AddInInfo
     {
         public const string Category = "ACQ";
+        public const string MenuName = "ACQ";
     }
 
     class AddInInit : IExcelAddIn
@@ -18,6 +19,9 @@ namespace ACQ.Excel
         public void AutoOpen()
         {
             ExcelIntegration.RegisterUnhandledExceptionHandler(ErrorHandler);
+
+            // Register Ctrl+Shift+H to show log window 
+            XlCall.Excel(XlCall.xlcOnKey, "^H", "ShowLogWindow"); 
         }
 
         public void AutoClose()
@@ -27,13 +31,18 @@ namespace ACQ.Excel
 
         private object ErrorHandler(object exceptionObject)
         {
-            ExcelReference caller = (ExcelReference)XlCall.Excel(XlCall.xlfCaller);
-
-       
-            LogDisplay.WriteLine("Error: " + exceptionObject.ToString());
+            if (exceptionObject != null)
+            {
+                LogDisplay.WriteLine("Exception: " + exceptionObject.ToString());
+            }
 
             // return #VALUE into the cell.
             return ExcelError.ExcelErrorValue; 
+        }
+        [ExcelCommand(MenuText = "Show Log Window", MenuName = AddInInfo.MenuName)]
+        public static void ShowLogWindow()
+        {
+            LogDisplay.Show();
         }
     }
 }

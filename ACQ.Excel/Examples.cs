@@ -5,10 +5,9 @@ using System.Text;
 
 using ExcelDna.Integration;
 
-
 namespace ACQ.Excel
 {
-    public class Examples
+    public static class Examples
     {
         [ExcelFunction(Description = "acq_sum", Category = AddInInfo.Category)]
         public static double acq_sum(double a, double b)

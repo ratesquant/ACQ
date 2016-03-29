@@ -47,6 +47,7 @@
     <Compile Include="Examples.cs" />
     <Compile Include="Handles\Handle.cs" />
     <Compile Include="Handles\HandleStorage.cs" />
+    <Compile Include="Info.cs" />
     <Compile Include="Init.cs" />
     <Compile Include="Handles\GlobalCache.cs" />
     <Compile Include="Objects\ExcelInterpolator.cs" />
