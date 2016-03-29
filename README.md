@@ -14,11 +14,9 @@ The distribution contains:
 	
 
 # Installation 
-1. In Excel go File->Options-> Add-ins. Select "Excel Add-in" in Manage (bottom of the option screen), Click "Go"
+	1. In Excel go File->Options-> Add-ins. Select "Excel Add-in" in Manage (bottom of the option screen), Click "Go"
+	2. Browse to the location of the ACQ32.xll/ACQ64.xll file, and pick the xll file based on bitness of your Excel version. If you select wrong file Excel will be unable to load it.
+	3. Make sure your Excel security settings allow you to run Add-ins 
+	4. All ACQ functions have prefix "acq_" and located in ACQ category.
     
-2. Browse to the location of the ACQ32.xll/ACQ64.xll file, and pick the xll file based on bitness of your Excel version. If you select wrong file Excel will be unable to load it.
-
-3. Make sure your Excel security settings allow you to run Add-ins 
-
-4. All ACQ functions have prefix "acq_" and located in ACQ category.
-    
+# Functions
