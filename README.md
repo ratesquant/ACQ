@@ -27,9 +27,9 @@ https://support.office.com/en-us/article/Add-or-remove-add-ins-0af570c4-5cf3-4fa
 # Interpolation
 The following functions for interpolation are currently implemented:
 
-	1. acq_interpolator_create(x, y, method, bounds) - create interpolator object
-	2. acq_interpolator_eval(interpolator, x) - evaluate interpolation at specified point
-	3. acq_interpolation(xi, x, y, method, bounds) - create interpolater and compute interpolation at specified point
+	1. acq_interpolator_create(x, y, method, bounds) - creates interpolator object (returns a handle)
+	2. acq_interpolator_eval(interpolator, x) - evaluates interpolation at specified point (first argument is a handle created using acq_interpolator_create function)
+	3. acq_interpolation(xi, x, y, method, bounds) - creates interpolater and computes interpolation at specified point
 	
 Interpolaton method is specified using method argument. The argument is optional, linear interpolation is used by default. Currently implemented methods are
     0. Nearest - nearest point interpolation
@@ -38,6 +38,7 @@ Interpolaton method is specified using method argument. The argument is optional
 	3. Cubic - natural cubic spline
 	4. Hermite - local cubic spline (aka Catmull-Rom spline)
 	5. Steffen - monotonic cubic spline
-	6. Akima - cubic spline with Akima conditions
+	6. Akima - Akima spline (cubic spline with special condition for derivatives)
+	7. AkimaPeriodic - Akima spline with periodic boundary conditions
 
 Bounds is optional argument that controls interpolation results outside of interpolation range. When interpolating outside of range num excel error will be returned if bounds is false, and closest point when bounds is true (default).  
