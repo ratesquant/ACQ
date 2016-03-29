@@ -77,7 +77,9 @@
 copy ACQ.Excel.dna ACQ.Excel32.dna
 "$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ64.xll
 "$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel32.dna /Y /O ACQ32.xll
-</PostBuildEvent>
+copy ACQ64.xll $(ProjectDir)\..\Distribution\
+copy ACQ32.xll $(ProjectDir)\..\Distribution\
+copy $(ProjectDir)\Demo.xlsx $(ProjectDir)\..\Distribution\</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
