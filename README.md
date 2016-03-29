@@ -2,7 +2,7 @@
 uses Excel-DNA, https://exceldna.codeplex.com/
 
 # Abstract 
-Excel is very useful tool for working with small datasets. However, some essential functionality such as interpolation is missing. Add-ins and VBA are used to extend standard Excel functionality to turn it into truly powerful tool. All code developed as part of work remains the property of the company, and have to be implemented when changing jobs. Therefore, I decided to develop ACQ: free (for any purpose), open source implementation of frequently used excel functionality: interpolation, etc. 
+Excel is very useful tool for working with small datasets. However, some essential functionality such as interpolation is missing. Add-ins and VBA are used to extend Excel functionality and turn it into truly powerful tool. ACQ is lightweight .NET add-in that adds interpolation routines to Excel. It is open source and free to use for any purpose. 
 
 The Add-in is based on Excel-DNA, and uses .NET 4.0.
 
