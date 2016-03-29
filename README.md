@@ -1,4 +1,4 @@
-# ACQ, Excel Add-in for interpolation 
+# ACQ - Excel Add-in for interpolation 
 uses Excel-DNA, https://exceldna.codeplex.com/
 
 # Abstract 
@@ -18,5 +18,6 @@ The distribution contains:
 	2. Browse to the location of the ACQ32.xll/ACQ64.xll file, and pick the xll file based on bitness of your Excel version. If you select wrong file Excel will be unable to load it.
 	3. Make sure your Excel security settings allow you to run Add-ins 
 	4. All ACQ functions have prefix "acq_" and located in ACQ category.
+	5. Any issues? Let me know: rates.quant@gmail.com
     
 # Functions
