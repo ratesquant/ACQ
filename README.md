@@ -32,6 +32,7 @@ The following functions for interpolation are currently implemented:
 	3. acq_interpolation(xi, x, y, method, bounds) - creates interpolater and computes interpolation at specified point
 	
 Interpolaton method is specified using method argument. The argument is optional, linear interpolation is used by default. Currently implemented methods are
+
 	0. Nearest - nearest point interpolation
 	1. Linear - linear spline interpolation
 	2. Quadratic - quadratic  spline interpolation	
