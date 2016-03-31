@@ -50,6 +50,7 @@
     <Compile Include="Info.cs" />
     <Compile Include="Init.cs" />
     <Compile Include="Handles\GlobalCache.cs" />
+    <Compile Include="MathUtils.cs" />
     <Compile Include="Objects\ExcelInterpolator.cs" />
     <Compile Include="Objects\ExcelVector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,7 +8,7 @@ The distribution contains:
 
 	1. 32-bit and 64-bit versions of Add-in: ACQ32.xll, ACQ64.xll
 	2. Excel spreadsheet with examples of Add-in functionality: Demo.xlsx
-	3. Description of all numerical methods using in Add-in: Primer.pptx 
+	3. Description of all numerical methods using in Add-in: Primer.pdf 
 	
 
 # Installation
