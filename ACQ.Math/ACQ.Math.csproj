@@ -43,10 +43,15 @@
     <Compile Include="Common.cs" />
     <Compile Include="Complex.cs" />
     <Compile Include="Interpolation\AkimaInterpolation.cs" />
+    <Compile Include="Interpolation\BackwardInterpolation.cs" />
+    <Compile Include="Interpolation\BilinearInterpolation.cs" />
     <Compile Include="Interpolation\CubicInterpolation.cs" />
+    <Compile Include="Interpolation\ForwardInterpolation.cs" />
+    <Compile Include="Interpolation\InterpolationBase2D.cs" />
     <Compile Include="Interpolation\InterpolationFactory.cs" />
     <Compile Include="Interpolation\HermiteInterpolation.cs" />
     <Compile Include="Interpolation\InterpolationBase.cs" />
+    <Compile Include="Interpolation\InterpolationFactory2D.cs" />
     <Compile Include="Interpolation\LinearInterpolation.cs" />
     <Compile Include="Interpolation\NearestInterpolation.cs" />
     <Compile Include="Interpolation\QuadraticInterpolation.cs" />

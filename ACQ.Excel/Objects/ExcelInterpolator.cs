@@ -58,12 +58,17 @@ namespace ACQ.Excel.Objects
         [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category)]
         public static object acq_interpolation(double xi, double[] x, double[] y, object method, object bounds)
         {
-            ACQ.Math.Interpolation.InterpolationInterface interpolator = construct_interpolator(x, y, method, bounds);
-
-            if (interpolator != null)
-                return interpolator.Eval(xi);
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
             else
-                return ExcelError.ExcelErrorNum;
+            {
+                ACQ.Math.Interpolation.InterpolationInterface interpolator = construct_interpolator(x, y, method, bounds);
+
+                if (interpolator != null)
+                    return interpolator.Eval(xi);
+                else
+                    return ExcelError.ExcelErrorNum;
+            }
 
         }
 

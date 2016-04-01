@@ -9,8 +9,9 @@ namespace ACQ.Math.Interpolation
     {
         Linear,
         Cubic,
-        Hermit,
-        Akima
+        Hermite,
+        Akima,
+        Steffen
     }
 
     public class InterpolationFactory

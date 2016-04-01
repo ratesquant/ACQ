@@ -52,6 +52,7 @@
     <Compile Include="Handles\GlobalCache.cs" />
     <Compile Include="MathUtils.cs" />
     <Compile Include="Objects\ExcelInterpolator.cs" />
+    <Compile Include="Objects\ExcelInterpolator2D.cs" />
     <Compile Include="Objects\ExcelVector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DateUtils.cs" />
