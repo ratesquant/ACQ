@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Complex.cs" />
     <Compile Include="Interpolation\AkimaInterpolation.cs" />
     <Compile Include="Interpolation\CubicInterpolation.cs" />
     <Compile Include="Interpolation\InterpolationFactory.cs" />

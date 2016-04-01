@@ -556,7 +556,9 @@ namespace ACQ.Math
         public static void FillArray<T>(T[] a, T value)
         {
             for (int i = 0; i < a.Length; i++)
+            {
                 a[i] = value;
+            }
         }
 
         public static T[][] JaggedArray<T>(int rows, int cols)

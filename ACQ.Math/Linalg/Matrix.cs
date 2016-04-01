@@ -4,7 +4,6 @@ using System.Text;
 using System.IO;
 using System.Globalization;
 
-
 namespace ACQ.Math.Linalg
 {
     /// <summary>Matrix 
@@ -71,21 +70,21 @@ namespace ACQ.Math.Linalg
             m_data = (double[,])data.Clone();
         }
 
-        public Matrix(double[] value, bool isRow = true)
-            : this(isRow ? 1 : value.Length, isRow ? value.Length : 1)
+        public Matrix(double[] data, bool isRow = true)
+            : this(isRow ? 1 : data.Length, isRow ? data.Length : 1)
         {
             if (isRow)
             {
-                for (int i = 0; i < value.Length; i++)
+                for (int i = 0; i < data.Length; i++)
                 {
-                    m_data[0, i] = value[i];
+                    m_data[0, i] = data[i];
                 }
             }
             else 
             {
-                for (int i = 0; i < value.Length; i++)
+                for (int i = 0; i < data.Length; i++)
                 {
-                    m_data[i, 0] = value[i];
+                    m_data[i, 0] = data[i];
                 }
             }
         }
@@ -116,28 +115,28 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Determines weather two instances are equal.</summary>
-        public static bool Equals(Matrix left, Matrix right)
+        public static bool Equals(Matrix A, Matrix B)
         {
-            if (((object)left) == ((object)right))
+            if (((object)A) == ((object)B))
             {
                 return true;
             }
 
-            if ((((object)left) == null) || (((object)right) == null))
+            if ((((object)A) == null) || (((object)B) == null))
             {
                 return false;
             }
 
-            if ((left.Rows != right.Rows) || (left.Columns != right.Columns))
+            if ((A.Rows != B.Rows) || (A.Columns != B.Columns))
             {
                 return false;
             }
 
-            for (int i = 0; i < left.Rows; i++)
+            for (int i = 0; i < A.Rows; i++)
             {
-                for (int j = 0; j < left.Columns; j++)
+                for (int j = 0; j < A.Columns; j++)
                 {
-                    if (left[i, j] != right[i, j])
+                    if (A[i, j] != B[i, j])
                     {
                         return false;
                     }
@@ -421,16 +420,16 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Unary minus.</summary>
-        public static Matrix Negate(Matrix value)
+        public static Matrix Negate(Matrix A)
         {
-            if (value == null)
+            if (A == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException("A");
             }
 
-            int rows = value.Rows;
-            int columns = value.Columns;
-            double[,] data = value.Data;
+            int rows = A.Rows;
+            int columns = A.Columns;
+            double[,] data = A.Data;
 
             Matrix X = new Matrix(rows, columns);
             double[,] x = X.Data;
@@ -446,14 +445,14 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Unary minus.</summary>
-        public static Matrix operator -(Matrix value)
+        public static Matrix operator -(Matrix A)
         {
-            if (value == null)
+            if (A == null)
             {
                 throw new ArgumentNullException("value");
             }
 
-            return Negate(value);
+            return Negate(A);
         }
 
         /// <summary>Matrix equality.</summary>
