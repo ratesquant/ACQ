@@ -48,22 +48,51 @@ namespace ACQ.Math.Interpolation
 
             u = new double[n - 1];
 
-            double dy = y[1] - y[0];
-
-            for (int i = 0; i < n - 1; i++)
+            if (n == 2)
             {
-                u[i] = 0.25 * (dy + 3 * y[i] + y[i + 1]);
-                dy = (y[i] + 3 * y[i + 1] - 4 * u[i]);
+                //linear interpolation, in case we only have two points
+                u[0] = 0.5 * (y[1] + y[0]);
+            }
+            else if (n == 3)
+            {
+                //fit parabola using 3 points (i.e. second order Lagrange polynomial) 
+                for (int i = 0; i < 2; i++)
+                {
+                    double m = 0.5 * (x[i+1] + x[i]);
+                    double c1 = ((m - x[1]) / (x[0] - x[1])) * ((m - x[2]) / (x[0] - x[2]));
+                    double c2 = ((m - x[0]) / (x[1] - x[0])) * ((m - x[2]) / (x[1] - x[2]));
+                    double c3 = ((m - x[1]) / (x[2] - x[0])) * ((m - x[0]) / (x[2] - x[1]));
+
+                    u[i] = y[0] * c1 + y[1] * c2 + y[2] * c3;
+                }
+            }
+            else
+            {
+                double dx1 = x[1] - x[0];
+                double dx2 = x[2] - x[1];
+                double dx3 = x[2] - x[0];
+
+                double c1 = -(2 * dx1 + dx2) / (dx1 * dx3);
+                double c2 = (dx1 + dx2) / (dx1 * dx2);
+                double c3 = -dx1 / (dx2 * dx3) ;
+ 
+                double dy = y[0] * c1 + y[1] * c2 + y[2] * c3;
+
+                for (int i = 0; i < n - 1; i++)
+                {
+                    double dx = x[i + 1] - x[i];
+                    u[i] = 0.25 * (dy * dx + 3 * y[i] + y[i + 1]);
+                    dy = (y[i] + 3 * y[i + 1] - 4 * u[i])/dx;
+                }
             }
  
         }
 
         private void quadratic_basis(double x, out double q1, out double q2, out double q3)
         {
-            double a = 2.0 * x * x;
-            q1 = 1 - 3 * x + a;
-            q2 =  4 * x - 2 * a;
-            q3 = -x + a;
+            q1 = (1 - 2 * x) * (1 - x);
+            q2 =  4 * x * (1 - x);
+            q3 = (2 * x - 1) * x;
         }
     }
 }
