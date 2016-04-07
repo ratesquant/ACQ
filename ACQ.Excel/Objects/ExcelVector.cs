@@ -9,7 +9,7 @@ namespace ACQ.Excel.Objects
 {
     public class ExcelVector
     {
-        private static readonly string m_tag = "#Vector";
+        private static readonly string m_tag = "#acqVector";
 
         public static string Tag
         {
@@ -27,7 +27,7 @@ namespace ACQ.Excel.Objects
             else
             {
                 return ACQ.Excel.Handles.GlobalCache.CreateHandle(ExcelVector.Tag, new object[] { x, "acq_vector_create" },
-                    (objectType, paramaters) =>
+                    (objectType, parameters) =>
                     {
                         return x.Clone();
 
@@ -36,7 +36,8 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        public static object acq_vector_get_element(string handle, int index)
+        [ExcelFunction(Description = "Get vector element", Category = AddInInfo.Category)]
+        public static object acq_vector_element(string handle, int index)
         {
             double[] vector;
 
@@ -50,7 +51,8 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        public static object acq_vector_get_size(string handle)
+        [ExcelFunction(Description = "Get vector size", Category = AddInInfo.Category)]
+        public static object acq_vector_size(string handle)
         {
             double[] vector;
 

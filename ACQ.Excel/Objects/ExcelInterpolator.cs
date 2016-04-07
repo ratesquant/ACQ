@@ -10,7 +10,7 @@ namespace ACQ.Excel.Objects
 {
     public class ExcelInterpolator
     {
-        private static readonly string m_tag = "#Interpolator";
+        private static readonly string m_tag = "#acqInterpolator";
         private static readonly string m_defaultInterpolator = "Linear";
 
         [ExcelFunction(Description = "Create Interpolator object", Category = AddInInfo.Category)]
@@ -25,7 +25,7 @@ namespace ACQ.Excel.Objects
             else
             {
                 return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, method, bounds, "acq_interpolator_create" },
-                    (objectType, paramaters) =>
+                    (objectType, parameters) =>
                     {
                         ACQ.Math.Interpolation.InterpolationInterface interpolator = construct_interpolator(x, y, method, bounds);
 

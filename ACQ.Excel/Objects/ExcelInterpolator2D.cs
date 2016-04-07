@@ -10,7 +10,7 @@ namespace ACQ.Excel.Objects
 {
     public class ExcelInterpolator2D
     {
-        private static readonly string m_tag = "#Interpolator2D";
+        private static readonly string m_tag = "#acqInterpolator2D";
         private static readonly string m_defaultInterpolator = "Bilinear";
 
         [ExcelFunction(Description = "Create Interpolator object", Category = AddInInfo.Category)]
@@ -25,7 +25,7 @@ namespace ACQ.Excel.Objects
             else
             {
                 return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x1, x2, y, method, "acq_interpolator2d_create" },
-                    (objectType, paramaters) =>
+                    (objectType, parameters) =>
                     {
                         ACQ.Math.Interpolation.InterpolationInterface2D interpolator = construct_interpolator(x1, x2, y, method);
 
