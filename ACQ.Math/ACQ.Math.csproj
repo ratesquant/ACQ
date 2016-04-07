@@ -63,6 +63,9 @@
     <Compile Include="Linalg\Matrix.cs" />
     <Compile Include="Linalg\QrDecomposition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Random\MersenneTwister.cs" />
+    <Compile Include="Random\BoxMuller.cs" />
+    <Compile Include="Random\RandomBase.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Linalg\Vector.cs" />
   </ItemGroup>
