@@ -12,7 +12,7 @@ namespace ACQ.Math.Interpolation
 
         static InterpolationFactory2D()
         {
-            Type[] types = GetClassTypes(System.Reflection.Assembly.GetExecutingAssembly(), typeof(InterpolationFactory2D).Namespace);
+            Type[] types = Common.GetClassTypes(System.Reflection.Assembly.GetExecutingAssembly(), typeof(InterpolationFactory2D).Namespace);
 
             Type base_type = typeof(InterpolationInterface2D);
 
@@ -23,11 +23,6 @@ namespace ACQ.Math.Interpolation
                     m_interpolation_types[t.FullName.ToLower()] = t;
                 }
             }
-        }
-
-        private static Type[] GetClassTypes(Assembly assembly, string nameSpace)
-        {
-            return assembly.GetTypes().Where(t => t.IsClass && String.Equals(t.Namespace, nameSpace)).ToArray();
         }
 
         public static Type GetInterpolationType(string method)

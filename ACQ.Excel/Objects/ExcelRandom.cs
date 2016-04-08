@@ -21,14 +21,9 @@ namespace ACQ.Excel.Objects
                     {
 
                         ACQ.Math.Random.MersenneTwister rng = new Math.Random.MersenneTwister((uint)seed);
-                        double[] v = new double[size];
+                        ACQ.Math.Linalg.Vector v = gen_random_sample(rng, size);
 
-                        for (int i = 0; i < size; i++)
-                        {
-                            v[i] = rng.NextDouble();
-                        }
                         return v;
-
                     });
 
             }
@@ -51,17 +46,24 @@ namespace ACQ.Excel.Objects
                             useed[i] = (uint)seed[i];
                         }
                         ACQ.Math.Random.MersenneTwister rng = new Math.Random.MersenneTwister(useed);
-                        double[] v = new double[size];
-
-                        for (int i = 0; i < size; i++)
-                        {
-                            v[i] = rng.NextDouble();
-                        }
+                        ACQ.Math.Linalg.Vector v = gen_random_sample(rng, size);
+   
                         return v;
 
                     });
 
             }
+        }
+
+        private static ACQ.Math.Linalg.Vector gen_random_sample(ACQ.Math.Random.RandomBase rng, int size)
+        {
+            ACQ.Math.Linalg.Vector v = new ACQ.Math.Linalg.Vector(size);
+
+            for (int i = 0; i < size; i++)
+            {
+                v[i] = rng.NextDouble();
+            }
+            return v;
         }
     }
 

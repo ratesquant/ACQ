@@ -622,6 +622,7 @@ namespace ACQ.Math
     public static class Const
     {
         public const double epsilon = 2.220446049250313e-016;
+        public const double epsilon_sqrt = 1.4901161193847656e-08;
         public const double pi      = 3.1415926535897932384626433832795;
         public const double twopi   = 6.283185307179586476925286766559;
         public const double e       = 2.3025850929940456840179914546844;

@@ -29,7 +29,7 @@ namespace ACQ.Excel.Objects
                 return ACQ.Excel.Handles.GlobalCache.CreateHandle(ExcelVector.Tag, new object[] { x, "acq_vector_create" },
                     (objectType, parameters) =>
                     {
-                        return x.Clone();
+                        return new ACQ.Math.Linalg.Vector(x);
 
                     });
  
@@ -39,11 +39,11 @@ namespace ACQ.Excel.Objects
         [ExcelFunction(Description = "Get vector element", Category = AddInInfo.Category)]
         public static object acq_vector_element(string handle, int index)
         {
-            double[] vector;
+            ACQ.Math.Linalg.Vector vector;
 
-            if (ACQ.Excel.Handles.GlobalCache.TryGetObject<double[]>(handle, out vector))
+            if (ACQ.Excel.Handles.GlobalCache.TryGetObject<ACQ.Math.Linalg.Vector>(handle, out vector))
             {
-                if (vector != null && index >= 0 && index < vector.Length)
+                if (vector != null && index >= 0 && index < vector.Size)
                 {
                     return vector[index];
                 }
@@ -54,13 +54,13 @@ namespace ACQ.Excel.Objects
         [ExcelFunction(Description = "Get vector size", Category = AddInInfo.Category)]
         public static object acq_vector_size(string handle)
         {
-            double[] vector;
+            ACQ.Math.Linalg.Vector vector;
 
-            if (ACQ.Excel.Handles.GlobalCache.TryGetObject<double[]>(handle, out vector))
+            if (ACQ.Excel.Handles.GlobalCache.TryGetObject<ACQ.Math.Linalg.Vector>(handle, out vector))
             {
                 if (vector != null)
                 {
-                    return vector.Length;
+                    return vector.Size;
                 }
             }
             return ExcelError.ExcelErrorRef;

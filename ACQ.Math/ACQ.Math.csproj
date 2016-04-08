@@ -53,9 +53,11 @@
     <Compile Include="Interpolation\InterpolationBase.cs" />
     <Compile Include="Interpolation\InterpolationFactory2D.cs" />
     <Compile Include="Interpolation\LinearInterpolation.cs" />
+    <Compile Include="Interpolation\MultiquadricsInterpolation.cs" />
     <Compile Include="Interpolation\NearestInterpolation.cs" />
     <Compile Include="Interpolation\QuadraticInterpolation.cs" />
-    <Compile Include="Interpolation\RbfInterpolation.cs" />
+    <Compile Include="Interpolation\RadialBasisFunction.cs" />
+    <Compile Include="Interpolation\RbfInterpolation1D.cs" />
     <Compile Include="Interpolation\SteffenInterpolation.cs" />
     <Compile Include="Linalg\CholeskyDecomposition.cs" />
     <Compile Include="Linalg\EigenvalueDecomposition.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="Random\MersenneTwister.cs" />
     <Compile Include="Random\BoxMuller.cs" />
     <Compile Include="Random\RandomBase.cs" />
+    <Compile Include="Special.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Linalg\Vector.cs" />
   </ItemGroup>

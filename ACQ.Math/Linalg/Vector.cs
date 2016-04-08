@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ACQ.Math
+namespace ACQ.Math.Linalg
 {
     public class Vector
     {
@@ -37,7 +37,7 @@ namespace ACQ.Math
         }
         #endregion
 
-        private int Size
+        public int Size
         {
             get
             {

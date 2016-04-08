@@ -24,7 +24,7 @@ namespace ACQ.Math.Linalg
 
         public Matrix(Matrix A) : this(A.Rows, A.Columns)
         {
-            A.m_data.CopyTo(m_data, 0);
+            m_data = (double[,])A.m_data.Clone();
         }
 
         /// <summary>Constructs a matrix of the given size and assigns a given value to all elements.</summary>
@@ -223,6 +223,11 @@ namespace ACQ.Math.Linalg
             {
                 return m_data[row, column];
             }
+        }
+
+        public bool CheckIndexes(int row, int column)
+        {
+            return row >= 0 && column >= 0 && row < rows && column < cols;
         }
        
 

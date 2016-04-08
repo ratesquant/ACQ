@@ -5,27 +5,37 @@ using System.Text;
 
 namespace ACQ.Math.Interpolation
 {
-    public enum enInterpolationMethod
-    {
-        Linear,
-        Cubic,
-        Hermite,
-        Akima,
-        Steffen
-    }
-
     public class InterpolationFactory
     {
-        public static Type GetInterpolationType(enInterpolationMethod method)
-        {
-            Type interpolation_type = GetInterpolationType(method.ToString());
+        private static Dictionary<string, Type> m_interpolation_types = new Dictionary<string, Type>();
 
-            return interpolation_type;
+        static InterpolationFactory()
+        {
+            Type base_type = typeof(InterpolationInterface);
+
+            Type[] types = Common.GetClassTypes(System.Reflection.Assembly.GetExecutingAssembly(), base_type.Namespace);
+
+            foreach(Type t in types)
+            {
+                if (!t.IsAbstract && base_type.IsAssignableFrom(t))
+                {
+                    m_interpolation_types[t.FullName.ToLower()] = t;
+                }
+            }
         }
 
         public static Type GetInterpolationType(string method)
         {
-            return Type.GetType(String.Format("ACQ.Math.Interpolation.{0}Interpolation", method), false, true); //return null if missing, ignore case
+            string name = String.Format("ACQ.Math.Interpolation.{0}Interpolation", method).ToLower();
+
+            Type result = null;
+
+            if (m_interpolation_types.ContainsKey(name))
+            {
+                result = m_interpolation_types[name];
+            }
+            return result;
+    //        return Type.GetType(String.Format("ACQ.Math.Interpolation.{0}Interpolation", method), false, true); //return null if missing, ignore case
         }
 
         public static InterpolationInterface GetInterpolator(Type type, double[] x, double[] y, bool bounds)
