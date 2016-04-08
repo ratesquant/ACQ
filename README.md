@@ -1,4 +1,4 @@
-# ACQ - Excel Add-in for interpolation 
+# ACQ - Excel Add-in for interpolation
 uses Excel-DNA, https://exceldna.codeplex.com/
 
 # Abstract 
@@ -31,7 +31,7 @@ The following functions for interpolation are currently implemented:
 	
 Interpolaton method is specified using method argument. The argument is optional, linear interpolation is used by default. Currently implemented methods are
 
-	0. Nearest - nearest point interpolation
+	0. Nearest - nearest point interpolation (also Backward and Forward)
 	1. Linear - linear spline interpolation
 	2. Quadratic - quadratic  spline interpolation	
 	3. Cubic - natural cubic spline
@@ -39,5 +39,19 @@ Interpolaton method is specified using method argument. The argument is optional
 	5. Steffen - monotonic cubic spline
 	6. Akima - Akima spline (cubic spline with special condition for derivatives)
 	7. AkimaPeriodic - Akima spline with periodic boundary conditions
+	8. Multiquadrics - Multiquadrics radial basis function 
 
 Bounds is optional argument that controls interpolation outside of interpolation range. When interpolating outside of range num Excel error will be returned if bounds is false, while closest point is returned when bounds is true (default).  
+
+# 2D Interpolaton
+	0. Bilinear - interpolation on rectangular grid (linear in each dimension)
+	
+# Mersenne Twister
+Random number generator based on A C-program for MT19937, with initialization improved 2002/1/26. Coded by Takuji Nishimura and Makoto Matsumoto. 
+Excel interface allows to initialize generator with single or array seed
+
+	1. acq_random_vector(seed, size) - generate random sample using MT19937 
+	2. acq_random_vector_ex(seed, size) - generate random sample using array seed
+	3. acq_vector_element(vector, index) - get a random number from vector (random numbers are returned as vector)
+	4. acq_vector_size(vector) - get size of the vector 
+	
