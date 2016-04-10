@@ -21,7 +21,10 @@ namespace ACQ.Excel
             ExcelIntegration.RegisterUnhandledExceptionHandler(ErrorHandler);
 
             // Register Ctrl+Shift+H to show log window 
-            XlCall.Excel(XlCall.xlcOnKey, "^H", "ShowLogWindow"); 
+            XlCall.Excel(XlCall.xlcOnKey, "^H", "ShowLogWindow");
+
+            // Register Ctrl+Shift+A to show introspection window 
+            XlCall.Excel(XlCall.xlcOnKey, "^A", "ShowIntrospectionWindow"); 
         }
 
         public void AutoClose()
@@ -38,11 +41,6 @@ namespace ACQ.Excel
 
             // return #VALUE into the cell.
             return ExcelError.ExcelErrorValue; 
-        }
-        [ExcelCommand(MenuText = "Show Log Window", MenuName = AddInInfo.MenuName)]
-        public static void ShowLogWindow()
-        {
-            LogDisplay.Show();
         }
     }
 }

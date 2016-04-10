@@ -131,21 +131,18 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Returns the determinant of the matrix.</summary>
-        public double Determinant
-        {
-            get
+        public double GetDeterminant()
+        {  
+            if (m_lu.Rows != m_lu.Columns)
             {
-                if (m_lu.Rows != m_lu.Columns)
-                {
-                    throw new ArgumentException("Matrix must be square.");
-                }
-                double det = (double)m_psign;
-                for (int j = 0; j < m_lu.Columns; j++)
-                {
-                    det *= m_lu[j, j];
-                }
-                return det;
+                throw new ArgumentException("Matrix must be square.");
             }
+            double det = (double)m_psign;
+            for (int j = 0; j < m_lu.Columns; j++)
+            {
+                det *= m_lu[j, j];
+            }
+            return det;
         }
 
         /// <summary>Returns the lower triangular factor L with A=LU.</summary>

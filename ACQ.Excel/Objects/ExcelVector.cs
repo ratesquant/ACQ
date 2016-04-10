@@ -36,7 +36,7 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Get vector element", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Get vector element", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_vector_element(string handle, int index)
         {
             ACQ.Math.Linalg.Vector vector;
@@ -51,7 +51,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Get vector size", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Get vector size", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_vector_size(string handle)
         {
             ACQ.Math.Linalg.Vector vector;
@@ -62,8 +62,37 @@ namespace ACQ.Excel.Objects
                 {
                     return vector.Size;
                 }
+                else
+                {
+                    return ExcelError.ExcelErrorNA;
+                }
             }
             return ExcelError.ExcelErrorRef;
+        }
+
+        [ExcelFunction(Description = "Scale Vector", Category = AddInInfo.Category)]
+        public static object acq_vector_scale(string handle, double scale)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+            else
+            {
+                ACQ.Math.Linalg.Vector vector;
+
+                if (ACQ.Excel.Handles.GlobalCache.TryGetObject<ACQ.Math.Linalg.Vector>(handle, out vector))
+                {
+                    if (vector != null)
+                    {
+                        return ACQ.Excel.Handles.GlobalCache.CreateHandle(ExcelVector.Tag, new object[] { handle, scale, "acq_vector_scale" },
+                          (objectType, parameters) =>
+                          {
+                              return scale * vector;
+
+                          });
+                    }
+                }
+                return ExcelError.ExcelErrorRef;
+            }
         }
     }
 }

@@ -636,21 +636,15 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Inverse of the matrix if matrix is square, pseudoinverse otherwise.</summary>
-        public Matrix Inverse
+        public Matrix GetInverse()
         {
-            get
-            {
-                return Solve(Matrix.CreateDiagonal(rows, rows, 1.0));
-            }
+            return Solve(Matrix.CreateDiagonal(rows, rows, 1.0));            
         }
 
         /// <summary>Determinant if matrix is square.</summary>
-        public double Determinant
+        public double GetDeterminant()
         {
-            get
-            {
-                return new LuDecomposition(this).Determinant;
-            }
+            return new LuDecomposition(this).GetDeterminant();            
         }
 
         /// <summary>Returns the trace of the matrix.</summary>

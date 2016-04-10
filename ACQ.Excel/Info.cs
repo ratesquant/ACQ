@@ -30,6 +30,13 @@ namespace ACQ.Excel
             return info.ProductVersion;
         }
 
+        [ExcelFunction(Description = "Returns the version of the .NET", Category = AddInInfo.Category)]
+        public static object acq_dotnet_version()
+        {
+            return System.Environment.Version.ToString();
+        }
+
+
         [ExcelFunction(Description = "Returns the location of the ACQ add-in", Category = AddInInfo.Category)]
         public static string acq_xllpath()
         {
@@ -39,6 +46,29 @@ namespace ACQ.Excel
         public static void ShowLogWindow()
         {
             LogDisplay.Show();
+        }
+
+
+        [ExcelCommand(MenuText = "Show Introspection Window", MenuName = AddInInfo.MenuName)]
+        public static void ShowIntrospectionWindow()
+        {
+            ExcelReference cell = (ExcelReference)XlCall.Excel(XlCall.xlfActiveCell);
+
+            object value = cell.GetValue();
+
+            if (value != null)
+            {
+                string handle = value.ToString();
+
+                object acq_object;
+
+                if (ACQ.Excel.Handles.GlobalCache.TryGetObject(handle, out acq_object))
+                {
+                    ACQ.Excel.Introspection.IntrospectionDlg dlg = new ACQ.Excel.Introspection.IntrospectionDlg(acq_object);
+
+                    dlg.Show();
+                }
+            }
         }
     }
 }

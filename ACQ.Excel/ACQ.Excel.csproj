@@ -36,6 +36,8 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +52,13 @@
     <Compile Include="Info.cs" />
     <Compile Include="Init.cs" />
     <Compile Include="Handles\GlobalCache.cs" />
+    <Compile Include="Introspection\IntrospectionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Introspection\IntrospectionDlg.Designer.cs">
+      <DependentUpon>IntrospectionDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Introspection\ObjectIntrospector.cs" />
     <Compile Include="MathUtils.cs" />
     <Compile Include="Objects\ExcelArray.cs" />
     <Compile Include="Objects\ExcelHashtable.cs" />
@@ -80,6 +89,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Version.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Introspection\IntrospectionDlg.resx">
+      <DependentUpon>IntrospectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
