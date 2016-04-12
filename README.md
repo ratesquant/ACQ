@@ -59,6 +59,6 @@ Excel interface allows to initialize generator with single or array seed
 	
 	
 # Shotcuts
-	1. Ctrl+Shift+H - shows log windows 
-	2. Ctrl+Shift+A - shows introspection window (for ACQ handles)
+	1. Ctrl+Shift+H - shows ACQ log window
+	2. Ctrl+Shift+A - shows ACQ introspection window (for ACQ handles)
 	
