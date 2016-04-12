@@ -27,7 +27,7 @@ namespace ACQ.Math.Interpolation
         /// <param name="x">interpolation nodes - should be sorted i.e. x[i+1] > x[i]</param>
         /// <param name="y">function values at interpolation nodes i.e. y[i] = f(x[i])</param>        
         /// <param name="bCopyData"> Make copy of input arrays if true, otherwise save the reference</param>
-        public InterpolationBase(double[] x, double[] y, bool bounds = true, bool bCopyData = false)
+        public InterpolationBase(double[] x, double[] y, bool bounds = true, bool bCopyData = true)
         {
             if (x == null || y == null)
                 throw new ArgumentNullException("interpolation arrays can not be null");

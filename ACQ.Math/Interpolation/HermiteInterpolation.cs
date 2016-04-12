@@ -43,7 +43,7 @@ namespace ACQ.Math.Interpolation
             return value;
         }
 
-        protected void hermite_basis(double u, out double h1, out double h2, out double h3, out double h4)
+        public static void hermite_basis(double u, out double h1, out double h2, out double h3, out double h4)
         {
             double v = 1.0 - u;
             double z = u * v;
