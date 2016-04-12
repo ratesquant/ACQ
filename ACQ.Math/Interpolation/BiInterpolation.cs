@@ -27,11 +27,6 @@ namespace ACQ.Math.Interpolation
 
             if (index1 > 0 && index2 > 0)
             {
-                //      x10       x11  
-                //x20   y10  y1e  y11
-                //           val
-                //x21   y20  y2e  y21 
-
                 //slow reference method
 
                 int n1 = m_x1.Length;
@@ -39,6 +34,8 @@ namespace ACQ.Math.Interpolation
 
                 double[] yt = new double[n1];
                 double[] y2 = new double[n2];
+
+                bool bounds = false; //this is only helpful for 1D
 
                 InterpolationInterface interpolator;
 
@@ -48,12 +45,12 @@ namespace ACQ.Math.Interpolation
                     {
                         yt[j] = m_y[i, j];
                     }
-                    interpolator = InterpolationFactory.GetInterpolator(typeof(T).Name, m_x1, yt);
+                    interpolator = Activator.CreateInstance(typeof(T), m_x1, yt, bounds) as InterpolationInterface;
 
                     y2[i] = interpolator.Eval(x1);
                 }
 
-                interpolator = InterpolationFactory.GetInterpolator(typeof(T).Name, m_x2, y2);
+                interpolator = Activator.CreateInstance(typeof(T), m_x2, y2, bounds) as InterpolationInterface;
 
                 return interpolator.Eval(x2);
     
