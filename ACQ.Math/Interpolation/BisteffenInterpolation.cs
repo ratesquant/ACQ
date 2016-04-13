@@ -15,6 +15,5 @@ namespace ACQ.Math.Interpolation
             : base(x1, x2, y, copyData)
         {
         }
-
     }
 }
