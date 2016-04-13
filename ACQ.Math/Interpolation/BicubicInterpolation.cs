@@ -42,6 +42,8 @@ namespace ACQ.Math.Interpolation
                 double y11 = m_y[index2 - 1, index1];
                 double y20 = m_y[index2, index1 - 1];
                 double y21 = m_y[index2, index1];
+                double dx1 = x11 - x10;
+                double dx2 = x21 - x20;
 
                 //x1 derivatives
                 double y10dx1 = dydx1(m_y, m_x1, index1 - 1, index2 - 1);
@@ -56,10 +58,10 @@ namespace ACQ.Math.Interpolation
                 double y21dx2 = dydx2(m_y, m_x2, index1,     index2);
 
                 //TODO: cross derivatives
-                double y10dx1dx2 = 0;
-                double y11dx1dx2 = 0;
-                double y20dx1dx2 = 0;
-                double y21dx1dx2 = 0;
+                double y10dx1dx2 = dydx1dx2(m_y, m_x1, m_x2, index1 - 1, index2 - 1);
+                double y11dx1dx2 = dydx1dx2(m_y, m_x1, m_x2, index1, index2 - 1);
+                double y20dx1dx2 = dydx1dx2(m_y, m_x1, m_x2, index1 - 1, index2);
+                double y21dx1dx2 = dydx1dx2(m_y, m_x1, m_x2, index1, index2);
 
                 double b1 = (x1 - x10) / (x11 - x10);
                 double b2 = (x2 - x20) / (x21 - x20);
@@ -68,9 +70,15 @@ namespace ACQ.Math.Interpolation
                 HermiteInterpolation.hermite_basis(b1, out h11, out h21, out h31, out h41);
                 HermiteInterpolation.hermite_basis(b2, out h12, out h22, out h32, out h42);
 
-                //h1 * y0 + h2 * y1 + dx * (m_c[index - 1] * h3 + m_c[index] * h4);
-                value  = h11 * h12 * y10 + h21 * h12 * y11 + h12 * h11 * y20 + h22 * h21 * y20; // values at the nodes 
-                //TODO: add derivatives and cross derivatives
+                //function values at the nodes
+                double f_vals  = h11 * h12 * y10 + h21 * h12 * y11 + h22 * h11 * y20 + h22 * h21 * y21; // values at the nodes 
+                //function derivatives along edges
+                double f_dx1 = h31 * h12 * y10dx1 + h41 * h12 * y11dx1 + h31 * h22 * y20dx1 + h41 * h22 * y21dx1; // derivatives at the nodes  dy/dx1
+                double f_dx2 = h32 * h11 * y10dx2 + h32 * h21 * y11dx2 + h42 * h11 * y20dx2 + h42 * h21 * y21dx2; // derivatives at the nodes  dy/dx2
+                //function cross derivatives at the nodes 
+                double f_dxc = h31 * h32 * y10dx1dx2 + h41 * h32 * y11dx1dx2 + h42 * h31 * y20dx1dx2 + h41 * h42 * y21dx1dx2;//
+
+                value = f_vals + dx1 * f_dx1 + dx2 * f_dx2 + dx1 * dx2 * f_dxc;
                 
             }
 
@@ -138,6 +146,38 @@ namespace ACQ.Math.Interpolation
             }
 
             return dy;
+        }
+
+        //cross derivative
+        private static double dydx1dx2(double[,] y, double[] x1, double[] x2, int index1, int index2)
+        {
+            double dyc = 0;
+
+            if (index2 == 0)
+            {
+                double dydx1_1 = dydx1(y, x1, index1, index2);
+                double dydx1_2 = dydx1(y, x1, index1, index2 + 1);
+                dyc = (dydx1_2 - dydx1_1) / (x2[index2 + 1] - x2[index2]);
+            }
+            else if (index2 == x2.Length - 1)
+            {
+                double dydx1_1 = dydx1(y, x1, index1, index2 - 1);
+                double dydx1_2 = dydx1(y, x1, index1, index2);
+                dyc = (dydx1_2 - dydx1_1) / (x2[index2] - x2[index2-1]);
+            }
+            else
+            {
+                double dx  = x2[index2 + 1] - x2[index2 - 1];
+                double dx0 = x2[index2]     - x2[index2 - 1];
+                double dx1 = x2[index2 + 1] - x2[index2];
+
+                double dy0 = (dydx1(y, x1, index2, index1)     - dydx1(y, x1, index2 - 1, index1)) / dx0;
+                double dy1 = (dydx1(y, x1, index2 + 1, index1) - dydx1(y, x1, index2, index1))     / dx1;
+
+                dyc = (dy0 * dx1 + dy1 * dx0) / dx;
+            }
+
+            return dyc;
         }
     }
 }

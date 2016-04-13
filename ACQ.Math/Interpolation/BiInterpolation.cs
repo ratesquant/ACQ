@@ -5,10 +5,15 @@ using System.Text;
 
 namespace ACQ.Math.Interpolation
 {
+    /// <summary>
+    /// 2D interpolation on the rectangular grid, done using specified 1D interpolator in each dimension
+    /// the method is general, but not efficient
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class BiInterpolation<T> : InterpolationBase2D where T : InterpolationInterface
     {
         public BiInterpolation(double[] x1, double[] x2, double[,] y)
-            : base(x1, x2, y, false)
+            : base(x1, x2, y, true)
         {
         }
         public BiInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
@@ -38,6 +43,7 @@ namespace ACQ.Math.Interpolation
                 bool bounds = false; //this is only helpful for 1D
 
                 InterpolationInterface interpolator;
+                Type interpolator_type = typeof(T);
 
                 for(int i=0; i<n2; i++)
                 {
@@ -45,12 +51,12 @@ namespace ACQ.Math.Interpolation
                     {
                         yt[j] = m_y[i, j];
                     }
-                    interpolator = Activator.CreateInstance(typeof(T), m_x1, yt, bounds) as InterpolationInterface;
+                    interpolator = Activator.CreateInstance(interpolator_type, m_x1, yt, bounds) as InterpolationInterface;
 
                     y2[i] = interpolator.Eval(x1);
                 }
 
-                interpolator = Activator.CreateInstance(typeof(T), m_x2, y2, bounds) as InterpolationInterface;
+                interpolator = Activator.CreateInstance(interpolator_type, m_x2, y2, bounds) as InterpolationInterface;
 
                 return interpolator.Eval(x2);
     

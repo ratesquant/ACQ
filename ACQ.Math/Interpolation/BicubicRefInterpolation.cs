@@ -8,7 +8,7 @@ namespace ACQ.Math.Interpolation
     public class BicubicRefInterpolation : InterpolationBase2D
     {
         public BicubicRefInterpolation(double[] x1, double[] x2, double[,] y)
-            : base(x1, x2, y, false)
+            : base(x1, x2, y, true)
         {
         }
         public BicubicRefInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)

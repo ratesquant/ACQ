@@ -5,6 +5,13 @@ using System.Text;
 
 namespace ACQ.Math.Interpolation
 {
+    /// <summary>
+    /// Steffen interpolation. implemented as described in  
+    /// A Simple Method for Monotonic Interpolation in One Dimension, Steffen, M., Astronomy and Astrophysics, Vol. 239, NO. NOV(II), P. 443, 1990
+    /// 
+    /// uses hermit cubic bases and limits derivatives to enforce monotonicity. 
+    /// A good alternative to sometimes unstable Akima spline 
+    /// </summary>
     public class SteffenInterpolation : HermiteInterpolation
     {
         public SteffenInterpolation(double[] x, double[] y, bool bounds = true)
@@ -46,7 +53,7 @@ namespace ACQ.Math.Interpolation
                 }
             }
 
-            a[0] = (y[0] - y[1]) / (x[0] - x[1]);
+            a[0] = (y[1] - y[0]) / (x[1] - x[0]);
             a[n - 1] = (y[n - 1] - y[n - 2]) / (x[n - 1] - x[n - 2]);
 
         }
