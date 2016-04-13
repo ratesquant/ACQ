@@ -5,13 +5,17 @@ using System.Text;
 
 namespace ACQ.Math.Interpolation
 {
-    public class BicubicInterpolation : InterpolationBase2D
+    /// <summary>
+    /// this should be the same as bihermiteinterpolation
+    /// implementation is a bit convoluted, but does the same thing as hermite interpolation
+    /// </summary>
+    public class BiCubicInterpolation : InterpolationBase2D
     {
-        public BicubicInterpolation(double[] x1, double[] x2, double[,] y)
+        public BiCubicInterpolation(double[] x1, double[] x2, double[,] y)
             : base(x1, x2, y, false)
         {
         }
-        public BicubicInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
+        public BiCubicInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
             : base(x1, x2, y, copyData)
         {
         }
@@ -171,8 +175,12 @@ namespace ACQ.Math.Interpolation
                 double dx0 = x2[index2]     - x2[index2 - 1];
                 double dx1 = x2[index2 + 1] - x2[index2];
 
-                double dy0 = (dydx1(y, x1, index2, index1)     - dydx1(y, x1, index2 - 1, index1)) / dx0;
-                double dy1 = (dydx1(y, x1, index2 + 1, index1) - dydx1(y, x1, index2, index1))     / dx1;
+                double dydx1_bot = dydx1(y, x1, index2 - 1, index1);
+                double dydx1_mid = dydx1(y, x1, index2, index1);
+                double dydx1_top = dydx1(y, x1, index2 + 1, index1);
+
+                double dy0 = (dydx1_mid - dydx1_bot) / dx0;
+                double dy1 = (dydx1_top - dydx1_mid) / dx1;
 
                 dyc = (dy0 * dx1 + dy1 * dx0) / dx;
             }
