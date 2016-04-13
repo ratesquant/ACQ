@@ -73,7 +73,7 @@ namespace ACQ.Math.Interpolation
             }
 
             a[0] = (y[0] - y[1]) / (x[0] - x[1]);
-            a[n - 1] = (y[n-1] - y[n-1]) / (x[n-1] - x[n-2]);
+            a[n - 1] = (y[n-1] - y[n-2]) / (x[n-1] - x[n-2]);
           
         }
     }
