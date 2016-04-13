@@ -44,7 +44,8 @@
     <Compile Include="Complex.cs" />
     <Compile Include="Interpolation\AkimaInterpolation.cs" />
     <Compile Include="Interpolation\BackwardInterpolation.cs" />
-    <Compile Include="Interpolation\BicubicInterpolation.cs" />
+    <Compile Include="Interpolation\BiAkimaInterpolation.cs" />
+    <Compile Include="Interpolation\BiCubicInterpolation.cs" />
     <Compile Include="Interpolation\BihermiteInterpolation.cs" />
     <Compile Include="Interpolation\BiInterpolation.cs" />
     <Compile Include="Interpolation\BilinearInterpolation.cs" />

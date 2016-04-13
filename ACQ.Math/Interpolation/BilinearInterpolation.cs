@@ -5,13 +5,13 @@ using System.Text;
 
 namespace ACQ.Math.Interpolation
 {
-    public class BilinearInterpolation : InterpolationBase2D
+    public class BiLinearInterpolation : InterpolationBase2D
     {
-        public BilinearInterpolation(double[] x1, double[] x2, double[,] y)
+        public BiLinearInterpolation(double[] x1, double[] x2, double[,] y)
             : base(x1, x2, y, true)
         {
         }
-        public BilinearInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
+        public BiLinearInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
             : base(x1, x2, y, copyData)
         {
         }

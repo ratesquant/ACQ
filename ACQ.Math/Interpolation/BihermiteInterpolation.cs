@@ -9,13 +9,13 @@ namespace ACQ.Math.Interpolation
     /// Hermite cubic cpline interpolation on 2D rectangular grid
     /// this is sometimes called bicubic interpolation 
     /// </summary>
-    public class BihermiteInterpolation : BiInterpolation<HermiteInterpolation>
+    public class BiHermiteInterpolation : BiInterpolation<HermiteInterpolation>
     {
-        public BihermiteInterpolation(double[] x1, double[] x2, double[,] y)
+        public BiHermiteInterpolation(double[] x1, double[] x2, double[,] y)
             : base(x1, x2, y, true)
         {
         }
-        public BihermiteInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
+        public BiHermiteInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
             : base(x1, x2, y, copyData)
         {
         }
