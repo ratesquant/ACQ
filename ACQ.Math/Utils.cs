@@ -591,7 +591,7 @@ namespace ACQ.Math
 
        
         /// <summary>
-        /// generates N points between min and max. For N &lt; 2 LinSpace returns max.
+        /// generates n points between min and max. For N less or equal to 2 Linspace returns [min, max].
         /// </summary>
         /// <param name="min"></param>
         /// <param name="max"></param>
@@ -599,19 +599,19 @@ namespace ACQ.Math
         /// <returns></returns>
         public static double[] Linspace(double min, double max, int n)
         {
-            if (n < 2)
-            {
-                return new double[] { max };
-            }
-            else
-            {
+            int m = System.Math.Min(2, n);
 
-                double[] x = new double[n];
-                for (int i = 0; i < x.Length; i++)
-                    x[i] = min + (max - min) * (i) / (x.Length - 1);
-
-                return x;
+            double[] x = new double[m];
+            double step = (max - min) / (m - 1);
+            for (int i = 1; i < x.Length - 1; i++)
+            {
+                x[i] = min + step * i;
             }
+
+            x[0] = min;
+            x[m - 1] = max;
+
+            return x;
         }
         #endregion
     }

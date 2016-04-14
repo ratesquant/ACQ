@@ -24,7 +24,7 @@ namespace ACQ.Math.Interpolation
         {
         }
         public RbfInterpolation1D(double[] x, double[] y, enRadialBasisFunction basisFunction, double scale, double smooth)
-            : base(x, y, false)
+            : base(x, y, true)
         {
             m_basisFunction = RadialBasisFunction.CreateRadialBasisFunction(basisFunction);
             m_scale = scale;

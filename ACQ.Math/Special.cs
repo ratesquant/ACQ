@@ -7,6 +7,8 @@ namespace ACQ.Math
 {
     /// <summary>
     /// Special functions
+    /// adapted from 
+    /// https://github.com/jeremybarnes/cephes
     /// </summary>
     public class Special
     {
