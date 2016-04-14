@@ -53,6 +53,7 @@ Bounds is optional argument that controls interpolation outside of interpolation
 	
 # Scattered Data Interpolaton (ND)
 Scattered data interpolation is based on radial basis functions and currently limited to 512 interpolation nodes. The following radial basis functions are implemented (first three are the most common). Optional scale factors can be provided for each dimension
+
 	1. Linear
 	2. Cubic
 	3. Multiquadrics
@@ -62,6 +63,7 @@ Scattered data interpolation is based on radial basis functions and currently li
 	8. InverseMultiquadric
 
 the list of excel functions for scattered data interpolation:
+
 	1. acq_interpolator_scattered_create
 	2. acq_interpolator_scattered_eval
 	3. acq_interpolator_scattered_eval_x5
