@@ -12,7 +12,7 @@ namespace ACQ.Excel
      * ExcelError.ExcelErrorNull - Null range is specified as an input
      * ExcelError.ExcelErrorRef -  	Invalid cell reference
      * ExcelError.ExcelErrorValue - Wrong type of argument in a function or wrong type of operator
-     * ExcelError.ExcelErrorNA - No value available (for Nan use Num error)
+     * ExcelError.ExcelErrorNA - No value available (use this for Nan, excel plot ExcelErrorNum as zeros)
      * 
      */
     static class ExcelHelper
@@ -23,7 +23,7 @@ namespace ACQ.Excel
 
             if (Double.IsNaN(value))
             {
-                result = ExcelError.ExcelErrorNum;
+                result = ExcelError.ExcelErrorNA;
             }
             else
             {

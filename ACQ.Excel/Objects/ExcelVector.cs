@@ -36,7 +36,7 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Get vector element", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Get vector element", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_vector_element(string handle, int index)
         {
             ACQ.Math.Linalg.Vector vector;
@@ -51,7 +51,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Get vector size", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Get vector size", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_vector_size(string handle)
         {
             ACQ.Math.Linalg.Vector vector;

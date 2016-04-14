@@ -38,7 +38,7 @@ namespace ACQ.Excel.Objects
         }
        
 
-        [ExcelFunction(Description = "Evaluate interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Evaluate interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolator_eval(
             [ExcelArgument(Description = "Interpolator object")] string handle,
             [ExcelArgument(Description = "Interpolation point")] double x)
@@ -55,7 +55,30 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category, IsThreadSafe = true)]
+
+        [ExcelFunction(Description = "Evaluate interpolation at specified point (thread safe version)", Category = AddInInfo.Category, IsThreadSafe = false)]
+        public static object acq_interpolator_eval_tsafe(
+            [ExcelArgument(Description = "Interpolator object")] string handle,
+            [ExcelArgument(Description = "Interpolation point")] double x)
+        {
+
+            Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Interpolation.InterpolationInterface, double, double>(handle, (interpolator, point) =>
+            {
+                return interpolator.Eval(point);
+            }, x);
+
+            if (results.Item1)
+            {
+                return ExcelHelper.CheckNan(results.Item2);
+            }
+            else
+            {
+                return ExcelError.ExcelErrorRef;
+
+            }
+        }
+
+        [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolation(double xi, double[] x, double[] y, object method, object bounds)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
@@ -67,7 +90,7 @@ namespace ACQ.Excel.Objects
                 if (interpolator != null)
                     return interpolator.Eval(xi);
                 else
-                    return ExcelError.ExcelErrorNum;
+                    return ExcelError.ExcelErrorNA;
             }
 
         }

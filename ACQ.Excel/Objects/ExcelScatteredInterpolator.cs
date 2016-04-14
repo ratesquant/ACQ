@@ -37,7 +37,7 @@ namespace ACQ.Excel.Objects
         }
 
 
-        [ExcelFunction(Description = "Evaluate Scattered interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Evaluate Scattered interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolator_scattered_eval(
             [ExcelArgument(Description = "Interpolator object")] string handle,
             [ExcelArgument(Description = "Interpolation point")] double[] x)
@@ -54,7 +54,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Evaluate Scattered interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Evaluate Scattered interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolator_scattered_eval_x5(
             [ExcelArgument(Description = "Interpolator object")] string handle,
             [ExcelArgument(Description = "Interpolation point")] object x1,

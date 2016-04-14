@@ -89,6 +89,79 @@ namespace ACQ.Excel.Handles
             }
             return found;
         }
+        /// <summary>
+        /// thread safe way to access objects in cache
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="name"></param>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        internal Tuple<bool, TResult> TryReadObject<T, TResult>(string name, Func<T, TResult> reader) where T : class
+        {
+            bool valid = false;
+
+            TResult result = default(TResult);
+            T obj = default(T);
+
+            m_lock.EnterReadLock();
+
+            try
+            {
+                Handle handle;
+
+                if (m_storage.TryGetValue(name, out handle))
+                {
+                    if (handle.Value is T)
+                    {
+                        obj = handle.Value as T;
+                        if (obj != null)
+                        {
+                            result = reader(obj);
+                            valid = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                m_lock.ExitReadLock();
+            }
+            return new Tuple<bool, TResult>(valid, result);
+        }
+
+        internal Tuple<bool, TResult> TryReadObject<T, TResult, TArg>(string name, Func<T, TArg, TResult> reader, TArg argument) where T : class
+        {
+            bool valid = false;
+
+            TResult result = default(TResult);
+            T obj = default(T);
+
+            m_lock.EnterReadLock();
+
+            try
+            {
+                Handle handle;
+
+                if (m_storage.TryGetValue(name, out handle))
+                {
+                    if (handle.Value is T)
+                    {
+                        obj = handle.Value as T;
+                        if (obj != null)
+                        {
+                            result = reader(obj, argument);
+                            valid = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                m_lock.ExitReadLock();
+            }
+            return new Tuple<bool, TResult>(valid, result);
+        }
 
         internal void Remove(Handle handle)
         {

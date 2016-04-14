@@ -44,7 +44,7 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Get array element", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Get array element", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_array_element(string handle, int index)
         {
             object[] array;
@@ -59,7 +59,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Get array size", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Get array size", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_array_size(string handle)
         {
             object[] array;

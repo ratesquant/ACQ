@@ -38,7 +38,7 @@ namespace ACQ.Excel.Objects
         }
 
 
-        [ExcelFunction(Description = "Evaluate 2D interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Evaluate 2D interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolator2d_eval(
             [ExcelArgument(Description = "Interpolator object")] string handle,
             [ExcelArgument(Description = "Interpolation point")] double x1,
@@ -56,7 +56,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Compute interpolated value (2d)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Compute interpolated value (2d)", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolation2d(double px1, double px2, double[] x1, double[] x2, double[,] y, object method)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
@@ -68,7 +68,7 @@ namespace ACQ.Excel.Objects
                 if (interpolator != null)
                     return interpolator.Eval(px1, px2);
                 else
-                    return ExcelError.ExcelErrorNum;
+                    return ExcelError.ExcelErrorNA;
             }
         }
 
