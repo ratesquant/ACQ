@@ -55,7 +55,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_interpolation(double xi, double[] x, double[] y, object method, object bounds)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
