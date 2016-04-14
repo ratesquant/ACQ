@@ -6,16 +6,31 @@ using System.Text;
 namespace ACQ.Math.Interpolation
 {
     /// <summary>
-    /// this should be the same as bihermiteinterpolation
-    /// implementation is a bit convoluted, but does the same thing as hermite interpolation
+    /// Hermite cubic cpline interpolation on 2D rectangular grid
+    /// this is sometimes called bicubic interpolation 
     /// </summary>
-    public class BiCubicInterpolation : InterpolationBase2D
+    public class BiCubicInterpolation : BiInterpolation<CubicInterpolation>
     {
         public BiCubicInterpolation(double[] x1, double[] x2, double[,] y)
-            : base(x1, x2, y, false)
+            : base(x1, x2, y, true)
         {
         }
         public BiCubicInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
+            : base(x1, x2, y, copyData)
+        {
+        }
+    }
+    /// <summary>
+    /// this should be the same as bihermiteinterpolation
+    /// implementation is a bit convoluted, but does the same thing as hermite interpolation
+    /// </summary>
+    public class BiCubicTestInterpolation : InterpolationBase2D
+    {
+        public BiCubicTestInterpolation(double[] x1, double[] x2, double[,] y)
+            : base(x1, x2, y, false)
+        {
+        }
+        public BiCubicTestInterpolation(double[] x1, double[] x2, double[,] y, bool copyData)
             : base(x1, x2, y, copyData)
         {
         }

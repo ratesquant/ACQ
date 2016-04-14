@@ -198,7 +198,7 @@ namespace ACQ.Math
             return new Complex(r * System.Math.Cos(arg * k), r * System.Math.Sin(arg * k));
 		}
 		
-			public Complex Pow(double k)
+		public Complex Pow(double k)
 		{
 			return Complex.Pow(this,k);
 		}
