@@ -44,10 +44,28 @@ Interpolaton method is specified using method argument. The argument is optional
 Bounds is optional argument that controls interpolation outside of interpolation range. When interpolating outside of range num Excel error will be returned if bounds is false, while closest point is returned when bounds is true (default).  
 
 # 2D Interpolaton
-	1. Bilinear - interpolation on rectangular grid (linear in each dimension)
-	2. Bicubicref - cubic interpolation on rectangular grid (hermite cubic spline in each dimension)
-	3. Bisteffen - Steffen interpolation on rectangular grid (steffen in each dimension)
+	1. BiLinear - interpolation on rectangular grid (linear in each dimension)
+	2. BiCubic - cubic interpolation on rectangular grid (hermite cubic spline in each dimension)
+	3. BiSteffen - Steffen interpolation on rectangular grid (Steffen in each dimension)
+	4. BiAkima - Akima interpolation on rectangular grid (Akima in each dimension)
+	4. BiHermite - Hermite interpolation on rectangular grid (Hermite in each dimension)
 	
+	
+# Scattered Data Interpolaton (ND)
+Scattered data interpolation is based on radial basis functions and currently limited to 512 interpolation nodes. The following radial basis functions are implemented (first three are the most common). Optional scale factors can be provided for each dimension
+	1. Linear
+	2. Cubic
+	3. Multiquadrics
+	4. Gaussian
+	5. Thinplate,
+	6. InverseQuadratic,
+	8. InverseMultiquadric
+
+the list of excel functions for scattered data interpolation:
+	1. acq_interpolator_scattered_create
+	2. acq_interpolator_scattered_eval
+	3. acq_interpolator_scattered_eval_x5
+
 # Mersenne Twister
 Random number generator based on MT19937 by Takuji Nishimura and Makoto Matsumoto. 
 Excel interface allows to initialize generator with single or array seed
