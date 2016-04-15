@@ -10,8 +10,6 @@ namespace ACQ.Math
         
         This file is the original README from that page, which also states the license.
 
-        -----------------
-
            Some software in this archive may be from the book _Methods and
         Programs for Mathematical Functions_ (Prentice-Hall or Simon & Schuster
         International, 1989) or from the Cephes Mathematical Library, a
@@ -29,24 +27,122 @@ namespace ACQ.Math
      * */
     #endregion
     /// <summary>
-    /// Special functions
-    /// adapted from Cephes
+    /// Special functions, adapted from Cephes (subset)
     /// https://github.com/jeremybarnes/cephes
-    /// 
+    /// http://www.netlib.org/cephes/
+    /// function names are the same as Cephes
     /// </summary>
     public class Special
     {
         #region Const
-        public const double MACHEP = 1.11022302462515654042E-16;
-        public const double MAXLOG = 7.09782712893383996732E2;
-        public const double MINLOG = -7.451332191019412076235E2;
-        public const double MAXGAM = 171.624376956302725;
-        public const double SQTPI = 2.50662827463100050242E0;
-        public const double SQRTH = 7.07106781186547524401E-1;
-        public const double SQRT2 = 1.41421356237309504880;
-        public const double LOGPI = 1.14472988584940017414;
-        public const double MAXLGM = 2.556348e305;
+        private const double MACHEP = 1.11022302462515654042E-16;
+        private const double MAXLOG = 7.09782712893383996732E2;
+        private const double MINLOG = -7.451332191019412076235E2;
+        private const double MAXGAM = 171.624376956302725;
+        private const double SQTPI = 2.50662827463100050242E0;
+        private const double SQRTH = 7.07106781186547524401E-1;
+        private const double SQRT2 = 1.41421356237309504880;
+        private const double LOGPI = 1.14472988584940017414;
+        private const double LS2PI = 0.91893853320467274178;// log( sqrt( 2*pi ) )
+        private const double MAXLGM = 2.556348e305;
         #endregion 
+
+        #region polycoeffs
+        private static readonly double[] m_gamma_P = {
+          1.60119522476751861407E-4,
+          1.19135147006586384913E-3,
+          1.04213797561761569935E-2,
+          4.76367800457137231464E-2,
+          2.07448227648435975150E-1,
+          4.94214826801497100753E-1,
+          9.99999999999999996796E-1	};
+        private static readonly double[] m_gamma_Q = {
+        -2.31581873324120129819E-5,
+         5.39605580493303397842E-4,
+        -4.45641913851797240494E-3,
+         1.18139785222060435552E-2,
+         3.58236398605498653373E-2,
+        -2.34591795718243348568E-1,
+         7.14304917030273074085E-2,
+         1.00000000000000000320E0};
+        private static readonly double[] m_gamma_STIR = {
+        7.87311395793093628397E-4,
+        -2.29549961613378126380E-4,
+        -2.68132617805781232825E-3,
+        3.47222221605458667310E-3,
+        8.33333333333482257126E-2};
+        private static readonly double[] m_gamma_A = {
+        8.11614167470508450300E-4,
+        -5.95061904284301438324E-4,
+        7.93650340457716943945E-4,
+        -2.77777777730099687205E-3,
+        8.33333333333331927722E-2};
+        private static readonly double[] m_gamma_B = {
+		-1.37825152569120859100E3,
+		-3.88016315134637840924E4,
+		-3.31612992738871184744E5,
+		-1.16237097492762307383E6,
+		-1.72173700820839662146E6,
+		-8.53555664245765465627E5};
+        private static readonly double[] m_gamma_C = {
+		/* 1.00000000000000000000E0, */
+		-3.51815701436523470549E2,
+		-1.70642106651881159223E4,
+		-2.20528590553854454839E5,
+		-1.13933444367982507207E6,
+		-2.53252307177582951285E6,
+		-2.01889141433532773231E6};
+        private static readonly double[] m_ndtr_P = {
+		2.46196981473530512524E-10,
+		5.64189564831068821977E-1,
+		7.46321056442269912687E0,
+		4.86371970985681366614E1,
+		1.96520832956077098242E2,
+		5.26445194995477358631E2,
+		9.34528527171957607540E2,
+		1.02755188689515710272E3,
+		5.57535335369399327526E2};
+        private static readonly double[] m_ndtr_Q = {
+		//1.0
+		1.32281951154744992508E1,
+		8.67072140885989742329E1,
+		3.54937778887819891062E2,
+		9.75708501743205489753E2,
+		1.82390916687909736289E3,
+		2.24633760818710981792E3,
+		1.65666309194161350182E3,
+		5.57535340817727675546E2};
+        private static readonly double[] m_ndtr_R = {
+		5.64189583547755073984E-1,
+		1.27536670759978104416E0,
+		5.01905042251180477414E0,
+		6.16021097993053585195E0,
+		7.40974269950448939160E0,
+		2.97886665372100240670E0};
+        private static readonly double[] m_ndtr_S = {
+	    //1.00000000000000000000E0, 
+	    2.26052863220117276590E0,
+	    9.39603524938001434673E0,
+	    1.20489539808096656605E1,
+	    1.70814450747565897222E1,
+	    9.60896809063285878198E0,
+	    3.36907645100081516050E0};
+        private static readonly double[] m_ndtr_T = {
+		9.60497373987051638749E0,
+        9.00260197203842689217E1,
+        2.23200534594684319226E3,
+        7.00332514112805075473E3,
+        5.55923013010394962768E4	};
+        private static readonly double[] m_ndtr_U = {
+		//1.00000000000000000000E0,
+		3.35617141647503099647E1,
+		5.21357949780152679795E2,
+		4.59432382970980127987E3,
+		2.26290000613890934246E4,
+		4.92673942608635921086E4};
+        #endregion 
+
+
 
         /// <summary>
         /// chi-square function (left hand tail).
@@ -82,31 +178,23 @@ namespace ACQ.Math
             }
         }
 
+        #region gamma
         /// <summary>
         /// Returns the gamma function
         /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static double gamma(double x)
         {
-            double[] P = {
-						 1.60119522476751861407E-4,
-						 1.19135147006586384913E-3,
-						 1.04213797561761569935E-2,
-						 4.76367800457137231464E-2,
-						 2.07448227648435975150E-1,
-						 4.94214826801497100753E-1,
-						 9.99999999999999996796E-1
-					 };
-            double[] Q = {
-						 -2.31581873324120129819E-5,
-						 5.39605580493303397842E-4,
-						 -4.45641913851797240494E-3,
-						 1.18139785222060435552E-2,
-						 3.58236398605498653373E-2,
-						 -2.34591795718243348568E-1,
-						 7.14304917030273074085E-2,
-						 1.00000000000000000320E0
-					 };
-
+            int sgngam;
+            return gamma(x, out sgngam);
+        }
+        /// <summary>
+        /// Returns the gamma function
+        /// </summary>
+        private static double gamma(double x, out int sgngam)
+        {
+            sgngam = 1;
             if (Double.IsNaN(x))
             {
                 return Double.NaN;
@@ -121,7 +209,7 @@ namespace ACQ.Math
             {
                 return Double.NaN;
             }
-
+            int i;
             double p, z;
 
             double q = System.Math.Abs(x);
@@ -135,7 +223,11 @@ namespace ACQ.Math
                     {
                         return Double.NaN; //gamma: overflow
                     }
-
+                    i = (int)p;
+                    if ((i & 1) == 0)
+                    {
+                        sgngam = -1;
+                    }
                     z = q - p;
                     if (z > 0.5)
                     {
@@ -145,16 +237,16 @@ namespace ACQ.Math
                     z = q * System.Math.Sin(System.Math.PI * z);
                     if (z == 0.0)
                     {
-                        return Double.PositiveInfinity;//"gamma: overflow";
+                        return sgngam > 0 ? Double.PositiveInfinity : Double.NegativeInfinity;//"gamma: overflow";
                     }
                     z = System.Math.Abs(z);
                     z = System.Math.PI / (z * stirf(q));
-                    return -z;
                 }
                 else
                 {
-                    return stirf(x);
+                    z = stirf(x);
                 }
+                return sgngam * z;
             }
 
             z = 1.0;
@@ -168,7 +260,7 @@ namespace ACQ.Math
             {
                 if (x == 0.0)
                 {
-                    return Double.NaN;//"gamma: overflow");
+                    return Double.PositiveInfinity;//"gamma: overflow");
                 }
                 else if (x > -1.0E-9)
                 {
@@ -182,7 +274,7 @@ namespace ACQ.Math
             {
                 if (x == 0.0)
                 {
-                    return Double.NaN;//"gamma: singular"
+                    return Double.PositiveInfinity;//"gamma: singular"
                 }
                 else if (x < 1.0E-9)
                 {
@@ -192,37 +284,30 @@ namespace ACQ.Math
                 x += 1.0;
             }
 
-            if ((x == 2.0) || (x == 3.0)) //CHECKME: if( x == 2.0 )
+            if (x == 2.0)
             {
                 return z;
             }
 
             x -= 2.0;
-            p = polevl(x, P, 6);
-            q = polevl(x, Q, 7);
+            p = polevl(x, m_gamma_P, 6);
+            q = polevl(x, m_gamma_Q, 7);
             return z * p / q;
         }
 
         /// <summary>
-        /// Gamma function computed by Stirling's formula
+        /// Gamma function computed by Stirling's formula, The polynomial STIR is valid for 33 <= x <= 172.
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
         private static double stirf(double x)
         {
-            double[] STIR = {
-							7.87311395793093628397E-4,
-							-2.29549961613378126380E-4,
-							-2.68132617805781232825E-3,
-							3.47222221605458667310E-3,
-							8.33333333333482257126E-2,
-		};
             const double MAXSTIR = 143.01608;
 
             double w = 1.0 / x;
             double y = System.Math.Exp(x);
 
-            w = 1.0 + w * polevl(w, STIR, 4);
+            w = 1.0 + w * polevl(w, m_gamma_STIR, 4);
 
             if (x > MAXSTIR)
             {
@@ -246,16 +331,24 @@ namespace ACQ.Math
         /// <returns></returns>
         public static double igamc(double a, double x)
         {
-            double big = 4.503599627370496e15;
-            double biginv = 2.22044604925031308085e-16;
+            const double big = 4.503599627370496e15;
+            const double biginv = 2.22044604925031308085e-16;
+
             double ans, ax, c, yc, r, t, y, z;
             double pk, pkm1, pkm2, qk, qkm1, qkm2;
 
-            if (x <= 0 || a <= 0) return 1.0;
+            if (x <= 0 || a <= 0)
+            {
+                return 1.0;
+            }
 
-            if (x < 1.0 || x < a) return 1.0 - igam(a, x);
+            if (x < 1.0 || x < a)
+            {
+                return 1.0 - igam(a, x);
+            }
 
             ax = a * System.Math.Log(x) - x - lgam(a);
+
             if (ax < -MAXLOG)
             {
                 return 0.0;//UNDERFLOW 
@@ -308,15 +401,21 @@ namespace ACQ.Math
 
 
         /// <summary>
-        /// incomplete gamma function.
+        /// Incomplete gamma integral.
         /// </summary>
         public static double igam(double a, double x)
         {
             double ans, ax, c, r;
 
-            if (x <= 0 || a <= 0) return 0.0;
+            if (x <= 0 || a <= 0)
+            {
+                return 0.0;
+            }
 
-            if (x > 1.0 && x > a) return 1.0 - igamc(a, x);
+            if (x > 1.0 && x > a)
+            {
+                return 1.0 - igamc(a, x);
+            }
 
             // Compute  x**a * exp(-x) / gamma(a)  
             ax = a * System.Math.Log(x) - x - lgam(a);
@@ -349,32 +448,7 @@ namespace ACQ.Math
         /// <returns></returns>
         public static double lgam(double x)
         {
-            double p, q, w, z;
-
-            double[] A = {
-						 8.11614167470508450300E-4,
-						 -5.95061904284301438324E-4,
-						 7.93650340457716943945E-4,
-						 -2.77777777730099687205E-3,
-						 8.33333333333331927722E-2
-					 };
-            double[] B = {
-						 -1.37825152569120859100E3,
-						 -3.88016315134637840924E4,
-						 -3.31612992738871184744E5,
-						 -1.16237097492762307383E6,
-						 -1.72173700820839662146E6,
-						 -8.53555664245765465627E5
-					 };
-            double[] C = {
-						 /* 1.00000000000000000000E0, */
-						 -3.51815701436523470549E2,
-						 -1.70642106651881159223E4,
-						 -2.20528590553854454839E5,
-						 -1.13933444367982507207E6,
-						 -2.53252307177582951285E6,
-						 -2.01889141433532773231E6
-					 };
+            double p, q, u, w, z;
 
             if (Double.IsNaN(x))
             {
@@ -395,6 +469,7 @@ namespace ACQ.Math
                 {
                     return Double.PositiveInfinity; //lgam: Overflow
                 }
+
                 z = q - p;
                 if (z > 0.5)
                 {
@@ -413,29 +488,45 @@ namespace ACQ.Math
             if (x < 13.0)
             {
                 z = 1.0;
+                p = 0.0;
+                u = x;
                 while (x >= 3.0)
                 {
-                    x -= 1.0;
-                    z *= x;
+                    p -= 1.0;
+                    u = x + p;
+                    z *= u;
                 }
                 while (x < 2.0)
                 {
                     if (x == 0.0)
                         return Double.PositiveInfinity;
-                    z /= x;
-                    x += 1.0;
+                    z /= u;
+                    p += 1.0;
+                    u = x + p;
                 }
-                if (z < 0.0) z = -z;
-                if (x == 2.0) return System.Math.Log(z);
+                if (z < 0.0)
+                {
+                    z = -z;
+                }
+
+                if (x == 2.0)
+                {
+                    return System.Math.Log(z);
+                }
+
                 x -= 2.0;
-                p = x * polevl(x, B, 5) / p1evl(x, C, 6);
+                x = x + p;
+                p = x * polevl(x, m_gamma_B, 5) / p1evl(x, m_gamma_C, 6);
+
                 return (System.Math.Log(z) + p);
             }
 
             if (x > MAXLGM)
-                return Double.PositiveInfinity;
+            {
+                return Double.NaN; //Double.PositiveInfinity : Double.NegativeInfinity;
+            }
 
-            q = (x - 0.5) * System.Math.Log(x) - x + 0.91893853320467274178;
+            q = (x - 0.5) * System.Math.Log(x) - x + LS2PI;
             if (x > 1.0e8)
             {
                 return (q);
@@ -450,11 +541,18 @@ namespace ACQ.Math
             }
             else
             {
-                q += polevl(p, A, 4) / x;
+                q += polevl(p, m_gamma_A, 4) / x;
             }
             return q;
         }
-
+ 
+        /// <summary>
+        /// Gamma distribution function
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static double gdtr( double a, double b, double x )
         {
             if( x < 0.0 )
@@ -463,6 +561,13 @@ namespace ACQ.Math
             }
             return igam( b, a * x );
         }
+        /// <summary>
+        /// Returns the integral from x to infinity of the gamma probability density function:
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static double gdtrc( double a, double b, double x )
         {
             if( x < 0.0 )
@@ -471,7 +576,18 @@ namespace ACQ.Math
             }
             return igamc( b, a * x );
         }
+        #endregion 
 
+        #region normal
+        /// <summary>
+        /// Returns the area under the Gaussian probability density, integrated from minus infinity to x.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static double NormalCdf(double x)
+        {
+            return ndtr(x); 
+        }
         /// <summary>
         /// Returns the area under the Gaussian probability density, integrated from minus infinity to a.
         /// </summary>
@@ -484,7 +600,7 @@ namespace ACQ.Math
             x = a * SQRTH;
             z = System.Math.Abs(x);
 
-            if (z < SQRTH) //if( z < 1.0 ) ?
+            if (z < 1.0) //if( z < SQRTH  ) ?
             {
                 y = 0.5 + 0.5 * erf(x);
             }
@@ -508,47 +624,6 @@ namespace ACQ.Math
         public static double erfc(double a)
         {
             double x, y, z, p, q;
-
-            double[] P = {
-						 2.46196981473530512524E-10,
-						 5.64189564831068821977E-1,
-						 7.46321056442269912687E0,
-						 4.86371970985681366614E1,
-						 1.96520832956077098242E2,
-						 5.26445194995477358631E2,
-						 9.34528527171957607540E2,
-						 1.02755188689515710272E3,
-						 5.57535335369399327526E2
-					 };
-            double[] Q = {
-						 //1.0
-						 1.32281951154744992508E1,
-						 8.67072140885989742329E1,
-						 3.54937778887819891062E2,
-						 9.75708501743205489753E2,
-						 1.82390916687909736289E3,
-						 2.24633760818710981792E3,
-						 1.65666309194161350182E3,
-						 5.57535340817727675546E2
-					 };
-
-            double[] R = {
-						 5.64189583547755073984E-1,
-						 1.27536670759978104416E0,
-						 5.01905042251180477414E0,
-						 6.16021097993053585195E0,
-						 7.40974269950448939160E0,
-						 2.97886665372100240670E0
-					 };
-            double[] S = {
-						 //1.00000000000000000000E0, 
-						 2.26052863220117276590E0,
-						 9.39603524938001434673E0,
-						 1.20489539808096656605E1,
-						 1.70814450747565897222E1,
-						 9.60896809063285878198E0,
-						 3.36907645100081516050E0
-					 };
 
             if (a < 0.0) 
                 x = -a;
@@ -574,13 +649,13 @@ namespace ACQ.Math
 
             if (x < 8.0)
             {
-                p = polevl(x, P, 8);
-                q = p1evl(x, Q, 8);
+                p = polevl(x, m_ndtr_P, 8);
+                q = p1evl(x, m_ndtr_Q, 8);
             }
             else
             {
-                p = polevl(x, R, 5);
-                q = p1evl(x, S, 6);
+                p = polevl(x, m_ndtr_R, 5);
+                q = p1evl(x, m_ndtr_S, 6);
             }
 
             y = (z * p) / q;
@@ -610,28 +685,13 @@ namespace ACQ.Math
         public static double erf(double x)
         {
             double y, z;
-            double[] T = {
-			 9.60497373987051638749E0,
-             9.00260197203842689217E1,
-             2.23200534594684319226E3,
-             7.00332514112805075473E3,
-             5.55923013010394962768E4
-					 };
-            double[] U = {
-						 //1.00000000000000000000E0,
-						 3.35617141647503099647E1,
-						 5.21357949780152679795E2,
-						 4.59432382970980127987E3,
-						 2.26290000613890934246E4,
-						 4.92673942608635921086E4
-					 };
 
             if (System.Math.Abs(x) > 1.0)
             {
                 return (1.0 - erfc(x));
             }
             z = x * x;
-            y = x * polevl(z, T, 4) / p1evl(z, U, 5);
+            y = x * polevl(z, m_ndtr_T, 4) / p1evl(z, m_ndtr_U, 5);
             return y;
         }
 
@@ -641,7 +701,7 @@ namespace ACQ.Math
         /// <param name="x"></param>
         /// <param name="sign"></param>
         /// <returns></returns>
-        public static double expx2 (double x, int sign)
+        private static double expx2 (double x, int sign)
         {
             const double M = 128.0;
             const double MINV = 0.0078125;
@@ -680,7 +740,9 @@ namespace ACQ.Math
             u = System.Math.Exp(u) * System.Math.Exp(u1);
             return(u);
         }
+        #endregion 
 
+        #region private functions
         /// <summary>
         /// Evaluates polynomial of degree n
         /// </summary>
@@ -713,5 +775,6 @@ namespace ACQ.Math
 
             return ans;
         }
+        #endregion
     }
 }

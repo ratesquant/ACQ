@@ -627,5 +627,6 @@ namespace ACQ.Math
         public const double twopi   = 6.283185307179586476925286766559;
         public const double e       = 2.3025850929940456840179914546844;
         public const double radian  = 57.295779513082320876798154814105;
+
     }
 }
