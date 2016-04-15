@@ -9,7 +9,7 @@ namespace ACQ.Excel
 {
     public static class MathUtils
     {
-        [ExcelFunction(Description = "Compute first derivative: finite difference central 3pt", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Compute first derivative: finite difference central 3pt", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_diff1_c3pt(double[] x, double[] y)
         {
             object result = ExcelError.ExcelErrorNA;
@@ -38,7 +38,7 @@ namespace ACQ.Excel
             return result;
         }
 
-        [ExcelFunction(Description = "Compute second derivative: finite difference central 3pt", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Compute second derivative: finite difference central 3pt", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_diff2_c3pt(double[] x, double[] y)
         {
             object result = ExcelError.ExcelErrorNA;
