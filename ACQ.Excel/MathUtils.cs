@@ -64,4 +64,40 @@ namespace ACQ.Excel
             return result;
         }
     }
+
+    /// <summary>
+    /// Excel has some special function, here we expose function for testing purposes 
+    /// </summary>
+    public static class SpecialFunction
+    {
+        [ExcelFunction(Description = "Gamma function", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_special_gamma(double x)
+        {
+            return ExcelHelper.CheckNan(ACQ.Math.Special.gamma(x));
+        }
+
+        [ExcelFunction(Description = "Natural log of gamma function", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_special_lgam(double x)
+        {
+            return ExcelHelper.CheckNan(ACQ.Math.Special.lgam(x));
+        }
+
+        [ExcelFunction(Description = "Error function", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_special_erf(double x)
+        {
+            return ExcelHelper.CheckNan(ACQ.Math.Special.erf(x));
+        }
+
+        [ExcelFunction(Description = "Complimentary error function", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_special_erfc(double x)
+        {
+            return ExcelHelper.CheckNan(ACQ.Math.Special.erfc(x));
+        }
+
+        [ExcelFunction(Description = "Normal cdf", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_special_normalcdf(double x)
+        {
+            return ExcelHelper.CheckNan(ACQ.Math.Special.NormalCdf(x));
+        }
+    }
 }

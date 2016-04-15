@@ -21,7 +21,7 @@ namespace ACQ.Excel
         {
             object result;
 
-            if (Double.IsNaN(value))
+            if (Double.IsNaN(value) || Double.IsInfinity(value))
             {
                 result = ExcelError.ExcelErrorNA;
             }
