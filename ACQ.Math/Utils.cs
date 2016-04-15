@@ -627,13 +627,5 @@ namespace ACQ.Math
         public const double twopi   = 6.283185307179586476925286766559;
         public const double e       = 2.3025850929940456840179914546844;
         public const double radian  = 57.295779513082320876798154814105;
-
-        public const double MACHEP = 1.11022302462515654042E-16;
-        public const double MAXLOG = 7.09782712893383996732E2;
-        public const double MINLOG = -7.451332191019412076235E2;
-        public const double MAXGAM = 171.624376956302725;
-        public const double SQTPI = 2.506628274631000502415765284811;
-        public const double SQRTH = 7.07106781186547524401E-1;
-        public const double LOGPI = 1.14472988584940017414;
     }
 }
