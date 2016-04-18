@@ -58,23 +58,20 @@ namespace ACQ.Math.Interpolation
             int n = x.Length;
 
             a = new double[n];
-
            
             for (int i = 1; i < n - 1; i++)
             {
-                double dx = x[i + 1] - x[i - 1];
                 double dx0 = x[i] - x[i - 1];
                 double dx1 = x[i + 1] - x[i];
 
                 double dy0 = (y[i] - y[i - 1])/dx0;
                 double dy1 = (y[i + 1] - y[i])/dx1;
 
-                a[i] = (dy0 * dx1 + dy1 * dx0) / dx;
+                a[i] = 0.5 * (dy0 + dy1); // derivate is set to the average of derivatives on each side
             }
 
             a[0] = (y[1] - y[0]) / (x[1] - x[0]);
-            a[n - 1] = (y[n-1] - y[n-2]) / (x[n-1] - x[n-2]);
-          
+            a[n - 1] = (y[n-1] - y[n-2]) / (x[n-1] - x[n-2]);          
         }
     }
 }

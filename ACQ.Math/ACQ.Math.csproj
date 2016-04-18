@@ -52,6 +52,7 @@
     <Compile Include="Interpolation\BisteffenInterpolation.cs" />
     <Compile Include="Interpolation\CubicInterpolation.cs" />
     <Compile Include="Interpolation\ForwardInterpolation.cs" />
+    <Compile Include="Interpolation\HermiteQSInterpolation.cs" />
     <Compile Include="Interpolation\InterpolationBase2D.cs" />
     <Compile Include="Interpolation\InterpolationFactory.cs" />
     <Compile Include="Interpolation\HermiteInterpolation.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Random\MersenneTwister.cs" />
     <Compile Include="Random\BoxMuller.cs" />
     <Compile Include="Random\RandomBase.cs" />
+    <Compile Include="Regression\Lowess.cs" />
     <Compile Include="Special.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Linalg\Vector.cs" />

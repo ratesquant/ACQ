@@ -36,14 +36,15 @@ namespace ACQ.Math.Interpolation
                 double dy1 = (y[i + 1] - y[i]) / dx1;
 
                 double p = (dy0 * dx1 + dy1 * dx0) / dx;
+                double p_abs = System.Math.Abs(p);
 
-                //steffen conditions that limit derivatives
+                //steffen conditions that limit derivatives (eq. 11 from the article)
 
                 if (dy0 * dy0 <= 0.0)
                 {
                     a[i] = 0.0;
                 }
-                else if (System.Math.Abs(p) > 2 * System.Math.Abs(dy0) || System.Math.Abs(p) > 2 * System.Math.Abs(dy1))
+                else if (p_abs > 2 * System.Math.Abs(dy0) || p_abs > 2 * System.Math.Abs(dy1))
                 {
                     a[i] = 2.0 * Utils.Sign(dy0) * System.Math.Min(System.Math.Abs(dy0), System.Math.Abs(dy1));
 
@@ -52,7 +53,7 @@ namespace ACQ.Math.Interpolation
                     a[i] = p;
                 }
             }
-
+            //using simple derivative at the boundary
             a[0] = (y[1] - y[0]) / (x[1] - x[0]);
             a[n - 1] = (y[n - 1] - y[n - 2]) / (x[n - 1] - x[n - 2]);
 
