@@ -1,1 +1,2 @@
-﻿v1.00 (2016-03-31)(1.0.5931.39778): First version of the ACQ add-in. 1D interpolation: Linear, Quadratic, Cubic, Akima, Steffen, Hermite  
+﻿v1.00 (2016-03-31)(1.0.5931.39778): First version of the ACQ add-in. 
+									1D interpolation: Linear, Quadratic, Cubic, Akima, Steffen, Hermite  

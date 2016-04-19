@@ -108,7 +108,7 @@ namespace ACQ.Excel.Objects
             }
             catch (Exception ex)
             {
-                lock (m_lock)
+                lock (m_sync)
                 {
                     LogDisplay.WriteLine("Error: " + ex.ToString());
                 }
