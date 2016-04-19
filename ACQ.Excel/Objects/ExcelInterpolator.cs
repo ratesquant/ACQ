@@ -10,6 +10,7 @@ namespace ACQ.Excel.Objects
 {
     public class ExcelInterpolator
     {
+        private static readonly object m_lock = new object();
         private static readonly string m_tag = "#acqInterpolator";
         private static readonly string m_defaultInterpolator = "Linear";
 
@@ -78,7 +79,7 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category, IsThreadSafe = false)]
+        [ExcelFunction(Description = "Compute interpolated value", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_interpolation(double xi, double[] x, double[] y, object method, object bounds)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
@@ -88,7 +89,7 @@ namespace ACQ.Excel.Objects
                 ACQ.Math.Interpolation.InterpolationInterface interpolator = construct_interpolator(x, y, method, bounds);
 
                 if (interpolator != null)
-                    return interpolator.Eval(xi);
+                    return ExcelHelper.CheckNan(interpolator.Eval(xi));
                 else
                     return ExcelError.ExcelErrorNA;
             }
@@ -107,7 +108,10 @@ namespace ACQ.Excel.Objects
             }
             catch (Exception ex)
             {
-                LogDisplay.WriteLine("Error: " + ex.ToString());
+                lock (m_lock)
+                {
+                    LogDisplay.WriteLine("Error: " + ex.ToString());
+                }
             }
             return interpolator;
         }
