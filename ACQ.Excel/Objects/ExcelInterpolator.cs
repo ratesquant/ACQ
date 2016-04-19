@@ -10,7 +10,7 @@ namespace ACQ.Excel.Objects
 {
     public class ExcelInterpolator
     {
-        private static readonly object m_lock = new object();
+        private static readonly object m_sync = new object();
         private static readonly string m_tag = "#acqInterpolator";
         private static readonly string m_defaultInterpolator = "Linear";
 

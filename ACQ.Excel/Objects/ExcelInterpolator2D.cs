@@ -10,6 +10,7 @@ namespace ACQ.Excel.Objects
 {
     public class ExcelInterpolator2D
     {
+        private static readonly object m_sync = new object();
         private static readonly string m_tag = "#acqInterpolator2D";
         private static readonly string m_defaultInterpolator = "Bilinear";
 
@@ -56,7 +57,7 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
-        [ExcelFunction(Description = "Compute interpolated value (2d)", Category = AddInInfo.Category, IsThreadSafe = false)]
+        [ExcelFunction(Description = "Compute interpolated value (2d)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_interpolation2d(double px1, double px2, double[] x1, double[] x2, double[,] y, object method)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
@@ -66,7 +67,7 @@ namespace ACQ.Excel.Objects
                 ACQ.Math.Interpolation.InterpolationInterface2D interpolator = construct_interpolator(x1, x2, y, method);
 
                 if (interpolator != null)
-                    return interpolator.Eval(px1, px2);
+                    return ExcelHelper.CheckNan(interpolator.Eval(px1, px2));
                 else
                     return ExcelError.ExcelErrorNA;
             }
@@ -83,7 +84,10 @@ namespace ACQ.Excel.Objects
             }
             catch (Exception ex)
             {
-                LogDisplay.WriteLine("Error: " + ex.ToString());
+                lock (m_sync)
+                {
+                    LogDisplay.WriteLine("Error: " + ex.ToString());
+                }
             }
             return interpolator;
         }
