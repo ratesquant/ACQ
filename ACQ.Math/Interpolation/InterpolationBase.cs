@@ -36,7 +36,9 @@ namespace ACQ.Math.Interpolation
                 throw new ArgumentException("interpolation x and y arrays should have the same length");
 
             if (x.Length < 2)
+            {
                 throw new ArgumentException("interpolation array should have at least 2 nodes");
+            }
 
             //check that data is ordered           
             for (int i = 0; i < x.Length - 1; i++)

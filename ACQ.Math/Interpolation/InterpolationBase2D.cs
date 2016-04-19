@@ -36,8 +36,10 @@ namespace ACQ.Math.Interpolation
             if (x1.Length != y.GetLength(1) || x2.Length != y.GetLength(0))
                 throw new ArgumentException("interpolation array x1, x2 and y have incompatible sizes");
 
-            if (x1.Length < 1 || x2.Length < 1)
+            if (x1.Length < 2 || x2.Length < 2)
+            {
                 throw new ArgumentException("interpolation array should have at least 2 nodes");
+            }
 
             //check that data is ordered   
             if (!isSorted(x1) || !isSorted(x2))
