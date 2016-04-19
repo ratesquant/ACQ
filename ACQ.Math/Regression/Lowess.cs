@@ -29,9 +29,7 @@ namespace ACQ.Math.Regression
     /// </summary>
     public class Lowess
     {
-        double[] m_x;
-        double[] m_y;
-        double[] m_rw;
+        ACQ.Math.Interpolation.LinearInterpolation m_interpolator;
 
         /// <summary>
         /// Construct Loess
@@ -40,30 +38,62 @@ namespace ACQ.Math.Regression
         /// <param name="y"></param>
         /// <param name="nsteps"> number of robustifying iterations which should be performed. (default = 3) </param>
         /// <param name="span">smoother span. default(2/3) This gives the proportion of points in the plot which influence the smooth at each value. Larger values give more smoothness</param>
-        public Lowess(double[] x, double[] y, int nsteps = 3, double span = 2.0/3.0)
+        public Lowess(double[] x, double[] y, double span = 2.0/3.0, int nsteps = 3, double delta = 0.001)
         {
-            double delta = 0.001;
-            m_x = (double[])x.Clone();
-            m_y = (double[])y.Clone();
+            if (x == null || y == null)
+                throw new ArgumentNullException("Lowess input arrays can not be null");
 
-            double[] ys = new double[x.Length];
-            double[] rw = new double[x.Length];
-            double[] res = new double[x.Length];
+            if (x.Length != y.Length)
+                throw new ArgumentException("Lowess input arrays x and y should have the same length");
 
-            clowess(m_x, m_y, span, nsteps, delta, ys, rw, res);
- 
+            if (x.Length < 2)
+                throw new ArgumentException("Lowess input arrays should have at least 2 nodes");
+
+            bool ordered = true;
+            for (int i = 0; i < x.Length - 1; i++)
+            {
+                if (x[i + 1] < x[i])
+                {
+                    ordered = false;
+                    break;
+                }
+            }
+
+            double[] x_in = x;
+            double[] y_in = y;
+
+            if (!ordered)
+            {
+                //make copy and sort if provided array is not ordered
+                x_in = (double[])x.Clone();
+                y_in = (double[])y.Clone();
+
+                Array.Sort<double, double>(x_in, y_in);
+            }
+
+            int n = x.Length;
+
+            double[] ys = new double[n];
+            double[] rw = new double[n];
+            double[] res= new double[n];
+
+            clowess(x_in, y_in, span, nsteps, delta, ys, rw, res);
+
+            m_interpolator = new ACQ.Math.Interpolation.LinearInterpolation(x_in, ys);
         }
-        private static void lowest(double[] x, double[] y, int n, double xs, out double ys, int nleft, int nright, double[] w, bool userw, double[] rw, out bool ok)
+
+        public double Eval(double xp)
         {
+            return m_interpolator.Eval(xp);
+        }
+
+        private static void lowest(double[] x, double[] y, double xs, out double ys, int nleft, int nright, double[] w, bool userw, double[] rw, out bool ok)
+        {
+            int n = x.Length;
             int nrt, j;
             double a, b, c, h, h1, h9, r, range;
 
-            //x--;
-            //y--;
-            //w--;
-            //rw--;
-
-            range = x[n] - x[1];
+            range = x[n-1] - x[0];
             h = System.Math.Max(xs - x[nleft], x[nright] - xs);
             h9 = 0.999 * h;
             h1 = 0.001 * h;
@@ -72,11 +102,10 @@ namespace ACQ.Math.Regression
 
             a = 0.0;
             j = nleft;
-            while (j <= n)
+            while (j < n)
             {
                 // compute weights 
                 // (pick up all ties on right) 
-
                 w[j] = 0.0;
                 r = System.Math.Abs(x[j] - xs);
                 if (r <= h9)
@@ -150,71 +179,29 @@ namespace ACQ.Math.Regression
                 ys += w[j] * y[j];
             }
         }
-        private static void rPsort(double[] x, int n, int k)
-        {
-            rPsort2(x, 0, n - 1, k);
-        }
-        private static void rPsort2(double[] x, int lo, int hi, int k)
-        {
-            double v, w;
-            bool nalast = true;
-            int L, R, i, j;
 
-            for (L = lo, R = hi; L < R; )
-            {
-                v = x[k];
-                for (i = L, j = R; i <= j; )
-                {
-                    while (rcmp(x[i], v, nalast) < 0) i++;
-                    while (rcmp(v, x[j], nalast) < 0) j--;
-                    if (i <= j) { w = x[i]; x[i++] = x[j]; x[j--] = w; }
-                }
-                if (j < k) L = i;
-                if (k < i) R = j;
-            }
-        }
-        private static int rcmp(double x, double y, bool nalast)
-        {
-            bool nax = Double.IsNaN(x);
-            bool nay = Double.IsNaN(y);
-            if (nax && nay) return 0;
-            if (nax) return nalast ? 1 : -1;
-            if (nay) return nalast ? -1 : 1;
-            if (x < y) return -1;
-            if (x > y) return 1;
-            return 0;
-        }
         private static void clowess(double[] x, double[] y, double span, int nsteps, double delta, double[] ys, double[] rw, double[] res)
         {
-            int i, iter, j, last, m1, m2, nleft, nright, ns;
+            int i, j, last, m1, m2, nleft, nright, ns;
             bool ok;
-            double alpha, c1, c9, cmad, cut, d1, d2, denom, r, sc;
-            int n = x.Length;
-
-            if (n < 2)
-            {
-                ys[0] = y[0];
-                return;
-            }
-
+            double alpha, c1, c9, cmad, cut, d1, d2, denom, r;
+            int n = x.Length; // n >= 2
 
             // at least two, at most n points
-            ns = System.Math.Max(2, System.Math.Min(n, (int)(span * n + 1e-7)));
+            ns = System.Math.Max(2, System.Math.Min(n, (int)(span * n)));
 
 
             // robustness iterations
-
-            iter = 1;
-            while (iter <= nsteps + 1)
+            for (int iter = 0; iter < nsteps; iter++)
             {
-                nleft = 1;
-                nright = ns;
-                last = 0;	/* index of prev estimated point */
-                i = 1;		/* index of current point */
+                nleft = 0;
+                nright = ns - 1;
+                last = -1;	// index of prev estimated point 
+                i = 0;		// index of current point
 
                 for (; ; )
                 {
-                    if (nright < n)
+                    if (nright < n - 1)
                     {
                         // move nleft,  nright to right 
                         // if radius decreases 
@@ -222,17 +209,8 @@ namespace ACQ.Math.Regression
                         d1 = x[i] - x[nleft];
                         d2 = x[nright + 1] - x[i];
 
-                        // if d1 <= d2 with 
-                        // x[nright+1] == x[nright], 
-                        // lowest fixes 
-
                         if (d1 > d2)
                         {
-
-                            // radius will not 
-                            // decrease by 
-                            // move right 
-
                             nleft++;
                             nright++;
                             continue;
@@ -241,11 +219,12 @@ namespace ACQ.Math.Regression
 
                     // fitted value at x[i]
                     double y_temp;
-                    lowest(x, y, n, x[i], out y_temp, nleft, nright, res, iter > 1, rw, out ok);
+                    lowest(x, y, x[i], out y_temp, nleft, nright, res, iter > 0, rw, out ok);
                     if (ok)
                     {
                         ys[i] = y_temp;
-                    }else
+                    }
+                    else
                     {
                         ys[i] = y[i];
                     }
@@ -257,9 +236,7 @@ namespace ACQ.Math.Regression
                     {
                         denom = x[i] - x[last];
 
-                        // skipped points -- interpolate 
-                        // non-zero - proof? 
-
+                        // skipped points -- interpolate
                         for (j = last + 1; j < i; j++)
                         {
                             alpha = (x[j] - x[last]) / denom;
@@ -272,7 +249,7 @@ namespace ACQ.Math.Regression
 
                     // x coord of close points 
                     cut = x[last] + delta;
-                    for (i = last + 1; i <= n; i++)
+                    for (i = last + 1; i < n; i++)
                     {
                         if (x[i] > cut)
                             break;
@@ -283,67 +260,68 @@ namespace ACQ.Math.Regression
                         }
                     }
                     i = System.Math.Max(last + 1, i - 1);
-                    if (last >= n)
+                    if (last >= n - 1)
                     {
                         break;
                     }
-                }
+                }//loop over all points
+
                 // residuals
                 for (i = 0; i < n; i++)
                 {
-                    res[i] = y[i + 1] - ys[i + 1];
+                    res[i] = y[i] - ys[i];
                 }
 
-                // overall scale estimate */
-                sc = 0.0;
+                // overall scale estimate
+                double sc = 0.0;
                 for (i = 0; i < n; i++)
                 {
                     sc += System.Math.Abs(res[i]);
                 }
                 sc /= n;
 
-                // compute robustness weights 
-                // except last time 
-
-                if (iter > nsteps)
-                    break;
-
-                for (i = 0; i < n; i++)
+                // compute robustness weights, except last time 
+                if (iter < nsteps - 1)
                 {
-                    rw[i] = System.Math.Abs(res[i]);
-                }
+                    for (i = 0; i < n; i++)
+                    {
+                        rw[i] = System.Math.Abs(res[i]);
+                    }
 
-                /* Compute   cmad := 6 * median(rw[], n)  ---- */
-                m1 = n / 2;
-                // partial sort, for m1 & m2 
-                rPsort(rw, n, m1);
-                if (n % 2 == 0)
-                {
-                    m2 = n - m1 - 1;
-                    rPsort(rw, n, m2);
-                    cmad = 3.0 * (rw[m1] + rw[m2]);
-                }
-                else
-                { // n odd 
-                    cmad = 6.0 * rw[m1];
-                }
-
-                if (cmad < 1e-7 * sc) // effectively zero 
-                    break;
-                c9 = 0.999 * cmad;
-                c1 = 0.001 * cmad;
-                for (i = 0; i < n; i++)
-                {
-                    r = System.Math.Abs(res[i]);
-                    if (r <= c1)
-                        rw[i] = 1.0;
-                    else if (r <= c9)
-                        rw[i] = Utils.Sqr(1.0 - Utils.Sqr(r / cmad));
+                    //Compute cmad = 6 * median(rw[], n) 
+                    m1 = n / 2;
+                    Array.Sort<double>(rw); //R does partial sort here to figure out median, do full a sort here for clarity
+                    if (n % 2 == 0)
+                    {
+                        m2 = n - m1 - 1;
+                        cmad = 3.0 * (rw[m1] + rw[m2]);
+                    }
                     else
-                        rw[i] = 0.0;
+                    { // n odd 
+                        cmad = 6.0 * rw[m1];
+                    }
+
+                    if (cmad < 1e-7 * sc) // effectively zero 
+                    {
+                        break;
+                    }
+
+                    c9 = 0.999 * cmad;
+                    c1 = 0.001 * cmad;
+
+                    for (i = 0; i < n; i++)
+                    {
+                        r = System.Math.Abs(res[i]);
+                        if (r <= c1)
+                            rw[i] = 1.0;
+                        else if (r <= c9)
+                            rw[i] = Utils.Sqr(1.0 - Utils.Sqr(r / cmad));
+                        else
+                            rw[i] = 0.0;
+                    }
                 }
-                iter++;
             }
         }
+
     }
 }
