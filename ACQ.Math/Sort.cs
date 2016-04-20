@@ -417,59 +417,42 @@ namespace ACQ.Math
             }
         }
         #endregion
-    }
 
-    /// <summary>
-    /// Partial Sorting (for doubles only), adapted from R
-    /// </summary>
-    public static class PSort
-    {
+        #region Partition
         /// <summary>
         /// Partial sort so that x[k] is in the correct place, smaller to left, larger to right
         /// </summary>
         /// <param name="x"></param>
         /// <param name="k"></param>
-       public static void Psort(double[] x, int k)
-       {
-            rPsort2(x, 0, x.Length - 1, k); //dont check range for k here, let c# take care of this 
-       }
-
-        private static int rcmp(double x, double y, bool nalast)
+        public static void Psort<T>(T[] x, int k) where T : IComparable<T>
         {
-            bool nax = Double.IsNaN(x);
-            bool nay = Double.IsNaN(y);
-            if (nax && nay) return 0;
-            if (nax) return nalast ? 1 : -1;
-            if (nay) return nalast ? -1 : 1;
-            if (x < y) return -1;
-            if (x > y) return 1;
-            return 0;
+            psort(x, 0, x.Length - 1, k); //dont check range for k here, let c# take care of this 
         }
 
-        private static void rPsort2(double[] x, int lo, int hi, int k)
+        private static void psort<T>(T[] x, int lo, int hi, int k) where T : IComparable<T>
         {
-            double v, w;
-            
-            bool nalast=true; //put nan to the end
+            T v, w;
+
             int L, R, i, j;
-            
+
             for (L = lo, R = hi; L < R; )
             {
-                v = x[k];	
-                for(i = L, j = R; i <= j;) 
+                v = x[k];
+                for (i = L, j = R; i <= j; )
                 {
-                    while (rcmp(x[i], v, nalast) < 0) i++;
-                    while (rcmp(v, x[j], nalast) < 0) j--;
-                    if (i <= j) 
+                    while (x[i].CompareTo(v) < 0) i++;
+                    while (v.CompareTo(x[j]) < 0) j--;
+                    if (i <= j)
                     {
-                        w = x[i]; 
-                        x[i++] = x[j]; 
+                        w = x[i];
+                        x[i++] = x[j];
                         x[j--] = w;
                     }
                 }
-                if (j < k) L = i;	
-                if (k < i) R = j;	
+                if (j < k) L = i;
+                if (k < i) R = j;
             }
-        } 
+        }
+        #endregion
     }
 }
