@@ -48,7 +48,7 @@ Bounds is optional argument that controls interpolation outside of interpolation
 	2. BiCubic - cubic interpolation on rectangular grid (natural cubic spline in each dimension)
 	3. BiSteffen - Steffen interpolation on rectangular grid (Steffen in each dimension)
 	4. BiAkima - Akima interpolation on rectangular grid (Akima in each dimension)
-	4. BiHermite - Hermite interpolation on rectangular grid (Hermite in each dimension)
+	5. BiHermite - Hermite interpolation on rectangular grid (Hermite in each dimension)
 	
 	
 	1. acq_interpolator2d_create - creates 2D interpolator object
@@ -65,7 +65,7 @@ Scattered data interpolation is based on radial basis functions and currently li
 	4. Gaussian
 	5. Thinplate,
 	6. InverseQuadratic,
-	8. InverseMultiquadric
+	7. InverseMultiquadric
 
 the list of excel functions for scattered data interpolation:
 
