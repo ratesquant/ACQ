@@ -25,9 +25,9 @@ https://support.office.com/en-us/article/Add-or-remove-add-ins-0af570c4-5cf3-4fa
 # Interpolation
 The following functions for interpolation are currently implemented:
 
-	1. acq_interpolator_create(x, y, method, bounds) - creates interpolator object (returns a handle)
-	2. acq_interpolator_eval(interpolator, x) - evaluates interpolation at specified point (first argument is a handle created using acq_interpolator_create function)
-	3. acq_interpolation(xi, x, y, method, bounds) - creates interpolator and computes interpolation at specified point
+	1. acq_interpolator_create - creates interpolator object (returns a handle)
+	2. acq_interpolator_eval - evaluates interpolation at specified point
+	3. acq_interpolation - evaluates interpolation at specified point(in-situ without constructing interpolator object)
 	
 Interpolaton method is specified using method argument. The argument is optional, linear interpolation is used by default. Currently implemented methods are
 
@@ -35,7 +35,7 @@ Interpolaton method is specified using method argument. The argument is optional
 	1. Linear - linear spline interpolation
 	2. Quadratic - quadratic  spline interpolation	
 	3. Cubic - natural cubic spline
-	4. Hermite - local cubic spline (aka Catmull-Rom spline)
+	4. Hermite and HermiteQS - local cubic spline (aka Catmull-Rom spline)
 	5. Steffen - monotonic cubic spline
 	6. Akima - Akima spline (cubic spline with special condition for derivatives)
 	7. AkimaPeriodic - Akima spline with periodic boundary conditions
@@ -45,11 +45,16 @@ Bounds is optional argument that controls interpolation outside of interpolation
 
 # 2D Interpolaton
 	1. BiLinear - interpolation on rectangular grid (linear in each dimension)
-	2. BiCubic - cubic interpolation on rectangular grid (hermite cubic spline in each dimension)
+	2. BiCubic - cubic interpolation on rectangular grid (natural cubic spline in each dimension)
 	3. BiSteffen - Steffen interpolation on rectangular grid (Steffen in each dimension)
 	4. BiAkima - Akima interpolation on rectangular grid (Akima in each dimension)
 	4. BiHermite - Hermite interpolation on rectangular grid (Hermite in each dimension)
 	
+	
+	1. acq_interpolator2d_create - creates 2D interpolator object
+	2. acq_interpolator2d_eval - evaluates interpolation at specified point
+	3. acq_interpolation2d - evaluates interpolation at specified point(in-situ without constructing interpolator object)
+
 	
 # Scattered Data Interpolaton (ND)
 Scattered data interpolation is based on radial basis functions and currently limited to 512 interpolation nodes. The following radial basis functions are implemented (first three are the most common). Optional scale factors can be provided for each dimension
@@ -64,10 +69,18 @@ Scattered data interpolation is based on radial basis functions and currently li
 
 the list of excel functions for scattered data interpolation:
 
-	1. acq_interpolator_scattered_create
-	2. acq_interpolator_scattered_eval
-	3. acq_interpolator_scattered_eval_x5
+	1. acq_interpolator_scattered_create - creates RBF interpolator
+	2. acq_interpolator_scattered_eval - evaluates RBF interpolator at specified point
+	3. acq_interpolator_scattered_eval_x5 - evaluates RBF interpolator at specified point, coordinates are specified individually (up to 5D)
 
+# Lowess
+Lowess is scatter plot smoothing based on locally-weighted linear regression 
+
+	1. acq_regression_lowess_create - creates lowess smoother
+	2. acq_regression_lowess_eval - evaluates lowess smoother at specified point
+	3. acq_regression_lowess - evaluates lowess smoother at specified point(in-situ without constructing lowess object)
+	
+		
 # Mersenne Twister
 Random number generator based on MT19937 by Takuji Nishimura and Makoto Matsumoto. 
 Excel interface allows to initialize generator with single or array seed
@@ -76,7 +89,7 @@ Excel interface allows to initialize generator with single or array seed
 	2. acq_random_vector_ex(seed, size) - generate random sample using array seed
 	3. acq_vector_element(vector, index) - get a random number from vector (random numbers are returned as vector)
 	4. acq_vector_size(vector) - get size of the vector 
-	
+
 	
 # Shotcuts
 	1. Ctrl+Shift+H - shows ACQ log window
