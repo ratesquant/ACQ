@@ -25,20 +25,22 @@ namespace ACQ.Math.Regression
     *  https://www.R-project.org/Licenses/
     */
     /// <summary>
-    /// Lowess regression, adapted from R source code, 
+    /// Lowess regression, adapted from R source code,http://svn.r-project.org/R/trunk/src/library/stats/src/lowess.c
+    /// it attempts to faithfully reporoduce R code without any "improvments" 
     /// </summary>
     public class Lowess
     {
         ACQ.Math.Interpolation.LinearInterpolation m_interpolator;
 
         /// <summary>
-        /// Construct Loess
+        /// Construct Lowess
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="nsteps"> number of robustifying iterations which should be performed. (default = 3) </param>
-        /// <param name="span">smoother span. default(2/3) This gives the proportion of points in the plot which influence the smooth at each value. Larger values give more smoothness</param>
-        public Lowess(double[] x, double[] y, double span = 2.0/3.0, int nsteps = 3, double delta = 0.001)
+        /// <param name="span">smoother span [0, 1], default = 2/3. This gives the proportion of points in the plot which influence the smooth at each value. Larger values give more smoothness</param>
+        /// <param name="delta">Defaults to 1/100th of the range of x</param>
+        public Lowess(double[] x, double[] y, double span = 2.0/3.0, int nsteps = 3, double delta = 0.0)
         {
             if (x == null || y == null)
                 throw new ArgumentNullException("Lowess input arrays can not be null");
@@ -49,10 +51,20 @@ namespace ACQ.Math.Regression
             if (x.Length < 2)
                 throw new ArgumentException("Lowess input arrays should have at least 2 nodes");
 
+            if (nsteps < 0)
+                throw new ArgumentException("Lowess nsteps must be >= 0");
+
+            //the code below actually will work for any value of span (because it checks later), but R checks for negative span, so we as well for consistency 
+            if (span < 0)
+                throw new ArgumentException("Lowess span must be > 0");
+            
+            int n = x.Length;
+
+            //check that x is sorted
             bool ordered = true;
-            for (int i = 0; i < x.Length - 1; i++)
+            for (int i = 0; i < n - 1; i++)
             {
-                if (x[i + 1] < x[i])
+                if (x[i + 1] < x[i]) //same values are allowed
                 {
                     ordered = false;
                     break;
@@ -71,27 +83,66 @@ namespace ACQ.Math.Regression
                 Array.Sort<double, double>(x_in, y_in);
             }
 
-            int n = x.Length;
+            if (delta <= 0.0)
+            {
+                delta = 0.01 * (x_in[n - 1] - x_in[0]); //same default as in R
+            }
 
             double[] ys = new double[n];
-            double[] rw = new double[n];
-            double[] res= new double[n];
+           
+            clowess(x_in, y_in, ys, span, nsteps, delta); //this is main r - function 
 
-            clowess(x_in, y_in, span, nsteps, delta, ys, rw, res);
+            //check that all values of x_in are uniques
+            bool unique = true;
+            for (int i = 0; i < n - 1; i++)
+            {
+                if (x[i + 1] == x[i]) //same values are allowed
+                {
+                    unique = false;
+                    break;
+                }
+            }
 
-            m_interpolator = new ACQ.Math.Interpolation.LinearInterpolation(x_in, ys);
+            if (unique)
+            {
+                m_interpolator = new ACQ.Math.Interpolation.LinearInterpolation(x_in, ys);
+            }
+            else 
+            {
+                List<double> xu = new List<double>(n);
+                List<double> yu = new List<double>(n);
+
+                xu.Add(x_in[0]);
+                yu.Add(ys[0]);
+
+                double prev_x = x_in[0];
+
+                for (int i = 1; i < n; i++)
+                {
+                    if(x_in[i] > prev_x)
+                    {
+                        xu.Add(x_in[i]);
+                        yu.Add(ys[i]);
+                        prev_x = x_in[i];
+                    }
+                }
+                m_interpolator = new ACQ.Math.Interpolation.LinearInterpolation(xu.ToArray(), yu.ToArray());
+            }
         }
 
         public double Eval(double xp)
         {
-            return m_interpolator.Eval(xp);
+            double result = m_interpolator.Eval(xp);
+            return result;
         }
 
-        private static void lowest(double[] x, double[] y, double xs, out double ys, int nleft, int nright, double[] w, bool userw, double[] rw, out bool ok)
+        #region R routines
+        private static bool lowest(double[] x, double[] y, double xs, out double ys, int nleft, int nright, double[] w, bool userw, double[] rw)
         {
             int n = x.Length;
             int nrt, j;
             double a, b, c, h, h1, h9, r, range;
+            bool success = false;
 
             range = x[n-1] - x[0];
             h = System.Math.Max(xs - x[nleft], x[nright] - xs);
@@ -131,11 +182,11 @@ namespace ACQ.Math.Regression
             nrt = j - 1;
             if (a <= 0.0)
             {
-                ok = false;
+                success = false;
             }
             else
             {
-                ok = true;
+                success = true;
             }
 
             // weighted least squares 
@@ -178,21 +229,25 @@ namespace ACQ.Math.Regression
             {
                 ys += w[j] * y[j];
             }
+
+            return success;
         }
 
-        private static void clowess(double[] x, double[] y, double span, int nsteps, double delta, double[] ys, double[] rw, double[] res)
+        private static void clowess(double[] x, double[] y, double[] ys, double f, int nsteps, double delta)
         {
             int i, j, last, m1, m2, nleft, nright, ns;
-            bool ok;
             double alpha, c1, c9, cmad, cut, d1, d2, denom, r;
             int n = x.Length; // n >= 2
 
+            double[] rw = new double[n];
+            double[] res = new double[n];
+
             // at least two, at most n points
-            ns = System.Math.Max(2, System.Math.Min(n, (int)(span * n)));
+            ns = System.Math.Max(2, System.Math.Min(n, (int)(f * n + 1.0e-7)));
 
 
             // robustness iterations
-            for (int iter = 0; iter < nsteps; iter++)
+            for (int iter = 0; iter <= nsteps; iter++)
             {
                 nleft = 0;
                 nright = ns - 1;
@@ -219,8 +274,9 @@ namespace ACQ.Math.Regression
 
                     // fitted value at x[i]
                     double y_temp;
-                    lowest(x, y, x[i], out y_temp, nleft, nright, res, iter > 0, rw, out ok);
-                    if (ok)
+                    bool success = lowest(x, y, x[i], out y_temp, nleft, nright, res, iter > 0, rw);
+
+                    if (success)
                     {
                         ys[i] = y_temp;
                     }
@@ -281,7 +337,7 @@ namespace ACQ.Math.Regression
                 sc /= n;
 
                 // compute robustness weights, except last time 
-                if (iter < nsteps - 1)
+                if (iter < nsteps)
                 {
                     for (i = 0; i < n; i++)
                     {
@@ -322,6 +378,7 @@ namespace ACQ.Math.Regression
                 }
             }
         }
+        #endregion
 
     }
 }
