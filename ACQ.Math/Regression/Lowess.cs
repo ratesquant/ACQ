@@ -346,15 +346,17 @@ namespace ACQ.Math.Regression
 
                     //Compute cmad = 6 * median(rw[], n) 
                     m1 = n / 2;
-                    Array.Sort<double>(rw); //R does partial sort here to figure out median, do full a sort here for clarity
+                    PSort.Psort(rw, m1);
+                    double rwm1 = rw[m1];
                     if (n % 2 == 0)
                     {
                         m2 = n - m1 - 1;
-                        cmad = 3.0 * (rw[m1] + rw[m2]);
+                        PSort.Psort(rw, m2);
+                        cmad = 3.0 * (rwm1 + rw[m2]);
                     }
                     else
                     { // n odd 
-                        cmad = 6.0 * rw[m1];
+                        cmad = 6.0 * rwm1;
                     }
 
                     if (cmad < 1e-7 * sc) // effectively zero 

@@ -424,6 +424,11 @@ namespace ACQ.Math
     /// </summary>
     public static class PSort
     {
+        /// <summary>
+        /// Partial sort so that x[k] is in the correct place, smaller to left, larger to right
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="k"></param>
        public static void Psort(double[] x, int k)
        {
             rPsort2(x, 0, x.Length - 1, k); //dont check range for k here, let c# take care of this 
