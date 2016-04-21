@@ -74,7 +74,7 @@ the list of excel functions for scattered data interpolation:
 	3. acq_interpolator_scattered_eval_x5 - evaluates RBF interpolator at specified point, coordinates are specified individually (up to 5D)
 
 # Lowess
-Lowess is scatter plot smoothing based on locally-weighted linear regression 
+Lowess is scatter plot smoothing based on locally-weighted linear regression (based on R code)
 
 	1. acq_regression_lowess_create - creates lowess smoother
 	2. acq_regression_lowess_eval - evaluates lowess smoother at specified point

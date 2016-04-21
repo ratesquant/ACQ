@@ -40,7 +40,7 @@ namespace ACQ.Test
 
                 timer.Restart();
 
-                ACQ.Math.PSort.Psort(x, m);
+                ACQ.Math.Sort.Psort(x, m);
                 Console.WriteLine("x[{0}] = {1}, {2}, psorted in {3} ", m, x[m], x[m] - xs[m], timer.ElapsedMilliseconds);
             }
  
