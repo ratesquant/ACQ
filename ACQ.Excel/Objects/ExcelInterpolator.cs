@@ -104,7 +104,8 @@ namespace ACQ.Excel.Objects
                 string interpolation_method = ExcelHelper.Check(method, m_defaultInterpolator);
                 bool interpolation_bounds = ExcelHelper.CheckValue(bounds, true);
 
-                interpolator = ACQ.Math.Interpolation.InterpolationFactory.GetInterpolator(interpolation_method, x, y, interpolation_bounds);
+                interpolator = ACQ.Math.Interpolation.InterpolationFactory.GetInterpolator(interpolation_method, x, y);
+                interpolator.Bounds = interpolation_bounds;
             }
             catch (Exception ex)
             {
