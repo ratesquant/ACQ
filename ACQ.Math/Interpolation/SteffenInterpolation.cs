@@ -14,8 +14,8 @@ namespace ACQ.Math.Interpolation
     /// </summary>
     public class SteffenInterpolation : HermiteInterpolation
     {
-        public SteffenInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds)
+        public SteffenInterpolation(double[] x, double[] y)
+            : base(x, y)
         {
         }
 

@@ -7,8 +7,8 @@ namespace ACQ.Math.Interpolation
 {
     class BackwardInterpolation : InterpolationBase
     {
-        public BackwardInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds)
+        public BackwardInterpolation(double[] x, double[] y)
+            : base(x, y)
         { }
 
         public override double Eval(double x)

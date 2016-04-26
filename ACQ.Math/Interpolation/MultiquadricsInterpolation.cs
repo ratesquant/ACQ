@@ -7,7 +7,7 @@ namespace ACQ.Math.Interpolation
 {
     class MultiquadricsInterpolation : RbfInterpolation1D
     {
-        public MultiquadricsInterpolation(double[] x, double[] y, bool bounds = true)
+        public MultiquadricsInterpolation(double[] x, double[] y)
             : base(x, y, enRadialBasisFunction.Multiquadrics)
         { }
     }

@@ -12,8 +12,8 @@ namespace ACQ.Math.Interpolation
     {
         private readonly double[] m_u;
 
-        public QuadraticInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds)
+        public QuadraticInterpolation(double[] x, double[] y)
+            : base(x, y)
         {
             compute_coefficients(m_x, m_y, out m_u);
         }

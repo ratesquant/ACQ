@@ -14,15 +14,20 @@ namespace ACQ.Math.Interpolation
         private readonly double[] m_c;
         private readonly bool m_periodic;
 
-        public CubicInterpolation(double[] x, double[] y, bool bounds = true)
-            : this(x, y, bounds, false)
+        public CubicInterpolation(double[] x, double[] y)
+            : this(x, y, false)
         {
         }
-        public CubicInterpolation(double[] x, double[] y, bool bounds = true, bool periodic = false)
-            : base(x, y, bounds)
+        public CubicInterpolation(double[] x, double[] y, bool periodic = false)
+            : base(x, y)
         {
             m_periodic = periodic;
             compute_coefficients(m_x, m_y, m_periodic, out m_c);
+
+            if (m_periodic == true)
+            {
+                throw new NotImplementedException("Priodic boundary conditions are not implemented (yet) in cubic interpolation");
+            }
         }
 
         public override double Eval(double x)
@@ -109,8 +114,8 @@ namespace ACQ.Math.Interpolation
 
     public class CubicPeriodicInterpolation : CubicInterpolation
     {
-        public CubicPeriodicInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds, false)
+        public CubicPeriodicInterpolation(double[] x, double[] y)
+            : base(x, y, false)
         { }
     }
 }

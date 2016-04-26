@@ -40,8 +40,6 @@ namespace ACQ.Math.Interpolation
                 double[] yt = new double[n1];
                 double[] y2 = new double[n2];
 
-                bool bounds = false; //this is only helpful for 1D
-
                 InterpolationInterface interpolator;
                 Type interpolator_type = typeof(T);
 
@@ -51,12 +49,13 @@ namespace ACQ.Math.Interpolation
                     {
                         yt[j] = m_y[i, j];
                     }
-                    interpolator = Activator.CreateInstance(interpolator_type, m_x1, yt, bounds) as InterpolationInterface;
+                    interpolator = Activator.CreateInstance(interpolator_type, m_x1, yt) as InterpolationInterface;
+                    interpolator.Bounds = false;
 
                     y2[i] = interpolator.Eval(x1);
                 }
 
-                interpolator = Activator.CreateInstance(interpolator_type, m_x2, y2, bounds) as InterpolationInterface;
+                interpolator = Activator.CreateInstance(interpolator_type, m_x2, y2) as InterpolationInterface;
 
                 return interpolator.Eval(x2);
     

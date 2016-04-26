@@ -16,12 +16,12 @@ namespace ACQ.Math.Interpolation
         private readonly double[] m_b, m_c, m_d;
         private readonly bool m_periodic;
 
-        public AkimaInterpolation(double[] x, double[] y, bool bounds = true)
-            : this(x, y, bounds, false)
+        public AkimaInterpolation(double[] x, double[] y)
+            : this(x, y, false)
         {
         }
-        public AkimaInterpolation(double[] x, double[] y, bool bounds = true, bool periodic = false)
-            : base(x, y, bounds)
+        public AkimaInterpolation(double[] x, double[] y, bool periodic = false)
+            : base(x, y)
         {
             m_periodic = periodic;
 
@@ -115,8 +115,8 @@ namespace ACQ.Math.Interpolation
 
     public class AkimaPeriodicInterpolation : AkimaInterpolation
     {
-        public AkimaPeriodicInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds, true)
+        public AkimaPeriodicInterpolation(double[] x, double[] y)
+            : base(x, y, true)
         { }
     }
 }

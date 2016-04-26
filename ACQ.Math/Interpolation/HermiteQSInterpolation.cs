@@ -10,8 +10,8 @@ namespace ACQ.Math.Interpolation
     /// </summary>
     public class HermiteQSInterpolation : HermiteInterpolation
     {
-        public HermiteQSInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds)
+        public HermiteQSInterpolation(double[] x, double[] y)
+            : base(x, y)
         {
         }
         protected override void compute_coefficients(double[] x, double[] y, out double[] a)

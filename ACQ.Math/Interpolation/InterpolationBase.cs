@@ -8,6 +8,7 @@ namespace ACQ.Math.Interpolation
     public interface InterpolationInterface
     {
         double Eval(double x);
+        bool Bounds { get; set; }
     }
     /// <summary>
     /// Abstract Base class for 1D interpolation 
@@ -17,7 +18,7 @@ namespace ACQ.Math.Interpolation
         #region Members
         protected readonly double[] m_x;
         protected readonly double[] m_y;
-        protected readonly bool m_bounds;
+        protected bool m_bounds = true; //this is not needed in constructor and can be switched on or off
         #endregion Members
 
         #region Constructors
@@ -27,7 +28,7 @@ namespace ACQ.Math.Interpolation
         /// <param name="x">interpolation nodes - should be sorted i.e. x[i+1] > x[i]</param>
         /// <param name="y">function values at interpolation nodes i.e. y[i] = f(x[i])</param>        
         /// <param name="bCopyData"> Make copy of input arrays if true, otherwise save the reference</param>
-        public InterpolationBase(double[] x, double[] y, bool bounds = true, bool bCopyData = true)
+        public InterpolationBase(double[] x, double[] y, bool bCopyData = true)
         {
             if (x == null || y == null)
                 throw new ArgumentNullException("interpolation arrays can not be null");
@@ -60,8 +61,19 @@ namespace ACQ.Math.Interpolation
             {
                 m_x = x;
                 m_y = y;
+            }            
+        }
+
+        public bool Bounds
+        {
+            set
+            {
+                m_bounds = value;
             }
-            m_bounds = bounds;
+            get
+            {
+                return m_bounds;
+            }
         }
         #endregion Constructors
 
@@ -143,13 +155,6 @@ namespace ACQ.Math.Interpolation
             }
         }
 
-        public bool Bounds
-        {
-            get
-            {
-                return m_bounds;
-            }
-        }
         #endregion Public Methods
 
         #region Protected Methods

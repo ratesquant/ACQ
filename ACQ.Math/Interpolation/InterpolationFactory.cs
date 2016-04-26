@@ -38,9 +38,9 @@ namespace ACQ.Math.Interpolation
     //        return Type.GetType(String.Format("ACQ.Math.Interpolation.{0}Interpolation", method), false, true); //return null if missing, ignore case
         }
 
-        public static InterpolationInterface GetInterpolator(Type type, double[] x, double[] y, bool bounds)
+        public static InterpolationInterface GetInterpolator(Type type, double[] x, double[] y)
         {
-            InterpolationInterface interpolator = Activator.CreateInstance(type, x, y, bounds) as InterpolationInterface;
+            InterpolationInterface interpolator = Activator.CreateInstance(type, x, y) as InterpolationInterface;
 
             return interpolator; 
         }

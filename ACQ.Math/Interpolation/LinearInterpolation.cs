@@ -10,8 +10,8 @@ namespace ACQ.Math.Interpolation
     /// </summary>
     public class LinearInterpolation : InterpolationBase
     {
-        public LinearInterpolation(double[] x, double[] y, bool bounds = true)
-            : base(x, y, bounds)
+        public LinearInterpolation(double[] x, double[] y)
+            : base(x, y)
         { }
 
         public override double Eval(double x)
