@@ -36,12 +36,12 @@ namespace ACQ.Math.Interpolation
 
             int index = FindIndex(x, out value);
 
-            if(index > 0 )
+            if(index > 0)
             {
-                double x0 = m_x[index - 1];
-                double x1 = m_x[index];
-                double y0 = m_y[index - 1];
-                double y1 = m_y[index];
+                double x0, x1, y0, y1;
+
+                Bracket(index, out x0, out x1, out y0, out y1);
+
                 double dx = x1 - x0;
                 double dy = y1 - y0;
 
