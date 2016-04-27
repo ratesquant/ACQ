@@ -37,6 +37,31 @@ namespace ACQ.Excel.Objects
                     });
             }
         }
+
+        [ExcelFunction(Description = "Create Interpolator object", Category = AddInInfo.Category)]
+        public static object acq_interpolator_tension_create(
+            [ExcelArgument(Description = "Nodes")] double[] x,
+            [ExcelArgument(Description = "Values")]  double[] y,
+            [ExcelArgument(Description = "Tension")]  double[] tension,            
+            [ExcelArgument(Description = "Out of range value: false (num error), true (closest)")] object bounds)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+            else
+            {
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, tension, bounds, "acq_interpolator_tension_create" },
+                    (objectType, parameters) =>
+                    {
+                        ACQ.Math.Interpolation.InterpolationInterface interpolator = new ACQ.Math.Interpolation.ExpTensionInterpolation(x, y, tension);
+                        interpolator.Bounds = ExcelHelper.CheckValue(bounds, true);
+
+                        if (interpolator == null)
+                            return ExcelError.ExcelErrorNull;
+                        else
+                            return interpolator;
+                    });
+            }
+        }
        
 
         [ExcelFunction(Description = "Evaluate interpolation at specified point", Category = AddInInfo.Category, IsThreadSafe = false)]
