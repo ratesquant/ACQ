@@ -16,13 +16,28 @@ namespace ACQ.Math.Interpolation
         private readonly double[] m_ph;
         private readonly double[] m_d;
 
+        public ExpTensionInterpolation(double[] x, double[] y)
+            : base(x, y)
+        {
+            m_p = new double[x.Length - 1]; // tension paramaters are for intervals between nodes, therefore there are n-1 of them 
+
+            ACQ.Math.Utils.FillArray(m_p, 0.0); //init all tensions to zero to construct natural cubic cpline
+
+            double[] dq; // this is not needed for interpolation, only for estimation of tension params 
+            compute_coefficients(m_x, m_y, m_p, out m_d, out dq, out m_hp, out m_ph);
+
+            estimate_tension(m_x, m_y, m_d, dq, out m_p); //this is heuritic method for estimating tension from the article .. 
+
+            compute_coefficients(m_x, m_y, m_p, out m_d, out m_hp, out m_ph);
+        }
+
         public ExpTensionInterpolation(double[] x, double[] y, double tension = 1.0)
             : base(x, y)
         {
             m_p = new double[x.Length - 1]; // tension paramaters are for intervals between nodes, therefore there are n-1 of them 
 
             ACQ.Math.Utils.FillArray(m_p, tension); //init all tensions
-
+            
             compute_coefficients(x, y, m_p, out m_d, out m_hp, out m_ph);
         }
         /// <summary>
@@ -46,7 +61,7 @@ namespace ACQ.Math.Interpolation
             {
                 m_p[i] = tension[i];
             }
-
+            
             compute_coefficients(x, y, m_p, out m_d, out m_hp, out m_ph);
         }
 
@@ -89,6 +104,12 @@ namespace ACQ.Math.Interpolation
 
         private static void compute_coefficients(double[] x, double[] y, double[] p, out double[] d, out double[] hp, out double[] ph)
         {
+            double[] dq; // this is not needed for interpolation, only for estimation of tension params 
+            compute_coefficients(x, y, p, out d, out dq, out hp, out ph);
+        }
+
+        private static void compute_coefficients(double[] x, double[] y, double[] p, out double[] d, out double[] dq, out double[] hp, out double[] ph)
+        {
             //converted from procedure exsplcoeff, Rentrop article
             int n = x.Length - 1;
 
@@ -96,7 +117,7 @@ namespace ACQ.Math.Interpolation
             hp = new double[n];    //[0, n - 1]
             ph = new double[n];    //[0, n - 1]
 
-            double[] dq = new double[n]; //[1, n - 1]
+            dq = new double[n]; //[1, n - 1]
             double[] q = new double[n + 1]; //[0, n]
             double[] r = new double[n + 1]; //[0, n]
 
@@ -158,6 +179,58 @@ namespace ACQ.Math.Interpolation
         private static double phi(double a)
         {
             return ((0.27713991169e-5 * a + 0.19840927713e-3) * a + 0.83333336379e-2)*a + 0.16666666666;
+        }
+
+        /// <summary>
+        /// heuritic method for estimating tension
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="d"></param>
+        /// <param name="dq"></param>
+        /// <param name="p"></param>
+        private static void estimate_tension(double[] x, double[] y, double[] d, double[] dq, out double[] p)
+        {
+            int n = x.Length - 1;
+            int i1;
+            double d1, d2, y11, y1, y2;
+
+            p = new double[n]; // tension paramaters are for intervals between nodes, therefore there are n-1 of them 
+                        
+            y11 = y[1];
+            y1 = System.Math.Abs(y11);
+            d1 = d[1] * dq[1];
+
+            for (int i = 1; i <= n - 2; i++)
+            {                
+                i1 = i + 1;
+                double h = x[i] - x[i - 1];
+
+                d2 = d[i1] * dq[i1];                
+                y2 = System.Math.Abs(y[i1]);
+
+                if (y2 > y1)
+                {
+                    y1 = y2;
+                }
+
+                if (d1 * d2 > 0.0)
+                {
+                    p[i] = 0.0;
+                }
+                else
+                {
+                    if (y1 == 0)
+                        p[i] = 15.0 / h;
+                    else
+                        p[i] = (4.0 + 1.0 / (0.1 + System.Math.Abs((y[i1] - y11) / y1))) / h;
+                }
+                y11 = y[i1];
+                y1 = y2;
+                d1 = d2;
+            }
+            p[0] = p[1];
+            p[n - 1] = p[n - 2];
         }
     }
 }
