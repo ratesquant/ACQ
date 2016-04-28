@@ -1,8 +1,14 @@
-﻿v1.00 (2016-03-31)(1.0.5931.39778): First version of the ACQ add-in. 
-									1D interpolation: Linear, Quadratic, Cubic, Akima, Steffen, Hermite  
-v1.10 (2016-04-20)(1.1.5954.35227): Added 1. 1D interpolation: HermiteQS, Multiquadrics
-                                          2. 2D interpolation: BiLinear, BiCubic, BiHermite, BiAkima, BiSteffen
-										  3. Scattered Data Interpolation based on Radial basis functions: 
-										     Linear, Cubic, Multiquadrics, Gaussian, Thinplate, InverseQuadratic, InverseMultiquadric   
-										  4. Lowess smoothing based on locally-weighted linear regression (based on R code)
-										  5. Mersenne Twister - Random number generator based on MT19937 by Takuji Nishimura and Makoto Matsumoto. 
+﻿v1.00 (2016-03-31)(1.0.5931.39778): 
+    First version of the ACQ add-in. 
+    1D interpolation: Linear, Quadratic, Cubic, Akima, Steffen, Hermite  
+v1.10 (2016-04-20)(1.1.5954.35227): 
+    1. 1D interpolation: HermiteQS, Multiquadrics
+    2. 2D interpolation: BiLinear, BiCubic, BiHermite, BiAkima, BiSteffen
+	3. Scattered Data Interpolation based on Radial basis functions: Linear, Cubic, Multiquadrics, Gaussian, Thinplate, InverseQuadratic, InverseMultiquadric   
+	4. Lowess smoothing based on locally-weighted linear regression (based on R code)
+	5. Mersenne Twister - Random number generator based on MT19937 by Takuji Nishimura and Makoto Matsumoto. 
+v1.20 ()(): 
+    1. 1D interpolation: SteffenSoft, ExpTension (tension spline interpolation)
+    2. 2D interpolation: BiSteffenSoft (softer version of steffen interpolation)
+	3. 
+	 

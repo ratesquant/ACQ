@@ -53,7 +53,7 @@ namespace ACQ.Test
             double[] y = new double[]{1,2,3};
             double[,] f = new double[3, 3];
 
-            ACQ.Math.Interpolation.InterpolationFactory.GetInterpolator("Linear", x, y, true);
+            ACQ.Math.Interpolation.InterpolationFactory.GetInterpolator("Linear", x, y);
 
             ACQ.Math.Interpolation.InterpolationFactory2D.GetInterpolator("Bilinear", x, y, f);
  
