@@ -13,17 +13,24 @@ namespace ACQ.Math.Interpolation
     /// A good alternative to sometimes unstable Akima spline 
     /// </summary>
     public class SteffenInterpolation : HermiteInterpolation
-    {
+    {        
         public SteffenInterpolation(double[] x, double[] y)
             : base(x, y)
         {
         }
 
+        protected virtual double beta()
+        {
+            return 2.0;//2.0 is default beta of Steffen method             
+        }
+        
         protected override void compute_coefficients(double[] x, double[] y, out double[] a)
         {
             int n = x.Length;
 
             a = new double[n];
+
+            double beta = this.beta();
 
 
             for (int i = 1; i < n - 1; i++)
@@ -44,9 +51,9 @@ namespace ACQ.Math.Interpolation
                 {
                     a[i] = 0.0;
                 }
-                else if (p_abs > 2 * System.Math.Abs(dy0) || p_abs > 2 * System.Math.Abs(dy1))
+                else if (p_abs > beta * System.Math.Abs(dy0) || p_abs > beta * System.Math.Abs(dy1))
                 {
-                    a[i] = 2.0 * Utils.Sign(dy0) * System.Math.Min(System.Math.Abs(dy0), System.Math.Abs(dy1));
+                    a[i] = beta * Utils.Sign(dy0) * System.Math.Min(System.Math.Abs(dy0), System.Math.Abs(dy1));
 
                 }else
                 {

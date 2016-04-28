@@ -50,6 +50,7 @@
     <Compile Include="Interpolation\BiInterpolation.cs" />
     <Compile Include="Interpolation\BilinearInterpolation.cs" />
     <Compile Include="Interpolation\BisteffenInterpolation.cs" />
+    <Compile Include="Interpolation\BiSteffenSoftInterpolation.cs" />
     <Compile Include="Interpolation\CubicInterpolation.cs" />
     <Compile Include="Interpolation\ExpTensionInterpolation.cs" />
     <Compile Include="Interpolation\ForwardInterpolation.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Interpolation\RbfInterpolation1D.cs" />
     <Compile Include="Interpolation\ScatteredInterpolationBase.cs" />
     <Compile Include="Interpolation\SteffenInterpolation.cs" />
+    <Compile Include="Interpolation\SteffenSoftInterpolation.cs" />
     <Compile Include="Linalg\CholeskyDecomposition.cs" />
     <Compile Include="Linalg\EigenvalueDecomposition.cs" />
     <Compile Include="Linalg\LuDecomposition.cs" />
