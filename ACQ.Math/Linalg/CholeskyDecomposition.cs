@@ -28,7 +28,7 @@ namespace ACQ.Math.Linalg
                 throw new ArgumentNullException("A");
             }
 
-            if (!A.Square)
+            if (!A.IsSquare)
             {
                 throw new ArgumentException("Matrix is not square.", "value");
             }

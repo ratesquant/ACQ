@@ -56,7 +56,9 @@ namespace ACQ.Math.Linalg
             for (int i = 0; i < rows; i++)
             {
                 if (data[i].Length != cols)
+                {
                     throw new ArgumentException("Argument out of range.");
+                }
 
                 for (int j = 0; j < cols; j++)
                 {
@@ -65,9 +67,15 @@ namespace ACQ.Math.Linalg
             }          
         }
 
-        public Matrix(double[,] data)
+        public Matrix(double[,] data, bool copy = true)
         {
-            m_data = (double[,])data.Clone();
+            if (copy)
+            {
+                m_data = (double[,])data.Clone();
+            }else
+            {
+                m_data = data;
+            }
         }
 
         public Matrix(double[] data, bool isRow = true)
@@ -88,6 +96,148 @@ namespace ACQ.Math.Linalg
                 }
             }
         }
+
+
+        public static Matrix CreateIdentity(int n)
+        {
+            Matrix d = new Matrix(n, n, 0.0);
+
+            for (int i = 0; i < n; i++)
+            {
+                d[i, i] = 1.0;
+            }
+            return d;
+        }
+
+
+        /// <summary>Returns a diagonal matrix of the given size.</summary>
+        public static Matrix CreateDiagonal(int rows, int columns, double value)
+        {
+            Matrix X = new Matrix(rows, columns);
+            double[,] x = X.Data;
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    x[i, j] = ((i == j) ? value : 0.0);
+                }
+            }
+            return X;
+        }
+
+        public static Matrix CreateDiagonal(double[] values)
+        {
+            Matrix res = new Matrix(values.Length, values.Length);
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                res[i, i] = values[i];
+            }
+            return res;
+        }
+
+        /// <summary>
+        /// Create random n x m matrix 
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="m"></param>
+        /// <param name="rng"></param>
+        /// <returns></returns>
+        public static Matrix CreateRandom(int n, int m, ACQ.Math.Random.IRandomGenerator rng)
+        {
+            Matrix random = new Matrix(n, m);
+            double[,] d = random.m_data;
+
+            for (int i = 0; i < random.Rows; i++)
+            {
+                for (int j = 0; j < random.Columns; j++)
+                {
+                    d[i, j] = rng.NextDouble();
+                }
+            }
+            return random;
+        }
+        /// <summary>
+        /// Create magic square matrix
+        /// </summary>
+        /// <param name="n">size of the matrix</param>
+        /// <returns></returns>
+        public static Matrix CreateMagic(int n)
+        {
+            Matrix magic = new Matrix(n, n);
+            double[,] M = magic.m_data;
+            double t;
+
+            if ((n % 2) == 1)   // Odd order
+            {
+                int a = (n+1)/2;
+                int b = (n+1);
+                for (int j = 0; j < n; j++) 
+                {
+                    for (int i = 0; i < n; i++) 
+                    {
+                        M[i, j] = n*((i+j+a) % n) + ((i+2*j+b) % n) + 1;
+                    }
+                }                
+            }
+            else if ((n % 4) == 0) // Doubly Even Order
+            {
+                for (int j = 0; j < n; j++) 
+                {
+                    for (int i = 0; i < n; i++) 
+                    {
+                        if (((i+1)/2)%2 == ((j+1)/2)%2) 
+                        {
+                            M[i, j] = n*n-n*i-j;
+                        } else 
+                        {
+                            M[i, j] = n*i+j+1;
+                        }
+                    }
+                }
+            }
+            else  // Singly Even Order
+            {
+                int p = n/2;
+                int k = (n-2)/4;
+                Matrix A = CreateMagic(p);
+
+                for (int j = 0; j < p; j++) 
+                {
+                    for (int i = 0; i < p; i++) 
+                    {
+                        double aij = A[i, j];
+                        M[i, j] = aij;
+                        M[i, j+p] = aij + 2*p*p;
+                        M[i+p, j] = aij + 3*p*p;
+                        M[i+p, j+p] = aij + p*p;
+                    }
+                }
+                for (int i = 0; i < p; i++) 
+                {
+                    for (int j = 0; j < k; j++) 
+                    {
+                        t = M[i, j]; 
+                        M[i, j] = M[i+p, j];
+                        M[i+p, j] = t;
+                    }
+                    for (int j = n-k+1; j < n; j++) 
+                    {
+                        t = M[i, j]; 
+                        M[i, j] = M[i+p, j];
+                        M[i+p, j] = t;
+                    }
+                }
+                t = M[k, 0]; 
+                M[k, 0] = M[k+p, 0]; 
+                M[k+p, 0] = t;
+                t = M[k, k];
+                M[k, k] = M[k+p, k];
+                M[k+p, k] = t;
+            }
+            return magic;
+        }
+
         #endregion
 
         private int rows
@@ -178,7 +328,7 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Return true if the matrix is a square matrix.</summary>
-        public bool Square
+        public bool IsSquare
         {
             get
             {
@@ -187,11 +337,11 @@ namespace ACQ.Math.Linalg
         }
 
         /// <summary>Returns true if the matrix is symmetric.</summary>
-        public bool Symmetric
+        public bool IsSymmetric
         {
             get
             {
-                if (Square)
+                if (IsSquare)
                 {
                     for (int i = 0; i < rows; i++)
                     {
@@ -366,62 +516,53 @@ namespace ACQ.Math.Linalg
 
         /// <summary>Returns the One Norm for the matrix.</summary>
         /// <value>The maximum column sum.</value>
-        public double Norm1
+        public double Norm1()
         {
-            get
+            double f = 0;
+            for (int j = 0; j < cols; j++)
             {
-                double f = 0;
-                for (int j = 0; j < cols; j++)
+                double s = 0;
+                for (int i = 0; i < rows; i++)
                 {
-                    double s = 0;
-                    for (int i = 0; i < rows; i++)
-                    {
-                        s += System.Math.Abs(m_data[i, j]);
-                    }
-
-                    f = System.Math.Max(f, s);
+                    s += System.Math.Abs(m_data[i, j]);
                 }
-                return f;
+
+                f = System.Math.Max(f, s);
             }
+            return f;
         }
 
         /// <summary>Returns the Infinity Norm for the matrix.</summary>
         /// <value>The maximum row sum.</value>
-        public double InfinityNorm
+        public double InfinityNorm()
         {
-            get
+            double f = 0;
+            for (int i = 0; i < rows; i++)
             {
-                double f = 0;
-                for (int i = 0; i < rows; i++)
+                double s = 0;
+                for (int j = 0; j < cols; j++)
                 {
-                    double s = 0;
-                    for (int j = 0; j < cols; j++)
-                    {
-                        s += System.Math.Abs(m_data[i, j]);
-                    }
-                    f = System.Math.Max(f, s);
+                    s += System.Math.Abs(m_data[i, j]);
                 }
-                return f;
+                f = System.Math.Max(f, s);
             }
+            return f;
         }
 
         /// <summary>Returns the Frobenius Norm for the matrix.</summary>
         /// <value>The square root of sum of squares of all elements.</value>
-        public double FrobeniusNorm
+        public double FrobeniusNorm()
         {
-            get
+            double f = 0;
+            for (int i = 0; i < rows; i++)
             {
-                double f = 0;
-                for (int i = 0; i < rows; i++)
+                for (int j = 0; j < cols; j++)
                 {
-                    for (int j = 0; j < cols; j++)
-                    {
-                        f = Utils.Hypotenuse(f, m_data[i, j]);
-                    }
+                    f = Utils.Hypotenuse(f, m_data[i, j]);
                 }
-
-                return f;
             }
+
+            return f;         
         }
 
         /// <summary>Unary minus.</summary>
@@ -649,43 +790,14 @@ namespace ACQ.Math.Linalg
 
         /// <summary>Returns the trace of the matrix.</summary>
         /// <returns>Sum of the diagonal elements.</returns>
-        public double Trace
+        public double Trace()
         {
-            get
+            double trace = 0;
+            for (int i = 0; i < System.Math.Min(rows, cols); i++)
             {
-                double trace = 0;
-                for (int i = 0; i < System.Math.Min(rows, cols); i++)
-                {
-                    trace += m_data[i, i];
-                }
-                return trace;
+                trace += m_data[i, i];
             }
-        }
-
-        /// <summary>Returns a diagonal matrix of the given size.</summary>
-        public static Matrix CreateDiagonal(int rows, int columns, double value)
-        {
-            Matrix X = new Matrix(rows, columns);
-            double[,] x = X.Data;
-            for (int i = 0; i < rows; i++)
-            {
-                for (int j = 0; j < columns; j++)
-                {
-                    x[i, j] = ((i == j) ? value : 0.0);
-                }
-            }
-            return X;
-        }
-
-        public static Matrix CreateDiagonal(double[] values)
-        {
-            Matrix res = new Matrix(values.Length, values.Length);
-
-            for (int i = 0; i < values.Length; i++)
-            {
-                res[i, i] = values[i];
-            }
-            return res;
+            return trace;
         }
 
         /// <summary>Returns the matrix in a textual form.</summary>
@@ -707,357 +819,6 @@ namespace ACQ.Math.Linalg
 
             return sb.ToString();            
         }
-        /*
-        public static void SVD(Matrix Mat_, out double[,] S_, out double[,] U_, out double[,] V_)
-        {
-            int Rows, Cols;
-            int m, MP, n, NP;
-            double[] w;
-            double[,] A, v;
-
-            m = Mat_.Rows + 1;
-            n = Mat_.Columns + 1;
-
-            if (m < n)
-            {
-                m = n;
-                MP = NP = n;
-            }
-            else if (m > n)
-            {
-                n = m;
-                NP = MP = m;
-            }
-            else
-            {
-                MP = m;
-                NP = n;
-            }
-
-            A = new double[m + 1, n + 1];
-
-            for (int row = 1; row <= Mat_.Rows + 1; row++)
-                for (int col = 1; col <= Mat_.Columns + 1; col++)
-                { A[row, col] = Mat_[row - 1, col - 1]; }
-
-            const int NMAX = 100;
-            v = new double[NP + 1, NP + 1];
-            w = new double[NP + 1];
-
-            int k, l, nm;
-            int flag, i, its, j, jj;
-
-            double[,] U_temp, S_temp, V_temp;
-            double anorm, c, f, g, h, s, scale, x, y, z;
-            double[] rv1 = new double[NMAX];
-
-            l = 0;
-            nm = 0;
-            g = 0.0;
-            scale = 0.0;
-            anorm = 0.0;
-
-            for (i = 1; i <= n; i++)
-            {
-                l = i + 1;
-                rv1[i] = scale * g;
-                g = s = scale = 0.0;
-                if (i <= m)
-                {
-                    for (k = i; k <= m; k++) scale += Math.Abs(A[k, i]);
-                    if (scale != 0)
-                    {
-                        for (k = i; k <= m; k++)
-                        {
-                            A[k, i] /= scale;
-                            s += A[k, i] * A[k, i];
-                        }
-                        f = A[i, i];
-                        g = -Utils.Sign(Math.Sqrt(s), f);
-                        h = f * g - s;
-                        A[i, i] = f - g;
-                        if (i != n)
-                        {
-                            for (j = l; j <= n; j++)
-                            {
-                                for (s = 0, k = i; k <= m; k++) s += A[k, i] * A[k, j];
-                                f = s / h;
-                                for (k = i; k <= m; k++) A[k, j] += f * A[k, i];
-                            }
-                        }
-                        for (k = i; k <= m; k++) A[k, i] *= scale;
-                    }
-                }
-                w[i] = scale * g;
-                g = s = scale = 0.0;
-                if (i <= m && i != n)
-                {
-                    for (k = l; k <= n; k++) scale += Math.Abs(A[i, k]);
-                    if (scale != 0)
-                    {
-                        for (k = l; k <= n; k++)
-                        {
-                            A[i, k] /= scale;
-                            s += A[i, k] * A[i, k];
-                        }
-                        f = A[i, l];
-                        g = -Utils.Sign(Math.Sqrt(s), f);
-                        h = f * g - s;
-                        A[i, l] = f - g;
-                        for (k = l; k <= n; k++) rv1[k] = A[i, k] / h;
-                        if (i != m)
-                        {
-                            for (j = l; j <= m; j++)
-                            {
-                                for (s = 0.0, k = l; k <= n; k++) s += A[j, k] * A[i, k];
-                                for (k = l; k <= n; k++) A[j, k] += s * rv1[k];
-                            }
-                        }
-                        for (k = l; k <= n; k++) A[i, k] *= scale;
-                    }
-                }
-                anorm = Math.Max(anorm, (Math.Abs(w[i]) + Math.Abs(rv1[i])));
-            }
-            for (i = n; i >= 1; i--)
-            {
-                if (i < n)
-                {
-                    if (g != 0)
-                    {
-                        for (j = l; j <= n; j++)
-                            v[j, i] = (A[i, j] / A[i, l]) / g;
-                        for (j = l; j <= n; j++)
-                        {
-                            for (s = 0.0, k = l; k <= n; k++) s += A[i, k] * v[k, j];
-                            for (k = l; k <= n; k++) v[k, j] += s * v[k, i];
-                        }
-                    }
-                    for (j = l; j <= n; j++) v[i, j] = v[j, i] = 0.0;
-                }
-                v[i, i] = 1.0;
-                g = rv1[i];
-                l = i;
-            }
-            for (i = n; i >= 1; i--)
-            {
-                l = i + 1;
-                g = w[i];
-                if (i < n)
-                    for (j = l; j <= n; j++) A[i, j] = 0.0;
-                if (g != 0)
-                {
-                    g = 1.0 / g;
-                    if (i != n)
-                    {
-                        for (j = l; j <= n; j++)
-                        {
-                            for (s = 0.0, k = l; k <= m; k++) s += A[k, i] * A[k, j];
-                            f = (s / A[i, i]) * g;
-                            for (k = i; k <= m; k++) A[k, j] += f * A[k, i];
-                        }
-                    }
-                    for (j = i; j <= m; j++) A[j, i] *= g;
-                }
-                else
-                {
-                    for (j = i; j <= m; j++) A[j, i] = 0.0;
-                }
-                ++A[i, i];
-            }
-            for (k = n; k >= 1; k--)
-            {
-                for (its = 1; its <= 30; its++)
-                {
-                    flag = 1;
-                    for (l = k; l >= 1; l--)
-                    {
-                        nm = l - 1;
-                        if (Math.Abs(rv1[l]) + anorm == anorm)
-                        {
-                            flag = 0;
-                            break;
-                        }
-                        if (Math.Abs(w[nm]) + anorm == anorm) break;
-                    }
-                    if (flag != 0)
-                    {
-                        c = 0.0;
-                        s = 1.0;
-                        for (i = l; i <= k; i++)
-                        {
-                            f = s * rv1[i];
-                            if (Math.Abs(f) + anorm != anorm)
-                            {
-                                g = w[i];
-                                h = Utils.Hypotenuse(f, g);
-                                w[i] = h;
-                                h = 1.0 / h;
-                                c = g * h;
-                                s = (-f * h);
-                                for (j = 1; j <= m; j++)
-                                {
-                                    y = A[j, nm];
-                                    z = A[j, i];
-                                    A[j, nm] = y * c + z * s;
-                                    A[j, i] = z * c - y * s;
-                                }
-                            }
-                        }
-                    }
-                    z = w[k];
-                    if (l == k)
-                    {
-                        if (z < 0.0)
-                        {
-                            w[k] = -z;
-                            for (j = 1; j <= n; j++) v[j, k] = (-v[j, k]);
-                        }
-                        break;
-                    }
-                    if (its == 30) Console.WriteLine("No convergence in 30 SVDCMP iterations");
-                    x = w[l];
-                    nm = k - 1;
-                    y = w[nm];
-                    g = rv1[nm];
-                    h = rv1[k];
-                    f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
-                    g = Utils.Hypotenuse(f, 1.0);
-                    f = ((x - z) * (x + z) + h * ((y / (f + Utils.Sign(g, f))) - h)) / x;
-                    c = s = 1.0;
-                    for (j = l; j <= nm; j++)
-                    {
-                        i = j + 1;
-                        g = rv1[i];
-                        y = w[i];
-                        h = s * g;
-                        g = c * g;
-                        z = Utils.Hypotenuse(f, h);
-                        rv1[j] = z;
-                        c = f / z;
-                        s = h / z;
-                        f = x * c + g * s;
-                        g = g * c - x * s;
-                        h = y * s;
-                        y = y * c;
-                        for (jj = 1; jj <= n; jj++)
-                        {
-                            x = v[jj, j];
-                            z = v[jj, i];
-                            v[jj, j] = x * c + z * s;
-                            v[jj, i] = z * c - x * s;
-                        }
-                        z = Utils.Hypotenuse(f, h);
-                        w[j] = z;
-                        if (z != 0)
-                        {
-                            z = 1.0 / z;
-                            c = f * z;
-                            s = h * z;
-                        }
-                        f = (c * g) + (s * y);
-                        x = (c * y) - (s * g);
-                        for (jj = 1; jj <= m; jj++)
-                        {
-                            y = A[jj, j];
-                            z = A[jj, i];
-                            A[jj, j] = y * c + z * s;
-                            A[jj, i] = z * c - y * s;
-                        }
-                    }
-                    rv1[l] = 0.0;
-                    rv1[k] = f;
-                    w[k] = x;
-                }
-            }
-
-            S_temp = new double[NP, NP];
-            V_temp = new double[NP, NP];
-            U_temp = new double[MP, NP];
-
-            for (i = 1; i <= NP; i++) S_temp[i - 1, i - 1] = w[i];
-
-            S_ = S_temp;
-
-            for (i = 1; i <= NP; i++)
-                for (j = 1; j <= NP; j++) V_temp[i - 1, j - 1] = v[i, j];
-
-            V_ = V_temp;
-
-            for (i = 1; i <= MP; i++)
-                for (j = 1; j <= NP; j++) U_temp[i - 1, j - 1] = A[i, j];
-
-            U_ = U_temp;
-        }
-
-        /// <summary>
-        /// Returns the pseudoinverse of a matrix, such that
-        /// X = PINV(A) produces a matrix 'X' of the same dimensions
-        /// as A' so that A*X*A = A, X*A*X = X.
-        /// In case of an error the error is raised as an exception.
-        /// </summary>
-        /// <param name="Mat">An array whose pseudoinverse is to be found</param>
-        /// <returns>The pseudoinverse of the array as an array</returns>
-        public static Matrix PINV(Matrix Mat)
-        {
-            Matrix Matrix = new Matrix(Mat);
-            int i, m, n, j, l;
-            double[,] S;
-            double EPS, MulAdd, Tol, Largest_Item = 0;
-
-            double[,] svdU, svdS, svdV;
-
-            m = Mat.Rows;
-            n = Mat.Columns;
-
-            SVD(Mat, out svdS, out svdU, out svdV);
-
-            EPS = 2.2204E-16;
-            m++;
-            n++;
-
-            Matrix Part_I = new Matrix(m, n);
-            Matrix Part_II = new Matrix(m, n);
-            S = new Double[n, n];
-
-            MulAdd = 0;
-            for (i = 0; i <= svdS.GetUpperBound(0); i++)
-            {
-                if (i == 0) Largest_Item = svdS[0, 0];
-                if (Largest_Item < svdS[i, i]) Largest_Item = svdS[i, i];
-            }
-
-            if (m > n) Tol = m * Largest_Item * EPS;
-            else Tol = n * Largest_Item * EPS;
-
-            for (i = 0; i < n; i++) S[i, i] = svdS[i, i];
-
-            for (i = 0; i < m; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    for (l = 0; l < n; l++)
-                    {
-                        if (S[l, j] > Tol) MulAdd += svdU[i, l] * (1 / S[l, j]);
-                    }
-                    Part_I[i, j] = MulAdd;
-                    MulAdd = 0;
-                }
-            }
-
-            for (i = 0; i < m; i++)
-            {
-                for (j = 0; j < n; j++)
-                {
-                    for (l = 0; l < n; l++)
-                    {
-                        MulAdd += Part_I[i, l] * svdV[j, l];
-                    }
-                    Part_II[i, j] = MulAdd;
-                    MulAdd = 0;
-                }
-            }
-            return Part_II.Transpose();
-        }*/
     }
         
   
