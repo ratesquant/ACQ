@@ -188,16 +188,20 @@ namespace ACQ.Math.Linalg
 
         /// <summary>Returns the pivot permuation vector.</summary>
         public double[] GetPivot()
-        {
-            int rows = m_lu.Rows;
-
-            double[] p = new double[rows];
-            for (int i = 0; i < rows; i++)
+        {            
+            double[] p = new double[m_pivot.Length];
+            for (int i = 0; i < m_pivot.Length; i++)
             {
                 p[i] = (double)m_pivot[i];
             }
 
             return p;
+        }
+
+        /// <summary>Returns the pivot permuation vector.</summary>
+        public int[] GetPivotIndex()
+        {
+            return (int[])m_pivot.Clone();
         }
 
         /// <summary>Solves a set of equation systems of type A * X = B.</summary>
