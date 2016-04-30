@@ -6,7 +6,7 @@ using System.Text;
 namespace ACQ.Math
 {
     /// <summary>
-    /// Collection of sorting algoritms. 
+    /// Sorting algoritms
     /// </summary>
     public static class Sort
     {

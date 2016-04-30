@@ -7,6 +7,12 @@ namespace ACQ.Math
     public static class Utils
     {
         #region Floating Point 
+        /// <summary>
+        /// Returns a with the same sign as b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double Sign(double a, double b)
         {
             double abs = System.Math.Abs(a);
@@ -25,6 +31,12 @@ namespace ACQ.Math
             return (a >= 0.0) ? 1.0 : -1.0;
         }
 
+        /// <summary>
+        /// Returns sqrt(a*a + b*b) 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static double Hypotenuse(double a, double b)
         {
             if (System.Math.Abs(a) > System.Math.Abs(b))
@@ -71,13 +83,22 @@ namespace ACQ.Math
             else
                 return n * Factorial(n - 1);
         }
+        public static Int64 Factorial(Int64 n)
+        {
+            if (n == 0)
+                return 1;
+            else
+                return n * Factorial(n - 1);
+        }
         #endregion
 
         #region Generic Routines
         public static T Min<T>(params T[] a) where T : IComparable<T>
         {
-            if (a == null)
+            if (a == null || a.Length == 0)
+            {
                 throw new ArgumentNullException();
+            }
 
             T min = a[0];
 
@@ -92,8 +113,10 @@ namespace ACQ.Math
         }
         public static T Max<T>(params T[] a) where T : IComparable<T>
         {
-            if (a == null)
+            if (a == null || a.Length == 0)
+            {
                 throw new ArgumentNullException();
+            }
 
             T max = a[0];
 
@@ -110,7 +133,9 @@ namespace ACQ.Math
         public static void Bound<T>(T[] a, T min, T max) where T : IComparable<T>
         {
             if (a == null)
+            {
                 throw new ArgumentNullException();
+            }
 
             for (int i = 0; i < a.Length; i++)
             {
@@ -163,14 +188,16 @@ namespace ACQ.Math
             int cols = a.GetLength(1);
 
             T[][] res = new T[rows][];
+
             for (int i = 0; i < rows; i++)
             {
-                res[i] = new T[cols];
+                T[] row = new T[cols];
 
-                for (int j = 0; j < rows; j++)
+                for (int j = 0; j < cols; j++)
                 {
-                    res[i][j] = a[i, j];
+                    row[j] = a[i, j];
                 }
+                res[i] = row;
             }
             return res;
         }
@@ -185,7 +212,7 @@ namespace ACQ.Math
         /// <returns></returns>
         public static double[] Linspace(double min, double max, int n)
         {
-            int m = System.Math.Min(2, n);
+            int m = System.Math.Min(2, n); //needs at least two points 
 
             double[] x = new double[m];
             double step = (max - min) / (m - 1);
@@ -207,12 +234,14 @@ namespace ACQ.Math
     /// </summary>
     public static class Const
     {
-        public const double epsilon = 2.220446049250313e-016;
-        public const double epsilon_sqrt = 1.4901161193847656e-08;
+        public const double epsilon       = 2.2204460492503131e-16;                                      
+        public const double epsilon_sqrt  = 1.4901161193847656e-08;
+        public const double epsilon_sqrt4 = 1.2207031250000000e-04;                       
         public const double pi      = 3.1415926535897932384626433832795;
         public const double twopi   = 6.283185307179586476925286766559;
         public const double e       = 2.3025850929940456840179914546844;
         public const double radian  = 57.295779513082320876798154814105;
 
+        public const double tiny = 1.6033346880071782e-291; //2^-966
     }
 }
