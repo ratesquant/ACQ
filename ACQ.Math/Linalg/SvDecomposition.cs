@@ -6,7 +6,7 @@ using System.Text;
 namespace ACQ.Math.Linalg
 {
     /// <summary>
-    ///  Singular Value Decomposition. (Adapted from JAMA)
+    ///  Singular Value Decomposition. (Adapted from JAMA and LAPACK (DGESVD))
     ///  
     /// For an m-by-n matrix A with m >= n, the singular value decomposition is
     /// an m-by-n orthogonal matrix U, an n-by-n diagonal matrix S, and
@@ -15,9 +15,16 @@ namespace ACQ.Math.Linalg
     /// The singular values, sigma[k] = S[k][k], are ordered so that
     /// sigma[0] >= sigma[1] >= ... >= sigma[n-1].
     /// 
+    /// in case of m less than n, transpose the matrix before computing SVD
+    /// 
     /// The singular value decompostion always exists, so the constructor will
     /// never fail.  The matrix condition number and the effective numerical
     /// rank can be computed from this decomposition.
+    /// 
+    ///             A    =    U    *     S      *      Vt
+    ///general    m x n     m x m      m x n         n x n
+    /// m>=n      m x n     m x n      n x n         n x n (this is what is being computed in this class )
+    /// compact   m x n     m x k      k x k         k x n , k = min(m, n)  
     /// </summary>
     public class SvDecomposition
     {
@@ -35,12 +42,16 @@ namespace ACQ.Math.Linalg
             // Initialize.
             int m = A.Rows;
             int n = A.Columns;  
-            double[,] a = (double[,])A.Data.Clone();                     
-             
-            //if (m<n) throw new IllegalArgumentException("SVD only works for m >= n");
-            int nu = System.Math.Min(m,n);
-            m_s = new double [System.Math.Min(m+1, n)];
-            m_U = new Matrix(m, nu);
+            
+            if (m < n)
+            {
+                throw new ArgumentException("SVD only works for m >= n, (transpose input matrix)");
+            }
+
+            double[,] a = (double[,])A.Data.Clone();
+            
+            m_s = new double[n]; //n
+            m_U = new Matrix(m, n); // m x n
             m_V = new Matrix(n, n);
             double[] e = new double [n];
             double[] work = new double [m];
@@ -53,9 +64,9 @@ namespace ACQ.Math.Linalg
             // Reduce A to bidiagonal form, storing the diagonal elements
             // in s and the super-diagonal elements in e.
             
-            int nct = System.Math.Min(m-1,n);
-            int nrt = System.Math.Max(0,System.Math.Min(n-2,m));
-            for (int k = 0; k < System.Math.Max(nct,nrt); k++) 
+            int nct = System.Math.Min(m - 1,n);
+            int nrt = System.Math.Max(0, System.Math.Min(n - 2, m));
+            for (int k = 0; k < System.Math.Max(nct, nrt); k++) 
             {
                 if (k < nct) 
                 {
@@ -190,7 +201,7 @@ namespace ACQ.Math.Linalg
             // If required, generate U.
             if (wantu) 
             {
-                for (int j = nct; j < nu; j++) 
+                for (int j = nct; j < n; j++) 
                 {
                     for (int i = 0; i < m; i++) 
                     {
@@ -202,7 +213,7 @@ namespace ACQ.Math.Linalg
                 {
                     if (m_s[k] != 0.0) 
                     {
-                        for (int j = k+1; j < nu; j++) 
+                        for (int j = k+1; j < n; j++) 
                         {
                             double t = 0;
                             for (int i = k; i < m; i++) 
@@ -241,7 +252,7 @@ namespace ACQ.Math.Linalg
                 for (int k = n-1; k >= 0; k--) 
                 {
                     if ((k < nrt) & (e[k] != 0.0)) {
-                        for (int j = k+1; j < nu; j++) {
+                        for (int j = k+1; j < n; j++) {
                             double t = 0;
                             for (int i = k+1; i < n; i++) {
                                 t += v[i, k] * v[i, j];
@@ -275,11 +286,10 @@ namespace ACQ.Math.Linalg
 
                 // kase = 1     if s(p) and e[k-1] are negligible and k<p
                 // kase = 2     if s(k) is negligible and k<p
-                // kase = 3     if e[k-1] is negligible, k<p, and
-                //              s(k), ..., s(p) are not negligible (qr step).
+                // kase = 3     if e[k-1] is negligible, k<p, and s(k), ..., s(p) are not negligible (qr step).
                 // kase = 4     if e(p-1) is negligible (convergence).
                 
-                for (k = p-2; k >= -1; k--) 
+                for (k = p - 2; k >= -1; k--) 
                 {
                     if (k == -1) 
                     {
@@ -291,7 +301,7 @@ namespace ACQ.Math.Linalg
                         break;
                     }
                 }
-                if (k == p-2) 
+                if (k == p - 2) 
                 {
                     kase = 4;
                 } 
@@ -532,10 +542,9 @@ namespace ACQ.Math.Linalg
 
         public Matrix GetS()
         {
-            int n = m_V.Rows;
-            Matrix S = new Matrix(n, n, 0.0);
+            Matrix S = new Matrix(m_U.Columns, m_V.Rows, 0.0);
 
-            for (int i = 0; i < System.Math.Min(n, m_s.Length); i++)
+            for (int i = 0; i < Math.Utils.Min(S.Rows, S.Columns, m_s.Length); i++)
             {
                 S[i, i] = m_s[i];
             }
@@ -563,8 +572,8 @@ namespace ACQ.Math.Linalg
         public double Cond()
         {
             int m = m_U.Rows;
-            int n = m_V.Rows;
-            return m_s[0] / m_s[System.Math.Min(m, n) - 1];
+            int n = m_V.Columns;
+            return m_s[0] / m_s[Math.Utils.Min(m, n, m_s.Length) - 1]; //all other elements if presents are zero
         }
 
         /// <summary>
@@ -574,7 +583,7 @@ namespace ACQ.Math.Linalg
         public int Rank()
         {
             int m = m_U.Rows;
-            int n = m_V.Rows;
+            int n = m_V.Columns;
 
             double tol = System.Math.Max(m, n) * m_s[0] * Math.Const.epsilon;
             int r = 0;
@@ -597,29 +606,97 @@ namespace ACQ.Math.Linalg
         public Matrix PseudoInverse()
         {
             int m = m_U.Rows;
-            int n = m_V.Rows;            
+            int n = m_V.Columns;            
 
             Matrix res = new Matrix(n, m);
-            
+
+            double[] scale = new double[n];
+
             double tol = System.Math.Max(m, n) * Math.Utils.Max(m_s) * Math.Const.epsilon;
 
+            for (int k = 0; k < n; k++)
+            {
+                scale[k] = m_s[k] > tol ? 1.0 / m_s[k] : 0.0;
+            }            
+            
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < m; j++)
-                {
-                    if (m_s[i] > tol)
-                    {
-                        res[i, j] = m_U[j, i] / m_s[i];
+                {                    
+                    double sum = 0;
+                    for (int k = 0; k < n; k++)
+                    {                        
+                        sum += m_V[i, k] * scale[k] * m_U[j, k];
                     }
-                    else
-                    {
-                        res[i, j] = 0;
-                    }
+                    res[i, j] = sum;
                 }
             }
 
-            return m_V * res;
-        }
+            return res;
+        }        
+        
+        /// <summary>
+        /// Solve Ax = b, given SVD decomposition of A, since decomposition currently implemented for A with rows >= cols
+        /// linear system with A rows &lt cols can be solved using SVN decomposition of transposed A i.e. M = A' 
+        /// </summary>
+        /// <param name="rhs"></param>
+        /// <param name="transposed">true is decomposition was contructed using transpose of A</param>
+        /// <returns></returns>
+        public Matrix Solve(Matrix B, bool transposed = false)
+        {
+            int m = m_U.Rows;
+            int n = m_V.Columns;
 
+            if ((B.Rows != m && !transposed) || (B.Rows != n && transposed))
+            {
+                throw new ArgumentException("B has wrong number of rows");
+            }
+
+            double tol = Math.Const.epsilon * System.Math.Max(m, n) * m_s[0];
+
+            double[] scales = new double[n];
+
+            for (int i = 0; i < n; i++) //m_s should have size n
+            {
+                scales[i] = ((System.Math.Abs(m_s[i]) > tol) ? 1.0 / m_s[i] : 0.0);
+            }            
+            
+            if (transposed)
+            {
+                Matrix VTB = new Matrix(n, B.Columns);
+
+                for (int j = 0; j < B.Columns; j++)
+                {
+                    for (int i = 0; i < n; i++)
+                    {
+                        double sum = 0;
+                        for (int k = 0; k < n; k++)
+                        {
+                            sum += m_V[k, i] * B[k, j];
+                        }
+                        VTB[i, j] = sum * scales[i];
+                    }
+                }
+                return m_U * VTB; 
+            }
+            else
+            {
+                Matrix UTB = new Matrix(m, B.Columns);
+
+                for (int j = 0; j < B.Columns; j++)
+                {
+                    for (int i = 0; i < n; i++)
+                    {
+                        double sum = 0;
+                        for (int k = 0; k < m; k++)
+                        {
+                            sum += m_U[k, i] * B[k, j];
+                        }
+                        UTB[i, j] = sum * scales[i];
+                    }
+                }
+                return m_V * UTB; 
+            }
+        }
     }
 }
