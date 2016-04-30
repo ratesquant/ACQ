@@ -379,7 +379,20 @@ namespace ACQ.Math.Linalg
         {
             return row >= 0 && column >= 0 && row < rows && column < cols;
         }
-       
+
+        public double[] RowPackedData()
+        {
+            double[] d = new double[rows * cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    d[j + i * cols] = m_data[i, j];
+                }
+            }
+            return d;
+        }
 
         /// <summary>Returns a sub matrix extracted from the current matrix.</summary>
         /// <param name="startRow">Start row index</param>

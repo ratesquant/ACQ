@@ -633,10 +633,17 @@ namespace ACQ.Math.Linalg
             }
 
             return res;
-        }        
-        
+        }
+
+        public double[] Solve(double[] b, bool transposed = false)
+        {
+            Matrix x = Solve(new Matrix(b, false));
+
+            return x.RowPackedData();
+        }
+
         /// <summary>
-        /// Solve Ax = b, given SVD decomposition of A, since decomposition currently implemented for A with rows >= cols
+        /// Solve Ax = B, given SVD decomposition of A, since decomposition currently implemented for A with rows >= cols
         /// linear system with A rows &lt cols can be solved using SVN decomposition of transposed A i.e. M = A' 
         /// </summary>
         /// <param name="rhs"></param>
