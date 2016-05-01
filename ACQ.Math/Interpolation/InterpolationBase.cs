@@ -7,7 +7,18 @@ namespace ACQ.Math.Interpolation
 {
     public interface InterpolationInterface
     {
+        /// <summary>
+        /// Evaluate interpolation function at x 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         double Eval(double x);
+        /// <summary>
+        /// Evaluate derivative of interpolation function at x
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        double EvalDeriv(double x); //compute first derivative
         bool Bounds { get; set; }
     }
     /// <summary>
@@ -80,6 +91,11 @@ namespace ACQ.Math.Interpolation
         #region Abstruct Methods
 
         public abstract double Eval(double x);
+
+        public virtual double EvalDeriv(double x)
+        {
+            return Double.NaN; //not all interpolation classes have to provide this method
+        }
 
         #endregion
 

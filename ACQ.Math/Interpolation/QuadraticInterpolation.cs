@@ -42,6 +42,30 @@ namespace ACQ.Math.Interpolation
             return value;
         }
 
+        public override double EvalDeriv(double x)
+        {
+            double value;
+
+            int index = FindIndex(x, out value);
+
+            if (index > 0)
+            {
+                double x0, x1, y0, y1;
+
+                Bracket(index, out x0, out x1, out y0, out y1);
+
+                double dx = x1 - x0;
+                double b = (x - x0) / dx;
+                double q1, q2, q3;
+
+                quadratic_basis_deriv(b, out q1, out q2, out q3);
+
+                value = (q1 * y0 + q3 * y1 + q2 * m_u[index - 1]) / dx;
+            }
+
+            return value;
+        }
+
         private void compute_coefficients(double[] x, double[] y, out double[] u)
         {
             int n = x.Length;
@@ -93,6 +117,12 @@ namespace ACQ.Math.Interpolation
             q1 = (1 - 2 * x) * (1 - x);
             q2 =  4 * x * (1 - x);
             q3 = (2 * x - 1) * x;
+        }
+        private void quadratic_basis_deriv(double x, out double q1, out double q2, out double q3)
+        {
+            q1 = 4 * x - 3;
+            q2 = 4 * (1 - 2 * x);
+            q3 = 4 * x - 1;
         }
     }
 }

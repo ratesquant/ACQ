@@ -43,6 +43,31 @@ namespace ACQ.Math.Interpolation
             return value;
         }
 
+        public override double EvalDeriv(double x)
+        {
+            double value;
+
+            int index = FindIndex(x, out value);
+
+            if (index > 0)
+            {
+                double x0 = m_x[index - 1];
+                double x1 = m_x[index];
+                double y0 = m_y[index - 1];
+                double y1 = m_y[index];
+                double dx = x1 - x0;
+                double b = (x - x0) / dx;
+
+                double h1, h2, h3, h4;
+
+                hermite_basis_deriv(b, out h1, out h2, out h3, out h4);
+
+                value = (h1 * y0 + h2 * y1 + dx * (m_c[index - 1] * h3 + m_c[index] * h4))/dx;
+            }
+
+            return value;
+        }
+
         public static void hermite_basis(double u, out double h1, out double h2, out double h3, out double h4)
         {
             double v = 1.0 - u;
@@ -51,6 +76,17 @@ namespace ACQ.Math.Interpolation
             h3 = z + h4; // h10 = u*(1-u)^2
             h1 = v + h3 + h4; //h00 = (1+2t)(1-t)^2
             h2 = 1.0 - h1; // h01 = t^2*(3-2t)    
+        }
+
+        public static void hermite_basis_deriv(double u, out double h1, out double h2, out double h3, out double h4)
+        {
+            double v = 1.0 - u;
+            double z = u * v;
+            double dz = 1 - 2 * u;
+            h4 = -z - u * dz;
+            h3 = dz + h4; // h10 = u*(1-u)^2
+            h1 = -1.0 + h3 + h4; //h00 = (1+2t)(1-t)^2
+            h2 = - h1; // h01 = t^2*(3-2t)    
         }
 
         protected virtual void compute_coefficients(double[] x, double[] y, out double[] a)

@@ -55,6 +55,31 @@ namespace ACQ.Math.Interpolation
             return value;
         }
 
+        public override double EvalDeriv(double x)
+        {
+            double value;
+
+            int index = FindIndex(x, out value);
+
+            if (index > 0)
+            {
+                double x0, x1, y0, y1;
+
+                Bracket(index, out x0, out x1, out y0, out y1);
+
+                double dx = x1 - x0;
+                double dy = y1 - y0;
+
+                double t = (x - x0) / dx;
+                double a = m_c[index - 1] * dx - dy;
+                double b = -m_c[index] * dx + dy;
+
+                value = (-y0 + y1 + (1 - t) * a * (1 - 3 * t) + b * t * (2 - 3 * t))/dx;
+            }
+
+            return value;
+        }
+
         //see [Engeln-Mullges + Uhlig, p. 254]
         private static void compute_coefficients(double[] x, double[] y, bool periodic, out double[] c)
         {

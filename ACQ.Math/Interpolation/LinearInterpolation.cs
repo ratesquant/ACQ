@@ -34,5 +34,23 @@ namespace ACQ.Math.Interpolation
 
             return value;
         }
+
+        public override double EvalDeriv(double x)
+        {
+            double value;
+
+            int index = FindIndex(x, out value);
+
+            if (index > 0)
+            {
+                double x0, x1, y0, y1;
+
+                Bracket(index, out x0, out x1, out y0, out y1);
+                
+                value = (y1 - y0) / (x1 - x0);
+            }
+
+            return value;
+        }
     }
 }

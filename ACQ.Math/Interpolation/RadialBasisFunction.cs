@@ -46,7 +46,7 @@ namespace ACQ.Math.Interpolation
         #region Basis Functions
         private static BasisFunction GetBasisFunction(enRadialBasisFunction basisFunction)
         {
-            //TODO: use reflaction 
+            //TODO: use reflection 
             switch (basisFunction)
             {
                 case enRadialBasisFunction.Linear:

@@ -34,7 +34,7 @@ namespace ACQ.Math
     /// </summary>
     public class Special
     {
-        #region Const
+        #region const
         private const double MACHEP = 1.11022302462515654042E-16;
         private const double MAXLOG = 7.09782712893383996732E2;
         private const double MINLOG = -7.451332191019412076235E2;
