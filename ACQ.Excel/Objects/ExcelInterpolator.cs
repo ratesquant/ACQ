@@ -81,6 +81,24 @@ namespace ACQ.Excel.Objects
             return ExcelError.ExcelErrorRef;
         }
 
+        [ExcelFunction(Description = "Evaluate derivative of interpolated function at specified point", Category = AddInInfo.Category, IsThreadSafe = false)]
+        public static object acq_interpolator_eval_deriv(
+            [ExcelArgument(Description = "Interpolator object")] string handle,
+            [ExcelArgument(Description = "Interpolation point")] double x)
+        {
+            ACQ.Math.Interpolation.InterpolationInterface interpolator;
+
+            if (ACQ.Excel.Handles.GlobalCache.TryGetObject<ACQ.Math.Interpolation.InterpolationInterface>(handle, out interpolator))
+            {
+                if (interpolator != null)
+                {
+                    return ExcelHelper.CheckNan(interpolator.EvalDeriv(x));
+                }
+            }
+            return ExcelError.ExcelErrorRef;
+        }
+
+
 
         [ExcelFunction(Description = "Evaluate interpolation at specified point (thread safe version)", Category = AddInInfo.Category, IsThreadSafe = false)]
         public static object acq_interpolator_eval_tsafe(
