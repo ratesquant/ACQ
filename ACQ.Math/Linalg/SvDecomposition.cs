@@ -6,7 +6,7 @@ using System.Text;
 namespace ACQ.Math.Linalg
 {
     /// <summary>
-    ///  Singular Value Decomposition. (Adapted from JAMA and LAPACK (DGESVD))
+    /// Singular Value Decomposition. (Adapted from JAMA and LAPACK)
     ///  
     /// For an m-by-n matrix A with m >= n, the singular value decomposition is
     /// an m-by-n orthogonal matrix U, an n-by-n diagonal matrix S, and
@@ -15,16 +15,16 @@ namespace ACQ.Math.Linalg
     /// The singular values, sigma[k] = S[k][k], are ordered so that
     /// sigma[0] >= sigma[1] >= ... >= sigma[n-1].
     /// 
-    /// in case of m less than n, transpose the matrix before computing SVD
-    /// 
     /// The singular value decompostion always exists, so the constructor will
-    /// never fail.  The matrix condition number and the effective numerical
+    /// never fail (prodived that m >= n). The matrix condition number and the effective numerical
     /// rank can be computed from this decomposition.
     /// 
     ///             A    =    U    *     S      *      Vt
-    ///general    m x n     m x m      m x n         n x n
+    /// general   m x n     m x m      m x n         n x n
     /// m>=n      m x n     m x n      n x n         n x n (this is what is being computed in this class )
-    /// compact   m x n     m x k      k x k         k x n , k = min(m, n)  
+    /// compact   m x n     m x k      k x k         k x n , k = min(m, n) 
+    /// 
+    /// in case when m less than n, transpose the matrix before computing SVD
     /// </summary>
     public class SvDecomposition
     {
@@ -688,7 +688,7 @@ namespace ACQ.Math.Linalg
             }
             else
             {
-                Matrix UTB = new Matrix(m, B.Columns);
+                Matrix UTB = new Matrix(n, B.Columns);
 
                 for (int j = 0; j < B.Columns; j++)
                 {
