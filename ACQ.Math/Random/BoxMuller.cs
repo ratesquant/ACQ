@@ -5,17 +5,21 @@ using System.Text;
 
 namespace ACQ.Math.Random
 {
-    public class BoxMuller
-    { 
-        RandomBase m_rng;
-        double m_spareValue = Double.NaN;
+    public class BoxMuller : RandomBase
+    {
+        IRandomGenerator m_rng;
+        double m_spareValue = Double.NaN; //this is not thread safe
 
-        public BoxMuller(RandomBase rng)            
+        public BoxMuller(IRandomGenerator rng)            
         {
             m_rng = rng;
         }
+        public override int Next()
+        {
+            return 0; //not implemented
+        }
 
-        public double Next()
+        public override double NextDouble()
         {
             if (!Double.IsNaN(m_spareValue))
             {
