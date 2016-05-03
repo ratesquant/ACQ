@@ -28,14 +28,11 @@ namespace ACQ.Math.Interpolation
         {
             string name = String.Format("ACQ.Math.Interpolation.{0}Interpolation", method).ToLower();
 
-            Type result = null;
+            Type result;
 
-            if (m_interpolation_types.ContainsKey(name))
-            {
-                result = m_interpolation_types[name];
-            }
-            return result;
-    //        return Type.GetType(String.Format("ACQ.Math.Interpolation.{0}Interpolation", method), false, true); //return null if missing, ignore case
+            m_interpolation_types.TryGetValue(name, out result); //returs null if not found
+            
+            return result;            
         }
 
         public static InterpolationInterface GetInterpolator(Type type, double[] x, double[] y)

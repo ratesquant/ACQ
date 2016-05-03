@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ACQ.Math.Regression
 {
-    public class Linear
+    public class LinearRegression
     {
     }
 }

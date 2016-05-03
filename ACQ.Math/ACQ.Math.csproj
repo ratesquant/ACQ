@@ -80,7 +80,7 @@
     <Compile Include="Random\MersenneTwister.cs" />
     <Compile Include="Random\BoxMuller.cs" />
     <Compile Include="Random\RandomBase.cs" />
-    <Compile Include="Regression\Linear.cs" />
+    <Compile Include="Regression\LinearRegression.cs" />
     <Compile Include="Regression\Lowess.cs" />
     <Compile Include="Sort.cs" />
     <Compile Include="Special.cs" />
