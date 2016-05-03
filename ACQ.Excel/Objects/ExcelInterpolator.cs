@@ -100,7 +100,7 @@ namespace ACQ.Excel.Objects
 
 
 
-        [ExcelFunction(Description = "Evaluate interpolation at specified point (thread safe version)", Category = AddInInfo.Category, IsThreadSafe = false)]
+        [ExcelFunction(Description = "Evaluate interpolation at specified point (thread safe version)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_interpolator_eval_tsafe(
             [ExcelArgument(Description = "Interpolator object")] string handle,
             [ExcelArgument(Description = "Interpolation point")] double x)
