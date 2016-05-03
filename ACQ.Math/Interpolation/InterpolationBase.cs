@@ -5,6 +5,9 @@ using System.Text;
 
 namespace ACQ.Math.Interpolation
 {
+    /// <summary>
+    /// Interface for 1D interpolation
+    /// </summary>
     public interface InterpolationInterface
     {
         /// <summary>
@@ -21,6 +24,7 @@ namespace ACQ.Math.Interpolation
         double EvalDeriv(double x); //compute first derivative
         bool Bounds { get; set; }
     }
+
     /// <summary>
     /// Abstract Base class for 1D interpolation 
     /// </summary>
@@ -138,12 +142,11 @@ namespace ACQ.Math.Interpolation
         public virtual void Eval(double[] x, double[] y)
         {
             if (x == null || y == null)
+            {
                 throw new ArgumentException("Interpolation arrays can not be null");
+            }
 
-            if (x.Length != y.Length)
-                throw new ArgumentException("interpolation arrays should have the same length");
-
-            for (int i = 0; i < x.Length; i++)
+            for (int i = 0; i < System.Math.Min(x.Length, y.Length); i++)
             {
                 y[i] = Eval(x[i]);
             }
@@ -167,27 +170,13 @@ namespace ACQ.Math.Interpolation
         {
             get
             {
-                return m_x.Length;
+                return m_x.Length; //m_y has the same size
             }
         }
 
         #endregion Public Methods
 
         #region Protected Methods
-
-     
-        /// <summary>
-        /// Function returns the index i such that x[i-1] < x <= x[i]         
-        /// </summary>
-        /// <param name="xi"></param>
-        /// <returns></returns>
-        protected int FindIndex(double x)
-        {
-            int index = Array.BinarySearch<double>(m_x, x);           
-
-            return (index < 0) ? ~index : index;
-        }
-
         /// <summary>
         /// Finds an index of interpolation region
         /// </summary>
@@ -229,7 +218,14 @@ namespace ACQ.Math.Interpolation
             }
             return index;
         }
-
+        /// <summary>
+        /// Returns x1 = x[index] and x0 = x[index - 1]
+        /// </summary>
+        /// <param name="index1"></param>
+        /// <param name="x0"></param>
+        /// <param name="x1"></param>
+        /// <param name="y0"></param>
+        /// <param name="y1"></param>
         protected void Bracket(int index1, out double x0, out double x1, out double y0, out double y1)
         {
             int index0 = index1 - 1;
@@ -239,43 +235,6 @@ namespace ACQ.Math.Interpolation
             y0 = m_y[index0];
             y1 = m_y[index1];
         }
-
-        #endregion
-
-        #region Static Methods
-        /*
-        public static double[] Compute(double[] x, double[] y, double[] xi, InterpolationMethod method)
-        {
-            Interp1DBase interp = null;
-
-            switch (method)
-            {
-                case InterpolationMethod.Linear:
-                    interp = new Interp1DLinear(x, y);
-                    break;
-                case InterpolationMethod.Akima:
-                    interp = new Interp1DAkima(x, y);
-                    break;
-                case InterpolationMethod.AkimaPeriodic:
-                    interp = new Interp1DAkima(x, y, true);
-                    break;
-                case InterpolationMethod.Nearest:
-                    interp = new Interp1DNearest(x, y);
-                    break;
-                case InterpolationMethod.CubicSpline:
-                    interp = new Interp1DCubicSpline(x, y);
-                    break;
-                case InterpolationMethod.CubicHermiteSpline:
-                    interp = new Interp1DCubicHermiteSpline(x, y);
-                    break;
-                default:
-                    interp = new Interp1DLinear(x, y);
-                    break;
-            }
-
-            return interp.Compute(xi);
-        }
-        */
         #endregion
     }
 }

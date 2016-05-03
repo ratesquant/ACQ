@@ -19,5 +19,12 @@ namespace ACQ.Math.Interpolation
             : base(x1, x2, y, copyData)
         {
         }
+        protected override int SupportSize
+        {
+            get
+            {
+                return 2;
+            }
+        }
     }
 }

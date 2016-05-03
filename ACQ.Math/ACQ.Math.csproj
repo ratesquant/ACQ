@@ -80,10 +80,13 @@
     <Compile Include="Random\MersenneTwister.cs" />
     <Compile Include="Random\BoxMuller.cs" />
     <Compile Include="Random\RandomBase.cs" />
+    <Compile Include="Regression\KernelRegression.cs" />
     <Compile Include="Regression\LinearRegression.cs" />
     <Compile Include="Regression\Lowess.cs" />
+    <Compile Include="Regression\RegressionBase.cs" />
     <Compile Include="Sort.cs" />
     <Compile Include="Special.cs" />
+    <Compile Include="Stats.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Linalg\Vector.cs" />
   </ItemGroup>
