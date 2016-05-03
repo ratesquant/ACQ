@@ -12,6 +12,7 @@ namespace ACQ.Test
     {
         static void Main(string[] args)
         {
+            TestInterpolation2();
             //TestThreadSafety();
             TestLinearAlgebra();
             //TestSort();
@@ -360,6 +361,17 @@ namespace ACQ.Test
 
             ACQ.Math.Interpolation.InterpolationFactory2D.GetInterpolator("Bilinear", x, y, f);
  
+        }
+
+        public static void TestInterpolation2()
+        {            
+            double[] x = new double[] { 0, 1 };
+            double[] y = new double[] { 0, 1 };            
+
+            ACQ.Math.Interpolation.InterpolationInterface interpolator = new ACQ.Math.Interpolation.LinearInterpolation(x, y);
+
+            double xi = 0.5;
+            double yi = interpolator.Eval(xi);
         }
     }
 }
