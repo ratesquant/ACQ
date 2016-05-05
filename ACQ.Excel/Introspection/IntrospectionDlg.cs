@@ -23,7 +23,7 @@ namespace ACQ.Excel.Introspection
             this.toolStripStatusLabel1.Text = m_introspector.Name;
             this.toolStripStatusLabel2.Text = String.Empty; //reserved
 
-            if (m_introspector.IsDataObject)
+            if (m_introspector.IsDataTableConvertable)
             {
                 this.dataGridView1.DataSource = m_introspector.Data;
                 this.tabControl1.SelectedTab = this.tabPage2;

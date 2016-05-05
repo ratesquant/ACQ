@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using System.Data;
 
 namespace ACQ.Excel.Introspection
@@ -10,10 +11,43 @@ namespace ACQ.Excel.Introspection
     public class ObjectIntrospector
     {
         object m_acq_object;
+        MethodInfo m_toDataTable = null;
+
+        private readonly static Dictionary<Type, MethodInfo> m_toTableMethods = new Dictionary<Type, MethodInfo>();
+
+        static ObjectIntrospector()
+        {
+            //init ToDataTable methods
+            foreach (MethodInfo method in typeof(ObjectIntrospector).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
+            {
+                ParameterInfo[] paramInfo =  method.GetParameters();
+                if (paramInfo.Length == 1 &&
+                    method.ReturnType.Equals(typeof(DataTable))) //method.Name == ToTable ?
+                {   
+                    Type arg = paramInfo[0].ParameterType;
+                    m_toTableMethods[arg] = method;
+                }
+            }
+        }
 
         public ObjectIntrospector(object acq_object)
         {
             m_acq_object = acq_object;
+
+            if (m_acq_object != null)
+            {
+                Type arg_type = m_acq_object.GetType();
+
+                //unfortunatly we have to iterate over all elements because types dont match exactly due to inheritance  
+                foreach (Type base_type in m_toTableMethods.Keys)
+                {
+                    if (base_type.IsAssignableFrom(arg_type))
+                    {
+                        m_toDataTable = m_toTableMethods[base_type];
+                        break;
+                    }
+                }
+            }
         }
 
         public string Name
@@ -50,24 +84,11 @@ namespace ACQ.Excel.Introspection
                 DataTable table = new DataTable();
  
                 if (m_acq_object != null)
-                {
-                    //object specific code goes here, all new objects need to have ToTable function for introspection to work
-                    if (m_acq_object is ACQ.Math.Linalg.Vector)
+                {                  
+                    if (m_toDataTable != null)
                     {
-                        table = VectorToTable(m_acq_object as ACQ.Math.Linalg.Vector);
-                    }
-                    else if (m_acq_object is ACQ.Math.Linalg.Matrix)
-                    {
-                        table = MatrixToTable(m_acq_object as ACQ.Math.Linalg.Matrix);
-                    }
-                    else if (m_acq_object is Hashtable)
-                    {
-                        table = HashtableToTable(m_acq_object as Hashtable);
-                    }
-                    else if (m_acq_object is object[])
-                    {
-                        table = ArrayToTable(m_acq_object as object[]);
-                    }
+                        table = m_toDataTable.Invoke(null, new object[] {m_acq_object}) as DataTable;
+                    }                 
                 }
 
                 return table;
@@ -83,19 +104,16 @@ namespace ACQ.Excel.Introspection
             }
         }
 
-        public bool IsDataObject
+        public bool IsDataTableConvertable
         {
             get
             {
-                return m_acq_object is ACQ.Math.Linalg.Vector ||
-                       m_acq_object is ACQ.Math.Linalg.Matrix ||
-                       m_acq_object is System.Collections.Hashtable ||
-                       m_acq_object is object[];
+                return m_toDataTable != null;
             }
         }
 
-        #region Private Convertion Methods
-        private DataTable VectorToTable(ACQ.Math.Linalg.Vector vector)
+        #region ToTable Methods
+        private static DataTable ToDataTable(ACQ.Math.Linalg.Vector vector)
         {
             DataTable table = new DataTable(vector.GetType().ToString());
          
@@ -119,7 +137,40 @@ namespace ACQ.Excel.Introspection
             return table;
         }
 
-        private DataTable MatrixToTable(ACQ.Math.Linalg.Matrix matrix)
+        private static DataTable ToDataTable(ACQ.Math.Interpolation.InterpolationBase interpolator)
+        {
+            DataTable table = new DataTable(interpolator.GetType().ToString());
+         
+            DataColumn column;
+            DataRow row;
+
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.Double");
+            column.ColumnName = "x";
+            column.ReadOnly = true;
+            table.Columns.Add(column);
+
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.Double");
+            column.ColumnName = "y";
+            column.ReadOnly = true;
+            table.Columns.Add(column);
+         
+            // Create three new DataRow objects and add 
+            // them to the DataTable
+            for (int i = 0; i < interpolator.Size; i++)
+            {
+                Tuple<double, double> node = interpolator.GetNode(i);
+
+                row = table.NewRow();
+                row["x"] = node.Item1;
+                row["y"] = node.Item2;
+                table.Rows.Add(row);
+            }
+            return table;
+        }
+
+        private static DataTable ToDataTable(ACQ.Math.Linalg.Matrix matrix)
         {
             DataTable table = new DataTable(matrix.GetType().ToString());
 
@@ -153,7 +204,7 @@ namespace ACQ.Excel.Introspection
             return table;
         }
 
-        private DataTable HashtableToTable(Hashtable ht)
+        private static DataTable ToDataTable(Hashtable ht)
         {
             DataTable table = new DataTable(ht.GetType().ToString());
 
@@ -184,7 +235,38 @@ namespace ACQ.Excel.Introspection
             return table;
         }
 
-        private DataTable ArrayToTable(object[] array)
+        private static DataTable ToDataTable(Dictionary<string, object> dict)
+        {
+            DataTable table = new DataTable(dict.GetType().ToString());
+
+            DataColumn column;
+            DataRow row;
+
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.String");
+            column.ColumnName = "key";
+            column.ReadOnly = true;
+            table.Columns.Add(column);
+
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.String");
+            column.ColumnName = "value";
+            column.ReadOnly = true;
+            table.Columns.Add(column);
+
+            // Create three new DataRow objects and add 
+            // them to the DataTable
+            foreach (KeyValuePair<string, object> pair in dict)
+            {
+                row = table.NewRow();
+                row["key"] = pair.Key;
+                row["value"] = pair.Value!=null ? pair.Value.ToString() : "NULL";
+                table.Rows.Add(row);
+            }
+            return table;
+        }
+
+        private static DataTable ToDataTable(object[] array)
         {
             DataTable table = new DataTable(array.GetType().ToString());
 
