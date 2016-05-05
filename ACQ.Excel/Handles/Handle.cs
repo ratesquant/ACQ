@@ -17,14 +17,14 @@ namespace ACQ.Excel.Handles
         private readonly string m_name;
         private readonly object m_value;
 
-        public Handle(HandleStorage storage, string objectType, object value)
+        public Handle(HandleStorage storage, string tag, object value)
         {
             m_storage = storage;
             m_value = value;
 
             lock (m_lock)
             {
-                m_name = String.Format("{0}:{1}", objectType, m_index++);
+                m_name = String.Format("{0}:{1}", tag, m_index++);
             }
         }
 

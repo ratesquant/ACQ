@@ -14,12 +14,12 @@ namespace ACQ.Excel.Handles
         private ReaderWriterLockSlim m_lock = new ReaderWriterLockSlim();
         private Dictionary<string, Handle> m_storage = new Dictionary<string, Handle>();
 
-        internal object CreateHandle(string objectType, object[] parameters, Func<string, object[], object> maker)
+        internal object CreateHandle(string tag, object[] parameters, Func<string, object[], object> maker)
         {
-            return ExcelAsyncUtil.Observe(objectType, parameters, () =>
+            return ExcelAsyncUtil.Observe(tag, parameters, () =>
             {
-                var value = maker(objectType, parameters);
-                var handle = new Handle(this, objectType, value);
+                var value = maker(tag, parameters);
+                var handle = new Handle(this, tag, value);
 
                 m_lock.EnterWriteLock();
 
@@ -62,7 +62,7 @@ namespace ACQ.Excel.Handles
             return found;
         }
 
-        internal bool TryGetObject<T>(string name, out T value) where T : class
+        internal bool TryGetObject<T>(string name, out T value)
         {
             bool found = false;
 
@@ -78,7 +78,7 @@ namespace ACQ.Excel.Handles
                 {
                     if (handle.Value is T)
                     {
-                        value = handle.Value as T;
+                        value = (T)handle.Value;
                         found = true;
                     }
                 }
@@ -97,7 +97,7 @@ namespace ACQ.Excel.Handles
         /// <param name="name"></param>
         /// <param name="reader"></param>
         /// <returns></returns>
-        internal Tuple<bool, TResult> TryReadObject<T, TResult>(string name, Func<T, TResult> reader) where T : class
+        internal Tuple<bool, TResult> TryReadObject<T, TResult>(string name, Func<T, TResult> reader)
         {
             bool valid = false;
 
@@ -114,12 +114,9 @@ namespace ACQ.Excel.Handles
                 {
                     if (handle.Value is T)
                     {
-                        obj = handle.Value as T;
-                        if (obj != null)
-                        {
-                            result = reader(obj);
-                            valid = true;
-                        }
+                        obj = (T)handle.Value;
+                        result = reader(obj);
+                        valid = true;
                     }
                 }
             }
@@ -130,7 +127,7 @@ namespace ACQ.Excel.Handles
             return new Tuple<bool, TResult>(valid, result);
         }
 
-        internal Tuple<bool, TResult> TryReadObject<T, TResult, TArg>(string name, Func<T, TArg, TResult> reader, TArg argument) where T : class
+        internal Tuple<bool, TResult> TryReadObject<T, TResult, TArg>(string name, Func<T, TArg, TResult> reader, TArg argument)
         {
             bool valid = false;
 
@@ -147,12 +144,9 @@ namespace ACQ.Excel.Handles
                 {
                     if (handle.Value is T)
                     {
-                        obj = handle.Value as T;
-                        if (obj != null)
-                        {
-                            result = reader(obj, argument);
-                            valid = true;
-                        }
+                        obj = (T)handle.Value;
+                        result = reader(obj, argument);
+                        valid = true;                        
                     }
                 }
             }
@@ -174,18 +168,18 @@ namespace ACQ.Excel.Handles
                 try
                 {
                     m_storage.Remove(handle.Name);
+
+                    IDisposable disp = value as IDisposable;
+
+                    if (disp != null)
+                    {
+                        disp.Dispose();
+                    }
                 }
                 finally
                 {
                     m_lock.ExitWriteLock();
-                }
-
-                var disp = value as IDisposable;
-
-                if (disp != null)
-                {
-                    disp.Dispose();
-                }
+                }                
             }
         }
     }

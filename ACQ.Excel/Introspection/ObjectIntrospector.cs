@@ -21,8 +21,7 @@ namespace ACQ.Excel.Introspection
             foreach (MethodInfo method in typeof(ObjectIntrospector).GetMethods(BindingFlags.Static | BindingFlags.NonPublic))
             {
                 ParameterInfo[] paramInfo =  method.GetParameters();
-                if (paramInfo.Length == 1 &&
-                    method.ReturnType.Equals(typeof(DataTable))) //method.Name == ToTable ?
+                if (paramInfo.Length == 1 && method.ReturnType.Equals(typeof(DataTable))) //method.Name == ToTable ?
                 {   
                     Type arg = paramInfo[0].ParameterType;
                     m_toTableMethods[arg] = method;
