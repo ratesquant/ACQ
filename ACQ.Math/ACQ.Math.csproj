@@ -87,6 +87,7 @@
     <Compile Include="Sort.cs" />
     <Compile Include="Special.cs" />
     <Compile Include="Stats.cs" />
+    <Compile Include="Sudoku.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Linalg\Vector.cs" />
   </ItemGroup>

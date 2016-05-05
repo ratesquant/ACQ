@@ -9,6 +9,118 @@ namespace ACQ.Excel
 {
     public static class Examples
     {
+        #region Sudoku
+        [ExcelFunction(Description = "Solve Sudoku puzzle", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object[,] acq_sudoku_generate(object seed)
+        {
+            int[,] grid;
+
+            if (seed != null && seed is double)
+            {
+                grid = ACQ.Math.Sudoku.Generate((int)(double)seed);
+            }
+            else
+            {
+                grid = ACQ.Math.Sudoku.Generate();
+            }
+            
+            object[,] result = new object[grid.GetLength(0), grid.GetLength(1)];
+
+            for (int i = 0; i < grid.GetLength(0); i++)
+            {
+                for (int j = 0; j < grid.GetLength(1); j++)
+                {
+                    if (grid[i, j] == 0)
+                        result[i, j] = "";//ExcelEmpty.Value;
+                    else
+                        result[i, j] = grid[i, j];
+                }
+            }
+
+            return result;
+        }
+
+        [ExcelFunction(Description = "Solve Sudoku puzzle", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object[,] acq_sudoku_solve(object[,] grid)
+        {
+            const int size = 9;
+
+            int[,] sudoku = acq_sudoku_convertgrid(grid, size);
+
+            if (sudoku != null)
+            {
+                List<int[,]> solutions = new List<int[,]>();
+
+                ACQ.Math.Sudoku.Solve(sudoku, solutions, 1);
+
+                if (solutions.Count > 0)
+                {
+                    return ExcelHelper.BoxArray(solutions[0]);
+                }
+            }
+            
+            return ExcelHelper.CreateArray(1, 1, ExcelError.ExcelErrorNull);
+        }
+
+        [ExcelFunction(Description = "Number of possible solutions", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static int acq_sudoku_solution_count(object[,] grid)
+        {
+            const int size = 9;
+            const int max_count = 1024;
+
+            int[,] sudoku = acq_sudoku_convertgrid(grid, size);
+
+            int count = 0;
+
+            if (sudoku != null)
+            {
+                List<int[,]> solutions = new List<int[,]>();
+
+                ACQ.Math.Sudoku.Solve(sudoku, solutions, max_count);
+
+                count = solutions.Count;                
+            }
+
+            return count;
+        }
+
+        private static int[,] acq_sudoku_convertgrid(object[,] grid, int size)
+        {            
+            int[,] sudoku = null;
+
+            if (grid != null && grid.GetLength(0) == size && grid.GetLength(1) == size)
+            {
+                sudoku = new int[size, size];
+
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        object v = grid[i, j];
+                        int sv = 0;
+
+                        if (v is double)
+                        {
+                            sv = (int)((double)v);
+                        }
+                        else if (v is string)
+                        {
+                            double res;
+
+                            if (Double.TryParse(v as string, out res))
+                            {
+                                sv = (int)res;
+                            }
+                        }
+                        sudoku[i, j] = System.Math.Min(sv, size);
+                    }
+                }                
+            }
+            return sudoku;
+        }
+        #endregion
+
+
         /*
         [ExcelFunction(Description = "acq_sum", Category = AddInInfo.Category)]
         public static double acq_sum(double a, double b)

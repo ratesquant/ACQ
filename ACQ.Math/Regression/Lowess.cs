@@ -26,7 +26,7 @@ namespace ACQ.Math.Regression
     */
     /// <summary>
     /// Lowess regression, adapted from R source code,http://svn.r-project.org/R/trunk/src/library/stats/src/lowess.c
-    /// it attempts to faithfully reporoduce R code without any "improvments" 
+    /// it attempts to faithfully reporoduce R code without any "improvements" 
     /// </summary>
     public class Lowess
     {

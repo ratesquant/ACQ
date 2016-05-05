@@ -33,6 +33,7 @@ namespace ACQ.Excel
             return result;
         }
 
+
         internal static bool IsMissingOrEmpty(object value)
         {
             return value is ExcelMissing || value is ExcelEmpty;
@@ -71,6 +72,36 @@ namespace ACQ.Excel
                 }
             }
            
+            return result;
+        }
+
+        internal static object[,] CreateArray(int size1, int size2, object value)
+        {
+            object[,] result = new object[size1, size2];
+
+            for (int i = 0; i < size1; i++)
+            {
+                for (int j = 0; j < size2; j++)
+                {
+                    result[i, j] = value;
+                }
+            }
+
+            return result;
+        }
+
+        internal static object[,] BoxArray<T>(T[,] a)
+        {
+            object[,] result = new object[a.GetLength(0), a.GetLength(1)];
+
+            for (int i = 0; i < a.GetLength(0); i++)
+            {
+                for (int j = 0; j < a.GetLength(1); j++)
+                {
+                    result[i, j] = a[i, j];
+                }
+            }
+
             return result;
         }
     }
