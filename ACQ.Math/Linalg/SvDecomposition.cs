@@ -705,5 +705,37 @@ namespace ACQ.Math.Linalg
                 return m_V * UTB; 
             }
         }
+
+        public Matrix Cov()
+        {
+            int m = m_U.Rows;
+            int n = m_V.Columns;
+
+            double tol = Math.Const.epsilon * System.Math.Max(m, n) * m_s[0];
+
+            double[] scales = new double[n];
+
+            for (int i = 0; i < n; i++) //m_s should have size n
+            {
+                scales[i] = ((System.Math.Abs(m_s[i]) > tol) ? 1.0 / (m_s[i] * m_s[i]) : 0.0);
+            }
+            
+            Matrix cov = new Matrix(n, n);
+            double[,] v = m_V.Data;
+
+            for (int j = 0; j < n; j++)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    double sum = 0;
+                    for (int k = 0; k < n; k++)
+                    {
+                        sum += v[i, k] * scales[k] * v[j, k];
+                    }
+                    cov[i, j] = sum;
+                }
+            }
+            return cov;
+        }
     }
 }
