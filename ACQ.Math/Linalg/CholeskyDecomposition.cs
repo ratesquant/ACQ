@@ -13,15 +13,22 @@ namespace ACQ.Math.Linalg
     ///		lower triangular matrix L so that >A = L * L'.
     ///		If the matrix is not symmetric or positive definite, the constructor returns a partial 
     ///		decomposition and sets two internal variables that can be queried using the
-    ///		Symmetric and PositiveDefinite properties.
+    ///		 PositiveDefinite property.
+    ///		
+    /// TODO: consider adding tolerance to check for positivity, and pivoting 
     ///	</remarks>
     public class CholeskyDecomposition
     {
         private Matrix m_l;
-        private bool m_symPosDef; //symmetric and positive definite
-
-        /// <summary>Construct a Cholesky Decomposition.</summary>
-        public CholeskyDecomposition(Matrix A)
+        private bool m_positiveDefinite; // positive definite (only symmetric matrix can be positive definite)
+        //it is possible to extend definition of "positive definite" to include some non-symmetric real matrices, but we dont need it here 
+        
+        /// <summary>
+        /// Construct a Cholesky Decomposition
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="checkSymmetry">check if matrix is symmetric, if not use elements below diagonal and assume that it is symmetric</param>
+        public CholeskyDecomposition(Matrix A, bool checkSymmetry = false)
         {
             if (A == null)
             {
@@ -39,8 +46,8 @@ namespace ACQ.Math.Linalg
             double[,] a = A.Data;
             double[,] l = m_l.Data;
 
-            m_symPosDef = (A.Columns == n);
-
+            m_positiveDefinite = (A.Columns == n); //only symmetric can be positive definite
+            
             for (int j = 0; j < n; j++)
             {
                 double d = 0.0;
@@ -54,13 +61,19 @@ namespace ACQ.Math.Linalg
                     l[j, k] = s = (a[j, k] - s) / l[k, k];
                     d = d + s * s;
 
-                    m_symPosDef = m_symPosDef && (a[k, j] == a[j, k]);
+                    if (checkSymmetry) //Symmetry check, does not work very well with floating numbers because of truncation errors  
+                    {
+                        m_positiveDefinite = m_positiveDefinite && (a[k, j] == a[j, k]);
+                    }
                 }
 
                 d = a[j, j] - d;
 
-                m_symPosDef = m_symPosDef & (d > 0.0);
+                //Positive-definite: d > 0,  Positive-semidefinite d >= 0                
+                m_positiveDefinite = m_positiveDefinite & (d > 0.0); 
+
                 l[j,j] = System.Math.Sqrt(System.Math.Max(d, 0.0));
+
                 for (int k = j + 1; k < n; k++)
                 {
                     l[j, k] = 0.0;
@@ -68,12 +81,12 @@ namespace ACQ.Math.Linalg
             }
         }
 
-        /// <summary>Returns true if the matrix is symmetric.</summary>
-        public bool IsSymmetricAndPositiveDefinite
+        /// <summary>Returns true if the matrix is symmetric and positive definite.</summary>
+        public bool IsPositiveDefinite
         {
             get
             {
-                return m_symPosDef;
+                return m_positiveDefinite;
             }
         }
 
@@ -99,9 +112,9 @@ namespace ACQ.Math.Linalg
                 throw new ArgumentException("Matrix dimensions do not match.");
             }
 
-            if (!IsSymmetricAndPositiveDefinite)
+            if (!IsPositiveDefinite)
             {
-                throw new InvalidOperationException("Matrix is not symmetric and positive definite.");
+                throw new InvalidOperationException("Matrix is not positive definite.");
             }
 
             int n = m_l.Rows;
