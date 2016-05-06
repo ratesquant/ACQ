@@ -57,18 +57,24 @@ namespace ACQ.Math
 
             System.Random rnd = new System.Random(seed);
 
+            int[] digits = new int[m_size];
+
+            for (i = 0; i < m_size; i++)
+            {
+                digits[i] = i + 1;
+            }
+
             //Initialize diagonal blocks with random numbers 
             for (i = 0; i < m_size; i += m_blocksize)
             {
+                ShuffleArray(digits, rnd);
+
                 for (k = 0; k < m_size; k++)
                 {
-                    do
-                    {
-                        x = rnd.Next(m_blocksize);
-                        y = rnd.Next(m_blocksize);
-                    } while (grid[x + i, y + i] != 0);
+                    int ik = k % m_blocksize;
+                    int jk = k / m_blocksize;
 
-                    grid[x + i, y + i] = k + 1;
+                    grid[i + ik, i + jk] = digits[k];
                 }
             }
 
