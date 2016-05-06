@@ -55,6 +55,5 @@ namespace ACQ.Excel.Handles
                 return m_value;
             }
         }
-
     }
 }
