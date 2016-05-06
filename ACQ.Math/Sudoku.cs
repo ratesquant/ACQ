@@ -164,53 +164,59 @@ namespace ACQ.Math
 
             //check all rows
             for (i = 0; i < m_size; i++)
-            {
-                for (k = 1; k <= m_size; k++)
-                    digits[k] = 0;
-
+            {                
                 for (j = 0; j < m_size; j++)
                 {
                     digits[grid[i, j]]++;
                 }
 
                 for (k = 1; k <= m_size; k++)
-                    if (digits[k] > 1)
+                {
+                    if (digits[k] != 1) //there should be exactly one of each digit
+                    {
                         return false;
+                    }
+                    digits[k] = 0; //init for the next row
+                }
             }
 
             //check all cols
             for (i = 0; i < m_size; i++)
-            {
-                for (k = 1; k <= m_size; k++)
-                    digits[k] = 0;
-
+            {                
                 for (j = 0; j < m_size; j++)
                 {
                     digits[grid[j, i]]++;
                 }
 
                 for (k = 1; k <= m_size; k++)
-                    if (digits[k] > 1)
+                {
+                    if (digits[k] != 1)
+                    {
                         return false;
+                    }
+                    digits[k] = 0; //init for the next row
+                }
             }
 
-            //check blocks
-            int nBlocks = m_size / m_blocksize;
+            //check all blocks
+            int blocks = m_size / m_blocksize;
 
-            for (i = 0; i < nBlocks; i++)
+            for (i = 0; i < blocks; i++)
             {
-                for (j = 0; j < nBlocks; j++)
+                for (j = 0; j < blocks; j++)
                 {
-                    for (k = 1; k <= m_size; k++)
-                        digits[k] = 0;
-
                     for (ii = 0; ii < m_blocksize; ii++)
                         for (jj = 0; jj < m_blocksize; jj++)
                             digits[grid[ii + i * m_blocksize, jj + j * m_blocksize]]++;
 
                     for (k = 1; k <= m_size; k++)
-                        if (digits[k] > 1)
+                    {
+                        if (digits[k] != 1)
+                        {
                             return false;
+                        }
+                        digits[k] = 0;
+                    }
                 }
             }
             return true;
@@ -261,8 +267,8 @@ namespace ACQ.Math
                     }
                 }
 
-                int ii = (index_i / 3) * 3;
-                int jj = (index_j / 3) * 3;
+                int ii = (index_i / m_blocksize) * m_blocksize;
+                int jj = (index_j / m_blocksize) * m_blocksize;
 
                 for (i = 0; i < m_blocksize; i++)
                 {
@@ -284,41 +290,46 @@ namespace ACQ.Math
             return ValidDigits(m_grid, index_i, index_j, vValid);
         }
 
-        private static int ValidDigits(int[,] grid, int index_i, int index_j, List<int> vValid)
+        private static int ValidDigits(int[,] grid, int index_i, int index_j, List<int> valid_digits)
         {
             int i, j, ii, jj;
 
-            vValid.Clear();
+            valid_digits.Clear();
 
             if (grid[index_i, index_j] == 0)
             {
-                int[] vInvalidDigits = new int[m_size + 1];
+                int[] digits = new int[m_size + 1]; //digits that are already there
 
                 //check horizontal and vertical lines 
                 for (i = 0; i < m_size; i++)
                 {
-                    vInvalidDigits[grid[i, index_j]] = 1;
-                    vInvalidDigits[grid[index_i, i]] = 1;
+                    digits[grid[i, index_j]] = 1;
+                    digits[grid[index_i, i]] = 1;
                 }
 
                 //check block
-                ii = (index_i / 3) * 3;
-                jj = (index_j / 3) * 3;
+                ii = (index_i / m_blocksize) * m_blocksize;
+                jj = (index_j / m_blocksize) * m_blocksize;
 
                 for (i = 0; i < m_blocksize; i++)
                 {
                     for (j = 0; j < m_blocksize; j++)
                     {
-                        vInvalidDigits[grid[ii + i, jj + j]] = 1;
+                        digits[grid[ii + i, jj + j]] = 1;
                     }
                 }
 
+                //add digits that are not on the invalid digits list 
                 for (i = 0; i < m_size; i++)
-                    if (vInvalidDigits[i + 1] == 0)
-                        vValid.Add(i + 1);
+                {
+                    if (digits[i + 1] == 0)
+                    {
+                        valid_digits.Add(i + 1);
+                    }
+                }
 
             }
-            return vValid.Count;
+            return valid_digits.Count;
         }
 
         public List<int[,]> SolvePuzzle(int nMaxSolutions)
@@ -358,7 +369,7 @@ namespace ACQ.Math
             List<int> valid_digits = new List<int>(m_size);
             List<int> temp = new List<int>(m_size);
 
-            //find the empty spot with least possible digits
+            //find the empty spot with fewer possible digits
             for (i = 0; i < m_size; i++)
             {
                 for (j = 0; j < m_size; j++)
@@ -393,11 +404,7 @@ namespace ACQ.Math
                 if (CheckSolution(grid))
                 {
                     solutions.Add((int[,])grid.Clone());
-                }
-                else
-                {
-                    System.Diagnostics.Debug.Assert(true);
-                }
+                }                
                 return true;
             }
             else
