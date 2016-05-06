@@ -174,6 +174,11 @@ namespace ACQ.Math.Interpolation
             }
         }
 
+        public Tuple<double, double> GetNode(int index)
+        {
+            return new Tuple<double, double>(m_x[index], m_y[index]);
+        }
+
         #endregion Public Methods
 
         #region Protected Methods
