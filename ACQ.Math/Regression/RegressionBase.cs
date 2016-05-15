@@ -17,6 +17,6 @@ namespace ACQ.Math.Regression
 
     public interface IRegressionSummary
     {
-        Dictionary<string, double> Summary();
+        Dictionary<string, double> Summary { get; }
     }
 }

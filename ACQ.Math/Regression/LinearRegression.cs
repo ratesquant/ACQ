@@ -5,11 +5,19 @@ using System.Text;
 
 namespace ACQ.Math.Regression
 {
-    public class LinearRegression : IRegression, IRegressionSummary
+    public class LinearRegression : IRegression, IRegressionSummary, IRegressionParam
     {
         readonly bool m_intercept;
+        readonly string[] m_names;
+
+        //paramaters
         double[] m_coeffs;
         double[] m_coeffs_stderr;
+        
+        
+        int m_observations;
+
+        Dictionary<string, double> m_summary;   
 
         /// <summary>
         /// 1D constructor
@@ -34,6 +42,15 @@ namespace ACQ.Math.Regression
 
             m_intercept = intercept;
 
+            //init variable names
+            m_names = new string[1 + (m_intercept ? 1 : 0)];
+            m_names[0] = "c1";
+
+            if (m_intercept)
+            {
+                m_names[1] = "(intercept)";
+            }
+
             Math.Linalg.Matrix A = null;
 
             int n = x.Length;
@@ -55,7 +72,7 @@ namespace ACQ.Math.Regression
                 A = new Linalg.Matrix(x, false);
             }  
 
-            Init(A, y, w);
+            compute_coefficients(A, y, w);
         }
 
         public LinearRegression(double[,] x, double[] y, double[] w, bool intercept)
@@ -64,15 +81,74 @@ namespace ACQ.Math.Regression
             {
                 throw new ArgumentException("LinearRegression: check input arguments");
             }
-
-            bool use_weights = (w != null);
-
-            if (use_weights && w.Length != y.Length)
+            
+            if ((w != null) && w.Length != y.Length)
             {
                 throw new ArgumentException("LinearRegression: array of weights should have the same length");
             }
 
             m_intercept = intercept;
+
+            //init variable names
+            int m = x.GetLength(1);            
+            
+            m_names = new string[m + (m_intercept ? 1 : 0)];
+
+            for (int j = 0; j < m; j++)
+            {
+                m_names[j] = String.Format("c{0}", j + 1);
+            }
+
+            if (m_intercept)
+            {
+                m_names[m] = "(intercept)";
+            }
+
+            compute_regression(x, y, w);
+        }        
+
+        public double Estimate(params double[] x)
+        {
+            double result = Double.NaN;
+
+            if(x != null)
+            {
+                if (x.Length + (m_intercept ? 1 : 0) == m_coeffs.Length)
+                {
+                    double sum = m_intercept ? m_coeffs[m_coeffs.Length - 1] : 0.0;
+
+                    for (int i = 0; i < x.Length; i++)
+                    {
+                        sum += m_coeffs[i] * x[i];
+                    }
+                    result = sum;                    
+                }
+            }
+            return result;
+        }
+
+        public Dictionary<string, double> Summary
+        {
+            get
+            {
+                return m_summary;
+            }
+        }
+
+        public double GetParam(string name)
+        {
+            double value ;
+
+            if (!m_summary.TryGetValue(name, out value))
+            {
+                value = Double.NaN;
+            }
+            return value;
+        }
+
+        private void compute_regression(double[,] x, double[] y, double[] w)
+        {
+            int m = x.GetLength(1);
 
             Math.Linalg.Matrix A = null;
 
@@ -80,8 +156,6 @@ namespace ACQ.Math.Regression
 
             if (m_intercept)
             {
-                int m = x.GetLength(1);
-
                 A = new Linalg.Matrix(n, m + 1);
 
                 for (int i = 0; i < n; i++)
@@ -98,10 +172,10 @@ namespace ACQ.Math.Regression
                 A = new Linalg.Matrix(x, false);
             }
 
-            Init(A, y, w);
+            compute_coefficients(A, y, w);
         }
 
-        private void Init(Linalg.Matrix A, double[] y, double[] w)
+        private void compute_coefficients(Linalg.Matrix A, double[] y, double[] w)
         {
             Linalg.Matrix b = new Linalg.Matrix(y, false);
 
@@ -125,17 +199,19 @@ namespace ACQ.Math.Regression
             double tss = Math.Stats.SumOfSquaredDev(y, w);
             double rss = Math.Stats.SumOfSquaredDev(residuals.RowPackedData());
 
+            m_observations = A.Rows;
             m_coeffs = coeffs.RowPackedData();
 
-            int n = A.Rows;
-            int dof = n - m_coeffs.Length;
-            m_coeffs_stderr = new double[m_coeffs.Length]; //coefficient standard errors
+            int p = m_coeffs.Length;
+            int n = m_observations;
+            int dof = n - p;
+            m_coeffs_stderr = new double[p]; //coefficient standard errors
 
-            double stderr = rss / dof; //residual sum of squares
+            double stderr = System.Math.Sqrt( rss / dof ); //residual sum of squares
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < p; i++)
             {
-                m_coeffs_stderr[i] = System.Math.Sqrt(cov[i, i] * stderr);
+                m_coeffs_stderr[i] = stderr * System.Math.Sqrt(cov[i, i]);
             }
 
             double r2 = 1.0 - rss / tss;
@@ -146,34 +222,29 @@ namespace ACQ.Math.Regression
             //t-value is m_coeffs/m_coeffs_stderr
             //pvalue 
             //Math.Special.incbet(0.5 * dof , 0.5 * m_dof / (dof + t * t))  
-        }
 
-        public double Estimate(params double[] x)
-        {
-            double result = Double.NaN;
+            //generate summary
+            m_summary = new Dictionary<string, double>();
 
-            if(x != null)
+            m_summary["n"] = m_observations;
+            m_summary["p"] = m_coeffs.Length;
+            m_summary["dof"] = dof;
+            m_summary["stderr"] = stderr;
+            m_summary["rss"] = rss;
+            m_summary["tss"] = tss;
+            m_summary["r2"] = r2;
+            m_summary["r2_adj"] = r2_adj;
+            m_summary["fvalue"] = fvalue;
+            m_summary["aic"] = aic;            
+
+            for (int i = 0; i < p; i++)
             {
-                if (x.Length + (m_intercept ? 1 : 0) == m_coeffs.Length)
-                {
-                    double sum = m_intercept ? m_coeffs[m_coeffs.Length - 1] : 0.0;
-
-                    for (int i = 0; i < x.Length; i++)
-                    {
-                        sum += m_coeffs[i] * x[i];
-                    }
-                }
+                m_summary[m_names[i]] = m_coeffs[i];
+                m_summary[m_names[i] + "_se"] = m_coeffs_stderr[i];
+                m_summary[m_names[i] + "_tvalue"] = m_coeffs[i] / m_coeffs_stderr[i];
             }
-            return result;
-        }
 
-        public Dictionary<string, double> Summary()
-        {
-            Dictionary<string, double> summary = new Dictionary<string, double>();
-
-            summary["Pi"] = System.Math.PI;
-
-            return summary;
+            m_summary["intercept"] = m_intercept ? 1.0 : 0.0;
         }
     }
 }
