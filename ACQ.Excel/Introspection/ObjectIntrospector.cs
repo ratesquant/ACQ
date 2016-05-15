@@ -267,7 +267,7 @@ namespace ACQ.Excel.Introspection
 
         private static DataTable ToDataTable(ACQ.Math.Regression.IRegressionSummary regression)
         {
-            return ToDataTable(regression.Summary());
+            return ToDataTable(regression.Summary);
         }
 
         private static DataTable ToDataTable(Dictionary<string, double> dict)

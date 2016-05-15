@@ -11,8 +11,7 @@ namespace ACQ.Excel.Objects
     public class ExcelRegression
     {
         private static readonly object m_sync = new object();
-        private static readonly string m_tag = "#acqRegression";
-        private static readonly string m_tag_summary = "#acqRegressionSummary";
+        private static readonly string m_tag = "#acqRegression";        
 
         [ExcelFunction(Description = "Create lowess smoother, locally-weighted linear regression", Category = AddInInfo.Category)]
         public static object acq_regression_lowess_create(
@@ -60,7 +59,7 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Estimate Regression value at specified point", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Estimate Regression value at specified point", Category = AddInInfo.Category,IsThreadSafe = true)]
         public static object acq_regression_estimate(
             [ExcelArgument(Description = "Regression object")] string handle, double[] x)
         {
@@ -80,7 +79,7 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Extract regression parameters", Category = AddInInfo.Category)]
+        [ExcelFunction(Description = "Extract regression parameters", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_regression_param(
             [ExcelArgument(Description = "Regression object")] string handle,
             [ExcelArgument(Description = "Parameter name")] string name)
@@ -100,7 +99,7 @@ namespace ACQ.Excel.Objects
                 return ExcelError.ExcelErrorRef;
             }
         }
-
+        /* //not needed
         [ExcelFunction(Description = "Regression summary", Category = AddInInfo.Category)]
         public static object acq_regression_summary(
             [ExcelArgument(Description = "Regression object")] string handle)
@@ -109,7 +108,7 @@ namespace ACQ.Excel.Objects
             Tuple<bool, Dictionary<string, double>> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegressionSummary, Dictionary<string, double>>(handle,
                 (regression) =>
                 {
-                    return regression.Summary();
+                    return regression.Summary;
                 });
 
             if (results.Item1)
@@ -124,7 +123,7 @@ namespace ACQ.Excel.Objects
             {
                 return ExcelError.ExcelErrorRef;
             }
-        }
+        }*/
 
         [ExcelFunction(Description = "Lowess smoother, locally-weighted linear regression", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_regression_lowess(
@@ -171,17 +170,20 @@ namespace ACQ.Excel.Objects
         [ExcelFunction(Description = "Create Linear Regression", Category = AddInInfo.Category)]
         public static object acq_regression_linear_create(
             [ExcelArgument(Description = "Array of nodes")] double[,] x,
-            [ExcelArgument(Description = "Array of values")]  double[] y)
+            [ExcelArgument(Description = "Array of values")]  double[] y,
+            [ExcelArgument(Description = "Intercept, optional(default=true)")]  object intercept)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
                 return ExcelError.ExcelErrorRef;
             else
             {
 
-                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, "acq_regression_linear_create" },
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, intercept, "acq_regression_linear_create" },
                    (objectType, parameters) =>
                    {
-                       ACQ.Math.Regression.LinearRegression regression = new Math.Regression.LinearRegression(x, y, null, true);
+                       bool include_intercept = ExcelHelper.CheckValue(intercept, true);
+
+                       ACQ.Math.Regression.LinearRegression regression = new Math.Regression.LinearRegression(x, y, null, include_intercept);
 
                        if (regression == null)
                            return ExcelError.ExcelErrorNull;

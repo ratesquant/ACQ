@@ -25,7 +25,7 @@ namespace ACQ.Excel.Objects
         }
 
         [ExcelFunction(Description = "Create Numeric Dictionary Object", Category = AddInInfo.Category)]
-        public static object acq_numdict_create(string[] keys, double[] values)
+        public static object acq_numdict_create(object[] keys, double[] values)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
             {
@@ -44,7 +44,7 @@ namespace ACQ.Excel.Objects
 
                         for (int i = 0; i < keys.Length; i++)
                         {
-                            dict[keys[i]] = values[i];
+                            dict[keys[i].ToString()] = values[i];
                         }
 
                         return dict;
