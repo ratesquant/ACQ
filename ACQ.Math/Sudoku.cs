@@ -50,8 +50,7 @@ namespace ACQ.Math
 
         public static int[,] Generate(int seed)
         {
-            int i, k;
-            int x, y;        
+            int i, k;   
 
             int[,] grid = new int[m_size, m_size];
 
