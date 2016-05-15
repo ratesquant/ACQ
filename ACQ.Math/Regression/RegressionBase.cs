@@ -7,15 +7,16 @@ namespace ACQ.Math.Regression
 {
     public interface IRegression
     {
-        double Estimate(double[] x);
+        double Estimate(params double[] x);
     }
 
-    enum enRegressionResults
+    public interface IRegressionParam
     {
- 
+        double GetParam(string name);
     }
 
-    public abstract class RegressionBase
+    public interface IRegressionSummary
     {
+        Dictionary<string, double> Summary();
     }
 }

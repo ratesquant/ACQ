@@ -81,6 +81,7 @@
     <Compile Include="Random\BoxMuller.cs" />
     <Compile Include="Random\RandomBase.cs" />
     <Compile Include="Regression\KernelRegression.cs" />
+    <Compile Include="Regression\Lars.cs" />
     <Compile Include="Regression\LinearRegression.cs" />
     <Compile Include="Regression\Lowess.cs" />
     <Compile Include="Regression\RegressionBase.cs" />

@@ -28,7 +28,7 @@ namespace ACQ.Math.Regression
     /// Lowess regression, adapted from R source code,http://svn.r-project.org/R/trunk/src/library/stats/src/lowess.c
     /// it attempts to faithfully reporoduce R code without any "improvements" 
     /// </summary>
-    public class Lowess
+    public class Lowess : IRegression
     {
         ACQ.Math.Interpolation.LinearInterpolation m_interpolator;
 
@@ -130,9 +130,9 @@ namespace ACQ.Math.Regression
             }
         }
 
-        public double Eval(double xp)
+        public double Estimate(params double[] xp)
         {
-            double result = m_interpolator.Eval(xp);
+            double result = m_interpolator.Eval(xp[0]);
             return result;
         }
 

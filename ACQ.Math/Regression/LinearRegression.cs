@@ -5,12 +5,19 @@ using System.Text;
 
 namespace ACQ.Math.Regression
 {
-    public class LinearRegression
+    public class LinearRegression : IRegression, IRegressionSummary
     {
         readonly bool m_intercept;
         double[] m_coeffs;
         double[] m_coeffs_stderr;
 
+        /// <summary>
+        /// 1D constructor
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="w"></param>
+        /// <param name="intercept"></param>
         public LinearRegression(double[] x, double[] y, double[] w, bool intercept)
         {
             if (x == null || y == null || x.Length != y.Length)            
@@ -40,13 +47,56 @@ namespace ACQ.Math.Regression
                 for (int i = 0; i < n; i++)
                 {
                     A[i, 0] = x[0];
-                    A[i, 0] = 1.0;
+                    A[i, 1] = 1.0; //intercept
                 }
             }
             else
             {
                 A = new Linalg.Matrix(x, false);
             }  
+
+            Init(A, y, w);
+        }
+
+        public LinearRegression(double[,] x, double[] y, double[] w, bool intercept)
+        {
+            if (x == null || y == null || x.GetLength(0) != y.Length)
+            {
+                throw new ArgumentException("LinearRegression: check input arguments");
+            }
+
+            bool use_weights = (w != null);
+
+            if (use_weights && w.Length != y.Length)
+            {
+                throw new ArgumentException("LinearRegression: array of weights should have the same length");
+            }
+
+            m_intercept = intercept;
+
+            Math.Linalg.Matrix A = null;
+
+            int n = x.GetLength(0);
+
+            if (m_intercept)
+            {
+                int m = x.GetLength(1);
+
+                A = new Linalg.Matrix(n, m + 1);
+
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < m; j++)
+                    {
+                        A[i, j] = x[i, j];
+                    }
+                    A[i, m] = 1.0;
+                }
+            }
+            else
+            {
+                A = new Linalg.Matrix(x, false);
+            }
 
             Init(A, y, w);
         }
@@ -98,7 +148,7 @@ namespace ACQ.Math.Regression
             //Math.Special.incbet(0.5 * dof , 0.5 * m_dof / (dof + t * t))  
         }
 
-        public double Estimate(double[] x)
+        public double Estimate(params double[] x)
         {
             double result = Double.NaN;
 
@@ -115,6 +165,15 @@ namespace ACQ.Math.Regression
                 }
             }
             return result;
+        }
+
+        public Dictionary<string, double> Summary()
+        {
+            Dictionary<string, double> summary = new Dictionary<string, double>();
+
+            summary["Pi"] = System.Math.PI;
+
+            return summary;
         }
     }
 }

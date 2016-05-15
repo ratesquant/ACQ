@@ -97,6 +97,12 @@ namespace ACQ.Math.Linalg
             return m_l.Clone();            
         }
 
+        public Matrix Solve(double[] b)
+        {
+            Matrix B = new Matrix(b, false);
+            return Solve(B);
+        }
+
         /// <summary>Solves a set of equation systems of type A * X = B.</summary>
         /// <param name="B">Right hand side matrix with as many rows as A and any number of columns.</param>
         /// <returns>Matrix X so that L * L' * X = B.</returns>

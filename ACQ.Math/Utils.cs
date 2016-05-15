@@ -93,6 +93,27 @@ namespace ACQ.Math
         #endregion
 
         #region Generic Routines
+        public static Tuple<T, int> MinIndex<T>(params T[] a) where T : IComparable<T>
+        {
+            if (a == null || a.Length == 0)
+            {
+                throw new ArgumentNullException();
+            }
+
+            int index = 0;
+            T min = a[0];
+
+            for (int i = 1; i < a.Length; i++)
+            {
+                if (min.CompareTo(a[i]) > 0)
+                {
+                    min = a[i];
+                    index = i;
+                }
+            }
+            return new Tuple<T, int>(min, index);                    
+        }
+
         public static T Min<T>(params T[] a) where T : IComparable<T>
         {
             if (a == null || a.Length == 0)
@@ -109,8 +130,10 @@ namespace ACQ.Math
                     min = a[i];
                 }
             }
-            return min;                    
+            return min;
         }
+
+
         public static T Max<T>(params T[] a) where T : IComparable<T>
         {
             if (a == null || a.Length == 0)
@@ -128,6 +151,37 @@ namespace ACQ.Math
                 }
             }
             return max;
+        }
+
+        public static Tuple<T, bool> MinBound<T>(T bound, params T[] a) where T : IComparable<T>
+        {
+            if (a == null || a.Length == 0)
+            {
+                throw new ArgumentNullException();
+            }
+
+            bool first = true;
+
+            T min = default(T); //this value will not be used 
+
+            for (int i = 0; i < a.Length; i++)
+            {
+                T value = a[i];
+
+                if (value.CompareTo(bound) > 0) //if value > bound
+                {
+                    if (first)
+                    {
+                        min = value;
+                        first = false;
+                    }else if (value.CompareTo(min) < 0) // if value < min
+                    {
+                        min = value;
+                    }
+                }
+            }
+            
+            return new Tuple<T,bool>(min, !first);
         }
 
         public static void Bound<T>(T[] a, T min, T max) where T : IComparable<T>
