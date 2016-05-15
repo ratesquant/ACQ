@@ -61,6 +61,7 @@
     <Compile Include="Introspection\ObjectIntrospector.cs" />
     <Compile Include="MathUtils.cs" />
     <Compile Include="Objects\ExcelArray.cs" />
+    <Compile Include="Objects\ExcelNumDictionary.cs" />
     <Compile Include="Objects\ExcelHashtable.cs" />
     <Compile Include="Objects\ExcelInterpolator.cs" />
     <Compile Include="Objects\ExcelInterpolator2D.cs" />
@@ -105,7 +106,8 @@ copy ACQ.Excel.dna ACQ.Excel32.dna
 "$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel32.dna /Y /O ACQ32.xll
 copy ACQ64.xll $(ProjectDir)\..\Distribution\
 copy ACQ32.xll $(ProjectDir)\..\Distribution\
-copy $(ProjectDir)\Demo.xlsx $(ProjectDir)\..\Distribution\</PostBuildEvent>
+copy $(ProjectDir)\Demo.Interpolation.xlsx $(ProjectDir)\..\Distribution\
+copy $(ProjectDir)\Demo.Regression.xlsx $(ProjectDir)\..\Distribution\</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

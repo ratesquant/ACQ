@@ -7,6 +7,9 @@ using ExcelDna.Integration;
 
 namespace ACQ.Excel.Objects
 {
+    /// <summary>
+    /// Array of objects
+    /// </summary>
     public class ExcelArray
     {
         private static readonly string m_tag = "#acqArray";

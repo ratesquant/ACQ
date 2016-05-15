@@ -8,11 +8,11 @@ using ExcelDna.Logging;
 
 namespace ACQ.Excel.Objects
 {
-
     public class ExcelRegression
     {
         private static readonly object m_sync = new object();
         private static readonly string m_tag = "#acqRegression";
+        private static readonly string m_tag_summary = "#acqRegressionSummary";
 
         [ExcelFunction(Description = "Create lowess smoother, locally-weighted linear regression", Category = AddInInfo.Category)]
         public static object acq_regression_lowess_create(
@@ -40,19 +40,85 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Evaluate lowess smoother at specified point", Category = AddInInfo.Category)]
-        public static object acq_regression_lowess_eval(
-            [ExcelArgument(Description = "Lowess object")] string handle, double x)
+        [ExcelFunction(Description = "Estimate Regression value at specified point", Category = AddInInfo.Category)]
+        public static object acq_regression_estimate1d(
+            [ExcelArgument(Description = "Regression object")] string handle, double x)
         {
-            Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.Lowess, double, double>(handle, 
-                (lowess, point) =>
+            Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegression, double, double>(handle, 
+                (regression, point) =>
             {
-                return lowess.Eval(point);
+                return regression.Estimate(point);
             }, x);
 
             if (results.Item1)
             {
                 return ExcelHelper.CheckNan(results.Item2);
+            }
+            else
+            {
+                return ExcelError.ExcelErrorRef;
+            }
+        }
+
+        [ExcelFunction(Description = "Estimate Regression value at specified point", Category = AddInInfo.Category)]
+        public static object acq_regression_estimate(
+            [ExcelArgument(Description = "Regression object")] string handle, double[] x)
+        {
+            Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegression, double, double[]>(handle,
+                (regression, point) =>
+                {
+                    return regression.Estimate(point);
+                }, x);
+
+            if (results.Item1)
+            {
+                return ExcelHelper.CheckNan(results.Item2);
+            }
+            else
+            {
+                return ExcelError.ExcelErrorRef;
+            }
+        }
+
+        [ExcelFunction(Description = "Extract regression parameters", Category = AddInInfo.Category)]
+        public static object acq_regression_param(
+            [ExcelArgument(Description = "Regression object")] string handle,
+            [ExcelArgument(Description = "Parameter name")] string name)
+        {
+            Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegressionParam, double, string>(handle,
+                (regression, param_name) =>
+                {
+                    return regression.GetParam(param_name);
+                }, name);
+
+            if (results.Item1)
+            {
+                return ExcelHelper.CheckNan(results.Item2);
+            }
+            else
+            {
+                return ExcelError.ExcelErrorRef;
+            }
+        }
+
+        [ExcelFunction(Description = "Regression summary", Category = AddInInfo.Category)]
+        public static object acq_regression_summary(
+            [ExcelArgument(Description = "Regression object")] string handle)
+        {
+            //extract regression summary
+            Tuple<bool, Dictionary<string, double>> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegressionSummary, Dictionary<string, double>>(handle,
+                (regression) =>
+                {
+                    return regression.Summary();
+                });
+
+            if (results.Item1)
+            {                
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag_summary, new object[] { handle, "acq_regression_summary" },
+                   (objectType, parameters) =>
+                   {
+                       return results.Item2;                    
+                   });
             }
             else
             {
@@ -74,7 +140,54 @@ namespace ACQ.Excel.Objects
             {   
                 ACQ.Math.Regression.Lowess lowess = construct_lowess(x, y, span, nsteps, delta);
 
-                return ExcelHelper.CheckNan(lowess.Eval(xp));
+                return ExcelHelper.CheckNan(lowess.Estimate(xp));
+            }
+        }
+
+
+        [ExcelFunction(Description = "Create Least Angle Regression (LARS)", Category = AddInInfo.Category)]
+        public static object acq_regression_lars_create(
+            [ExcelArgument(Description = "Array of nodes")] double[,] x,
+            [ExcelArgument(Description = "Array of values")]  double[] y)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+            else
+            {
+
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, "acq_regression_lars_create" },
+                   (objectType, parameters) =>
+                   {
+                       ACQ.Math.Regression.Lars lars = new Math.Regression.Lars(x, y);
+
+                       if (lars == null)
+                           return ExcelError.ExcelErrorNull;
+                       else
+                           return lars;
+                   });
+            }
+        }
+
+        [ExcelFunction(Description = "Create Linear Regression", Category = AddInInfo.Category)]
+        public static object acq_regression_linear_create(
+            [ExcelArgument(Description = "Array of nodes")] double[,] x,
+            [ExcelArgument(Description = "Array of values")]  double[] y)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+            else
+            {
+
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, "acq_regression_linear_create" },
+                   (objectType, parameters) =>
+                   {
+                       ACQ.Math.Regression.LinearRegression regression = new Math.Regression.LinearRegression(x, y, null, true);
+
+                       if (regression == null)
+                           return ExcelError.ExcelErrorNull;
+                       else
+                           return regression;
+                   });
             }
         }
 

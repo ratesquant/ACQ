@@ -265,6 +265,42 @@ namespace ACQ.Excel.Introspection
             return table;
         }
 
+        private static DataTable ToDataTable(ACQ.Math.Regression.IRegressionSummary regression)
+        {
+            return ToDataTable(regression.Summary());
+        }
+
+        private static DataTable ToDataTable(Dictionary<string, double> dict)
+        {
+            DataTable table = new DataTable(dict.GetType().ToString());
+
+            DataColumn column;
+            DataRow row;
+
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.String");
+            column.ColumnName = "key";
+            column.ReadOnly = true;
+            table.Columns.Add(column);
+
+            column = new DataColumn();
+            column.DataType = System.Type.GetType("System.Double");
+            column.ColumnName = "value";
+            column.ReadOnly = true;
+            table.Columns.Add(column);
+
+            // Create three new DataRow objects and add 
+            // them to the DataTable
+            foreach (KeyValuePair<string, double> pair in dict)
+            {
+                row = table.NewRow();
+                row["key"] = pair.Key;
+                row["value"] = pair.Value;
+                table.Rows.Add(row);
+            }
+            return table;
+        }
+
         private static DataTable ToDataTable(object[] array)
         {
             DataTable table = new DataTable(array.GetType().ToString());
