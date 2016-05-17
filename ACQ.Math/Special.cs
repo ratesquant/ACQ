@@ -45,6 +45,10 @@ namespace ACQ.Math
         private const double LOGPI = 1.14472988584940017414;
         private const double LS2PI = 0.91893853320467274178;// log( sqrt( 2*pi ) )
         private const double MAXLGM = 2.556348e305;
+
+        private const double big = 4.503599627370496e15;
+        private const double biginv =  2.22044604925031308085e-16;
+
         #endregion 
 
         #region polycoeffs
@@ -305,19 +309,19 @@ namespace ACQ.Math
             const double MAXSTIR = 143.01608;
 
             double w = 1.0 / x;
-            double y = System.Math.Exp(x);
+            double y = exp(x);
 
             w = 1.0 + w * polevl(w, m_gamma_STIR, 4);
 
             if (x > MAXSTIR)
             {
                 // Avoid overflow in Math.Pow() 
-                double v = System.Math.Pow(x, 0.5 * x - 0.25);
+                double v = pow(x, 0.5 * x - 0.25);
                 y = v * (v / y);
             }
             else
             {
-                y = System.Math.Pow(x, x - 0.5) / y;
+                y = pow(x, x - 0.5) / y;
             }
             y = SQTPI * y * w;
             return y;
@@ -347,14 +351,14 @@ namespace ACQ.Math
                 return 1.0 - igam(a, x);
             }
 
-            ax = a * System.Math.Log(x) - x - lgam(a);
+            ax = a * log(x) - x - lgam(a);
 
             if (ax < -MAXLOG)
             {
                 return 0.0;//UNDERFLOW 
             }
 
-            ax = System.Math.Exp(ax);
+            ax = exp(ax);
 
             // continued fraction 
             y = 1.0 - a;
@@ -387,7 +391,7 @@ namespace ACQ.Math
                 pkm1 = pk;
                 qkm2 = qkm1;
                 qkm1 = qk;
-                if (System.Math.Abs(pk) > big)
+                if (fabs(pk) > big)
                 {
                     pkm2 *= biginv;
                     pkm1 *= biginv;
@@ -418,13 +422,13 @@ namespace ACQ.Math
             }
 
             // Compute  x**a * exp(-x) / gamma(a)  
-            ax = a * System.Math.Log(x) - x - lgam(a);
+            ax = a * log(x) - x - lgam(a);
             if (ax < -MAXLOG)
             {
                 return (0.0);
             }
 
-            ax = System.Math.Exp(ax);
+            ax = exp(ax);
 
             // power series 
             r = a;
@@ -481,7 +485,7 @@ namespace ACQ.Math
                 {
                     return Double.PositiveInfinity;
                 }
-                z = LOGPI - System.Math.Log(z) - w;
+                z = LOGPI - log(z) - w;
                 return z;
             }
 
@@ -511,14 +515,14 @@ namespace ACQ.Math
 
                 if (x == 2.0)
                 {
-                    return System.Math.Log(z);
+                    return log(z);
                 }
 
                 x -= 2.0;
                 x = x + p;
                 p = x * polevl(x, m_gamma_B, 5) / p1evl(x, m_gamma_C, 6);
 
-                return (System.Math.Log(z) + p);
+                return (log(z) + p);
             }
 
             if (x > MAXLGM)
@@ -526,7 +530,7 @@ namespace ACQ.Math
                 return Double.NaN; //Double.PositiveInfinity : Double.NegativeInfinity;
             }
 
-            q = (x - 0.5) * System.Math.Log(x) - x + LS2PI;
+            q = (x - 0.5) * log(x) - x + LS2PI;
             if (x > 1.0e8)
             {
                 return (q);
@@ -598,7 +602,7 @@ namespace ACQ.Math
             double x, y, z;
 
             x = a * SQRTH;
-            z = System.Math.Abs(x);
+            z = fabs(x);
 
             if (z < 1.0) //if( z < SQRTH  ) ?
             {
@@ -645,7 +649,7 @@ namespace ACQ.Math
                     return 0.0;
             }
 
-            z =  System.Math.Exp(z); // Special.expx2(a, -1);
+            z =  exp(z); // Special.expx2(a, -1);
 
             if (x < 8.0)
             {
@@ -686,7 +690,7 @@ namespace ACQ.Math
         {
             double y, z;
 
-            if (System.Math.Abs(x) > 1.0)
+            if (fabs(x) > 1.0)
             {
                 return (1.0 - erfc(x));
             }
@@ -708,7 +712,7 @@ namespace ACQ.Math
 
             double u, u1, m, f;
             
-            x = System.Math.Abs (x);
+            x = fabs (x);
 
             if (sign < 0)
             {
@@ -737,12 +741,357 @@ namespace ACQ.Math
             }
 
             // u is exact, u1 is small.  
-            u = System.Math.Exp(u) * System.Math.Exp(u1);
+            u = exp(u) * exp(u1);
             return(u);
         }
         #endregion 
 
+        #region incbet
+        /// <summary>
+        /// Incomplete beta integral
+        /// </summary>
+        /// <param name="aa"></param>
+        /// <param name="bb"></param>
+        /// <param name="xx"></param>
+        /// <returns></returns>
+        public static double incbet(double aa, double bb, double xx )
+        {
+            double a, b, t, x, xc, w, y;
+            int flag;
+
+            if( aa <= 0.0 || bb <= 0.0 )
+                return( 0.0 );
+
+            if( (xx <= 0.0) || ( xx >= 1.0) )
+            {
+                if( xx == 0.0 )
+                    return(0.0);
+                if( xx == 1.0 )
+                    return( 1.0 );
+                return( 0.0 );
+            }
+            
+            flag = 0;
+            if( (bb * xx) <= 1.0 && xx <= 0.95)
+            {
+                t = pseries(aa, bb, xx);
+                return t;
+            }
+
+            w = 1.0 - xx;
+
+            // Reverse a and b if x is greater than the mean. 
+            if( xx > (aa/(aa+bb)) )
+            {
+                flag = 1;
+                a = bb;
+                b = aa;
+                xc = xx;
+                x = w;
+            }
+            else
+            {
+                a = aa;
+                b = bb;
+                xc = w;
+                x = xx;
+            }
+
+            if( flag == 1 && (b * x) <= 1.0 && x <= 0.95)
+            {
+                t = pseries(a, b, x);
+                if( t <= MACHEP )
+                    t = 1.0 - MACHEP;
+                else
+                    t = 1.0 - t;
+                return( t );
+            }
+
+            // Choose expansion for better convergence. 
+            y = x * (a+b-2.0) - (a-1.0);
+            if( y < 0.0 )
+                w = incbcf( a, b, x );
+            else
+                w = incbd( a, b, x ) / xc;
+            
+            // Multiply w by the factor
+            //a      b   _             _     _
+            //x  (1-x)   | (a+b) / ( a | (a) | (b) ) .   
+            y = a * log(x);
+            t = b * log(xc);
+            if( (a+b) < MAXGAM && fabs(y) < MAXLOG && fabs(t) < MAXLOG )
+            {
+                t = pow(xc,b);
+                t *= pow(x,a);
+                t /= a;
+                t *= w;
+                t *= gamma(a+b) / (gamma(a) * gamma(b));
+                
+                if (flag == 1)
+                {
+                    if (t <= MACHEP)
+                        t = 1.0 - MACHEP;
+                    else
+                        t = 1.0 - t;
+                }
+                return (t);
+
+            }
+            // Resort to logarithms. 
+            y += t + lgam(a+b) - lgam(a) - lgam(b);
+            y += log(w/a);
+            if( y < MINLOG )
+                t = 0.0;
+            else
+                t = exp(y);
+            
+            if( flag == 1 )
+            {
+                if( t <= MACHEP )
+                    t = 1.0 - MACHEP;
+                else
+                    t = 1.0 - t;
+            }
+            return( t );
+        }
+
+        /// <summary>
+        /// Continued fraction expansion #1 for incomplete beta integral
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static double incbcf(double a,double b, double x )
+        {
+            double xk, pk, pkm1, pkm2, qk, qkm1, qkm2;
+            double k1, k2, k3, k4, k5, k6, k7, k8;
+            double r, t, ans, thresh;
+            int n;
+
+            k1 = a;
+            k2 = a + b;
+            k3 = a;
+            k4 = a + 1.0;
+            k5 = 1.0;
+            k6 = b - 1.0;
+            k7 = k4;
+            k8 = a + 2.0;
+
+            pkm2 = 0.0;
+            qkm2 = 1.0;
+            pkm1 = 1.0;
+            qkm1 = 1.0;
+            ans = 1.0;
+            r = 1.0;
+            n = 0;
+            thresh = 3.0 * MACHEP;
+            do
+            {	
+                xk = -( x * k1 * k2 )/( k3 * k4 );
+                pk = pkm1 +  pkm2 * xk;
+                qk = qkm1 +  qkm2 * xk;
+                pkm2 = pkm1;
+                pkm1 = pk;
+                qkm2 = qkm1;
+                qkm1 = qk;
+
+                xk = ( x * k5 * k6 )/( k7 * k8 );
+                pk = pkm1 +  pkm2 * xk;
+                qk = qkm1 +  qkm2 * xk;
+                pkm2 = pkm1;
+                pkm1 = pk;
+                qkm2 = qkm1;
+                qkm1 = qk;
+
+                if( qk != 0 )
+                    r = pk/qk;
+                if( r != 0 )
+                {
+                    t = fabs( (ans - r)/r );
+                    ans = r;
+                }
+                else
+                    t = 1.0;
+
+                if( t < thresh )
+                   return ans;
+                
+                k1 += 1.0;
+                k2 += 1.0;
+                k3 += 2.0;
+                k4 += 2.0;
+                k5 += 1.0;
+                k6 -= 1.0;
+                k7 += 2.0;
+                k8 += 2.0;
+
+                if( (fabs(qk) + fabs(pk)) > big )
+                {
+                    pkm2 *= biginv;
+                    pkm1 *= biginv;
+                    qkm2 *= biginv;
+                    qkm1 *= biginv;
+                }
+                if( (fabs(qk) < biginv) || (fabs(pk) < biginv) )
+                {
+                    pkm2 *= big;
+                    pkm1 *= big;
+                    qkm2 *= big;
+                    qkm1 *= big;
+                }
+            }
+            while( ++n < 300 );            
+            return(ans);
+        }
+        /// <summary>
+        /// Continued fraction expansion #2 for incomplete beta integral
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static double incbd(double a, double b, double x )
+        {
+            double xk, pk, pkm1, pkm2, qk, qkm1, qkm2;
+            double k1, k2, k3, k4, k5, k6, k7, k8;
+            double r, t, ans, z, thresh;
+            int n;
+
+            k1 = a;
+            k2 = b - 1.0;
+            k3 = a;
+            k4 = a + 1.0;
+            k5 = 1.0;
+            k6 = a + b;
+            k7 = a + 1.0;
+            k8 = a + 2.0;
+
+            pkm2 = 0.0;
+            qkm2 = 1.0;
+            pkm1 = 1.0;
+            qkm1 = 1.0;
+            z = x / (1.0-x);
+            ans = 1.0;
+            r = 1.0;
+            n = 0;
+            thresh = 3.0 * MACHEP;
+            do
+            {
+                xk = -( z * k1 * k2 )/( k3 * k4 );
+                pk = pkm1 +  pkm2 * xk;
+                qk = qkm1 +  qkm2 * xk;
+                pkm2 = pkm1;
+                pkm1 = pk;
+                qkm2 = qkm1;
+                qkm1 = qk;
+                xk = ( z * k5 * k6 )/( k7 * k8 );
+                pk = pkm1 +  pkm2 * xk;
+                qk = qkm1 +  qkm2 * xk;
+                pkm2 = pkm1;
+                pkm1 = pk;
+                qkm2 = qkm1;
+                qkm1 = qk;
+
+                if( qk != 0 )
+                    r = pk/qk;
+                if( r != 0 )
+                {
+                    t = fabs( (ans - r)/r );
+                    ans = r;
+                }
+                else
+                    t = 1.0;
+
+                if( t < thresh )
+                    return (ans);
+
+                k1 += 1.0;
+                k2 -= 1.0;
+                k3 += 2.0;
+                k4 += 2.0;
+                k5 += 1.0;
+                k6 += 1.0;
+                k7 += 2.0;
+                k8 += 2.0;
+
+                if( (fabs(qk) + fabs(pk)) > big )
+                {
+                    pkm2 *= biginv;
+                    pkm1 *= biginv;
+                    qkm2 *= biginv;
+                    qkm1 *= biginv;
+                }
+                if( (fabs(qk) < biginv) || (fabs(pk) < biginv) )
+                {
+                    pkm2 *= big;
+                    pkm1 *= big;
+                    qkm2 *= big;
+                    qkm1 *= big;
+                }
+            }
+            while( ++n < 300 );
+            
+            return(ans);
+        }      
+        #endregion
+
         #region private functions
+        private static double fabs(double x)
+        {
+            return System.Math.Abs(x);
+        }
+        private static double exp(double x)
+        {
+            return System.Math.Exp(x);
+        }
+        private static double log(double x)
+        {
+            return System.Math.Log(x);
+        }
+        private static double pow(double x, double a)
+        {
+            return System.Math.Pow(x, a);
+        }
+        ///Power series for incomplete beta integral.  Use when b*x is small and x not too close to 1.
+        private static double pseries(double a, double b, double x)
+        {
+            double s, t, u, v, n, t1, z, ai;
+            ai = 1.0 / a;
+            u = (1.0 - b) * x;
+            v = u / (a + 1.0);
+            t1 = v;
+            t = u;
+            n = 2.0;
+            s = 0.0;
+            z = MACHEP * ai;
+            while (fabs(v) > z)
+            {
+                u = (n - b) * x / n;
+                t *= u;
+                v = t / (a + n);
+                s += v;
+                n += 1.0;
+            }
+            s += t1;
+            s += ai;
+
+            u = a * log(x);
+            if ((a + b) < MAXGAM && fabs(u) < MAXLOG)
+            {
+                t = gamma(a + b) / (gamma(a) * gamma(b));
+                s = s * t * pow(x, a);
+            }
+            else
+            {
+                t = lgam(a + b) - lgam(a) - lgam(b) + u + log(s);
+                if (t < MINLOG)
+                    s = 0.0;
+                else
+                    s = exp(t);
+            }
+            return (s);
+        }
         /// <summary>
         /// Evaluates polynomial of degree n
         /// </summary>
@@ -760,6 +1109,7 @@ namespace ACQ.Math
             return ans;
         }
 
+        /// <summary>
         /// Evaluates polynomial of degree n ( assumtion that coef[n] = 1.0)
         /// </summary>	
         private static double p1evl(double x, double[] coef, int n)
