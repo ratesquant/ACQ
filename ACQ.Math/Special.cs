@@ -167,7 +167,28 @@ namespace ACQ.Math
             if (x < 0.0 || df < 1.0) return 0.0;
 
             return igamc(df / 2.0, x / 2.0);
+        }
 
+        /// <summary>
+        /// Returns the sum of the first k terms of the Poisson distribution
+        /// </summary>
+        /// <param name="k"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static double poisson(int k, double x)
+        {
+            if (k < 0 || x < 0) 
+                return 0.0;
+
+            return igamc((double)(k + 1), x);
+        }
+
+        public static double poissonc(int k, double x)
+        {
+            if (k < 0 || x < 0) 
+                return 0.0;
+
+            return igam((double)(k + 1), x);
         }
 
         public static double fac(double x)
@@ -334,10 +355,7 @@ namespace ACQ.Math
         /// <param name="x"></param>
         /// <returns></returns>
         public static double igamc(double a, double x)
-        {
-            const double big = 4.503599627370496e15;
-            const double biginv = 2.22044604925031308085e-16;
-
+        {           
             double ans, ax, c, yc, r, t, y, z;
             double pk, pkm1, pkm2, qk, qkm1, qkm2;
 
@@ -445,14 +463,22 @@ namespace ACQ.Math
             return ans * ax / a;
         }
 
+        public static double lgam(double x)
+        {
+            int sgngam;
+            return lgam(x, out sgngam);
+        }
         /// <summary>
         /// Logarithm of gamma function
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        public static double lgam(double x)
+        public static double lgam(double x, out int sgngam)
         {
             double p, q, u, w, z;
+            int i;
+
+            sgngam = 1;
 
             if (Double.IsNaN(x))
             {
@@ -467,12 +493,18 @@ namespace ACQ.Math
             if (x < -34.0)
             {
                 q = -x;
-                w = lgam(q);
+                w = lgam(q, out sgngam);
                 p = System.Math.Floor(q);
                 if (p == q)
                 {
                     return Double.PositiveInfinity; //lgam: Overflow
                 }
+
+                i = (int)p;
+                if ((i & 1) == 0)
+                    sgngam = -1;
+                else
+                    sgngam = 1;
 
                 z = q - p;
                 if (z > 0.5)
@@ -494,13 +526,13 @@ namespace ACQ.Math
                 z = 1.0;
                 p = 0.0;
                 u = x;
-                while (x >= 3.0)
+                while (u >= 3.0)
                 {
                     p -= 1.0;
                     u = x + p;
                     z *= u;
                 }
-                while (x < 2.0)
+                while (u < 2.0)
                 {
                     if (x == 0.0)
                         return Double.PositiveInfinity;
@@ -510,15 +542,20 @@ namespace ACQ.Math
                 }
                 if (z < 0.0)
                 {
+                    sgngam = -1;
                     z = -z;
                 }
+                else
+                {
+                    sgngam = 1;
+                }
 
-                if (x == 2.0)
+                if (u == 2.0)
                 {
                     return log(z);
                 }
 
-                x -= 2.0;
+                p -= 2.0;
                 x = x + p;
                 p = x * polevl(x, m_gamma_B, 5) / p1evl(x, m_gamma_C, 6);
 
@@ -527,7 +564,7 @@ namespace ACQ.Math
 
             if (x > MAXLGM)
             {
-                return Double.NaN; //Double.PositiveInfinity : Double.NegativeInfinity;
+                return sgngam == 1 ? Double.PositiveInfinity : Double.NegativeInfinity;
             }
 
             q = (x - 0.5) * log(x) - x + LS2PI;
@@ -1050,7 +1087,7 @@ namespace ACQ.Math
             return System.Math.Log(x);
         }
         private static double pow(double x, double a)
-        {
+        {            
             return System.Math.Pow(x, a);
         }
         ///Power series for incomplete beta integral.  Use when b*x is small and x not too close to 1.
