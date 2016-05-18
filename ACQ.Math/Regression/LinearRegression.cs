@@ -194,10 +194,13 @@ namespace ACQ.Math.Regression
             }
             cov = sv.Cov();
 
-            Linalg.Matrix residuals = A * coeffs - b;
+            Linalg.Matrix fit = A * coeffs;
+            Linalg.Matrix residuals = fit - b;
 
-            double tss = Math.Stats.SumOfSquaredDev(y, w);
-            double rss = Math.Stats.SumOfSquaredDev(residuals.RowPackedData());
+
+            double mss = m_intercept ? Math.Stats.SumOfSquaredDev(fit.RowPackedData(), w) : Math.Stats.SumOfSquares(fit.RowPackedData());
+            double tss = m_intercept ? Math.Stats.SumOfSquaredDev(y, w) : Math.Stats.SumOfSquares(y);
+            double rss = Math.Stats.SumOfSquares(residuals.RowPackedData()); //without intercept residuals dont add up to zero
 
             m_observations = A.Rows;
             m_coeffs = coeffs.RowPackedData();
@@ -205,6 +208,8 @@ namespace ACQ.Math.Regression
             int p = m_coeffs.Length;
             int n = m_observations;
             int dof = n - p;
+            int dof_intercept = m_intercept ? 1 : 0;
+
             m_coeffs_stderr = new double[p]; //coefficient standard errors
 
             double stderr = System.Math.Sqrt( rss / dof ); //residual sum of squares
@@ -214,14 +219,10 @@ namespace ACQ.Math.Regression
                 m_coeffs_stderr[i] = stderr * System.Math.Sqrt(cov[i, i]);
             }
 
-            double r2 = 1.0 - rss / tss;
-            double r2_adj = 1.0 - (n - 1) * (1.0 - r2) / dof;
-            double fvalue = ((tss - rss) / (m_coeffs.Length - 1)) / (rss / dof);
+            double r2 = mss / (mss + rss);
+            double r2_adj = 1.0 - (n - dof_intercept) * (1.0 - r2) / dof;
+            double fvalue = (mss / (p - dof_intercept)) / (rss / dof);
             double aic = n + n * System.Math.Log(2 * System.Math.PI) + n * System.Math.Log(rss / n) + 2 * (m_coeffs.Length + 1); // sum(log(w))
-
-            //t-value is m_coeffs/m_coeffs_stderr
-            //pvalue 
-            //Math.Special.incbet(0.5 * dof , 0.5 * m_dof / (dof + t * t))  
 
             //generate summary
             m_summary = new Dictionary<string, double>();
@@ -232,6 +233,7 @@ namespace ACQ.Math.Regression
             m_summary["stderr"] = stderr;
             m_summary["rss"] = rss;
             m_summary["tss"] = tss;
+            m_summary["mss"] = mss;
             m_summary["r2"] = r2;
             m_summary["r2_adj"] = r2_adj;
             m_summary["fvalue"] = fvalue;
@@ -239,9 +241,15 @@ namespace ACQ.Math.Regression
 
             for (int i = 0; i < p; i++)
             {
-                m_summary[m_names[i]] = m_coeffs[i];
-                m_summary[m_names[i] + "_se"] = m_coeffs_stderr[i];
-                m_summary[m_names[i] + "_tvalue"] = m_coeffs[i] / m_coeffs_stderr[i];
+                double coef = m_coeffs[i];
+                double coef_std = m_coeffs_stderr[i];
+                double tvalue = coef / coef_std;
+                double pvalue = Math.Special.incbet(0.5 * dof, 0.5, dof / (dof + tvalue * tvalue));  
+
+                m_summary[m_names[i]] = coef;
+                m_summary[m_names[i] + "_se"] = coef_std;
+                m_summary[m_names[i] + "_tvalue"] = tvalue;
+                m_summary[m_names[i] + "_pvalue"] = pvalue;
             }
 
             m_summary["intercept"] = m_intercept ? 1.0 : 0.0;
