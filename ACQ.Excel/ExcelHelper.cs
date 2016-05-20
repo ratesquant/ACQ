@@ -53,6 +53,34 @@ namespace ACQ.Excel
             return result;
         }
 
+        internal static T[] CheckArray<T>(object value) where T : struct
+        {
+            T[] result = null;
+
+            object[,] array = value as object[,];
+
+            if (array != null)
+            {
+                try
+                {
+                    int n = array.GetLength(0);
+                    int m = array.GetLength(1);
+
+                    result = new T[n]; //TODO: convert first column, think about how to do it in more general way
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        result[i] = (T)array[i, 0];
+                    }
+                }catch(Exception e) //return null
+                {
+
+                }
+            }
+
+            return result;
+        }
+
         internal static T CheckEnum<T>(object value, T defaultValue) where T : struct, IConvertible
         {
             T result = defaultValue;

@@ -15,8 +15,8 @@ namespace ACQ.Excel.Objects
 
         [ExcelFunction(Description = "Create lowess smoother, locally-weighted linear regression", Category = AddInInfo.Category)]
         public static object acq_regression_lowess_create(
-            [ExcelArgument(Description = "Array of nodes")] double[] x,
-            [ExcelArgument(Description = "Array of values")]  double[] y,
+            [ExcelArgument(Description = "x")] double[] x,
+            [ExcelArgument(Description = "y")]  double[] y,
             [ExcelArgument(Description = "smoother span [0, 1] (optional, default 2/3)")] object span,
             [ExcelArgument(Description = "number of robust iterations (optional, default 3) ")] object nsteps,
             [ExcelArgument(Description = "regression step (optional)")] object delta)
@@ -127,8 +127,8 @@ namespace ACQ.Excel.Objects
 
         [ExcelFunction(Description = "Lowess smoother, locally-weighted linear regression", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_regression_lowess(
-            [ExcelArgument(Description = "Array of nodes")] double[] x,
-            [ExcelArgument(Description = "Array of values")]  double[] y, double xp,
+            [ExcelArgument(Description = "x")] double[] x,
+            [ExcelArgument(Description = "y")]  double[] y, double xp,
             [ExcelArgument(Description = "smoother span [0, 1] (optional, default 2/3)")] object span,
             [ExcelArgument(Description = "number of robust iterations (optional, default 3) ")] object nsteps,
             [ExcelArgument(Description = "regression step (optional)")] object delta)
@@ -146,8 +146,8 @@ namespace ACQ.Excel.Objects
 
         [ExcelFunction(Description = "Create Least Angle Regression (LARS)", Category = AddInInfo.Category)]
         public static object acq_regression_lars_create(
-            [ExcelArgument(Description = "Array of nodes")] double[,] x,
-            [ExcelArgument(Description = "Array of values")]  double[] y)
+            [ExcelArgument(Description = "x")] double[,] x,
+            [ExcelArgument(Description = "y")]  double[] y)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
                 return ExcelError.ExcelErrorRef;
@@ -169,21 +169,23 @@ namespace ACQ.Excel.Objects
 
         [ExcelFunction(Description = "Create Linear Regression", Category = AddInInfo.Category)]
         public static object acq_regression_linear_create(
-            [ExcelArgument(Description = "Array of nodes")] double[,] x,
-            [ExcelArgument(Description = "Array of values")]  double[] y,
-            [ExcelArgument(Description = "Intercept, optional(default=true)")]  object intercept)
+            [ExcelArgument(Description = "x")] double[,] x,
+            [ExcelArgument(Description = "y")]  double[] y,
+            [ExcelArgument(Description = "Intercept, optional(default=true)")]  object intercept,
+            [ExcelArgument(Description = "Weights, optional(default = none)")]  object weights)
         {
             if (ExcelDnaUtil.IsInFunctionWizard())
                 return ExcelError.ExcelErrorRef;
             else
             {
 
-                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, intercept, "acq_regression_linear_create" },
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, intercept, weights, "acq_regression_linear_create" },
                    (objectType, parameters) =>
                    {
                        bool include_intercept = ExcelHelper.CheckValue(intercept, true);
+                       double[] reg_weights = ExcelHelper.CheckArray<double>(weights);                     
 
-                       ACQ.Math.Regression.LinearRegression regression = new Math.Regression.LinearRegression(x, y, null, include_intercept);
+                       ACQ.Math.Regression.LinearRegression regression = new Math.Regression.LinearRegression(x, y, reg_weights, include_intercept);
 
                        if (regression == null)
                            return ExcelError.ExcelErrorNull;
