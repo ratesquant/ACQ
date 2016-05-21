@@ -55,6 +55,59 @@ namespace ACQ.Excel
             return ExcelError.ExcelErrorValue;
         }
 
+        [ExcelFunction(Description = "Returns next business day (doesn't use holiday calendar)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static DateTime acq_nextbusinessday(DateTime date)
+        {
+            DateTime businessday = date.AddDays(1);
+
+            while (IsHoliday(businessday))
+            {
+                businessday = businessday.AddDays(1);
+            }
+            return businessday;
+        }
+
+        [ExcelFunction(Description = "Returns previous business day (doesn't use holiday calendar)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static DateTime acq_prevbusinessday(DateTime date)
+        {
+            DateTime businessday = date.AddDays(-1);
+
+            while (IsHoliday(businessday))
+            {
+                businessday = businessday.AddDays(-1);
+            }
+            return businessday;
+        }
+
+        [ExcelFunction(Description = "Adjust to business day", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static DateTime acq_adjustbusinessday(DateTime date,
+            [ExcelArgument(Description = "Adjustment direction (-1, 1)")] object direction,
+            [ExcelArgument(Description = "Adjusted day should be in the same month")] object same_month)
+        {
+            int step = (int)ExcelHelper.CheckValue<double>(direction, 1); //default is next
+            bool mod = ExcelHelper.CheckValue<bool>(same_month, true); //default is true
+
+            DateTime businessday = date;           
+
+            while (IsHoliday(businessday))
+            {
+                businessday = businessday.AddDays(step);
+
+                if (mod && businessday.Month != date.Month)
+                {
+                    step = -step;
+                    businessday = date; //reset to start date, we know it is a holiday
+                }
+            }            
+
+            return businessday;
+        }
+
+        public static bool IsHoliday(DateTime date)
+        {
+            return date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
+        }
+
         public static DateTime IntToDate(int value)
         {
             int year = value / 10000;
