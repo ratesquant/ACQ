@@ -53,6 +53,38 @@ namespace ACQ.Excel.Objects
 
             }
         }
+        [ExcelFunction(Description = "Create Numeric Dictionary Object", Category = AddInInfo.Category)]
+        public static object acq_numdict_create_fake_data(string name)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+            {
+                return ExcelError.ExcelErrorRef;
+            }
+            else if (name == null)
+            {
+                return ExcelError.ExcelErrorRef;
+            }
+            else
+            {
+               return ACQ.Excel.Handles.GlobalCache.CreateHandle(Tag, new object[] { name, "acq_numdict_create_fake_data" },
+                    (objectType, parameters) =>
+                    {
+                        NumDictionary dict = new NumDictionary();
+
+                        System.Threading.Thread.Sleep(2000); //simulate loading from DB
+
+                        for (int i = 0; i < 100; i++)
+                        {
+
+                            dict[String.Format("{0}-{1}", name, i)] = i;
+                        }
+                        return dict;
+
+                    });
+           
+            }
+        }
+     
 
         [ExcelFunction(Description = "Get Dictionary element", Category = AddInInfo.Category)]
         public static object acq_dict_element(string handle, string key)

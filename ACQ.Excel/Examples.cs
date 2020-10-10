@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 using ExcelDna.Integration;
 
 namespace ACQ.Excel
@@ -120,6 +121,54 @@ namespace ACQ.Excel
         }
         #endregion
 
+        [ExcelFunction(Description = "acq_async_load_example", Category = AddInInfo.Category)]
+        public static object acq_async_load_example(string name)
+        {
+            object asyncResult = ExcelAsyncUtil.Run("AsyncLoadExample", name,
+                delegate()
+                {
+                    System.Threading.Thread.Sleep(2000);
+                    return String.Format("{0} was loaded",name);
+                });
+
+            if (asyncResult.Equals(ExcelError.ExcelErrorNA))
+            {
+                return ExcelError.ExcelErrorGettingData;
+            }
+            return asyncResult;
+        }
+
+        [ExcelFunction(Description = "acq_async_load_example2", Category = AddInInfo.Category)]
+        public static void acq_async_load_example2(string name, ExcelAsyncHandle asyncHandle)
+        {
+            int managedThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            System.Threading.ThreadPool.QueueUserWorkItem(delegate(object state)
+            {
+                System.Threading.Thread.Sleep(2000);
+                int completedThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+
+                asyncHandle.SetResult(String.Format("{0} was loaded", name));
+            });
+        }
+
+        /*
+        [ExcelFunction(Description = "acq_async_load_example3", Category = AddInInfo.Category)]
+        public static object acq_async_load_example3(string name)
+        {
+            var callingCell = (ExcelReference)XlCall.Excel(XlCall.xlfCaller);
+
+            return ExcelAsyncUtil.Observe("acq_async_load_example3", new object[] { name },
+                () =>
+                {
+                    //var longTask = Task.Run(delegate
+                    var longTask = System.Threading.Tasks.Task.Factory.StartNew(()=>
+                    {
+                        System.Threading.Thread.Sleep(3000);
+                        return String.Format("{0} was loaded", name);
+                    });
+                    return longTask.ToExcelObservable();
+                });
+        }*/
 
         /*
         [ExcelFunction(Description = "acq_sum", Category = AddInInfo.Category)]
