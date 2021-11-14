@@ -121,9 +121,16 @@ namespace ACQ.Excel
         }
         #endregion
 
+        /// <summary>
+        /// RTD-based async using ExcelDnaUtil.Run
+        /// RTD-based async functions allow you to continue interacting with Excel while the function executes.
+        /// https://github.com/Excel-DNA/ExcelDna/wiki/Async-Notes
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         [ExcelFunction(Description = "acq_async_load_example", Category = AddInInfo.Category)]
         public static object acq_async_load_example(string name)
-        {
+        {            
             object asyncResult = ExcelAsyncUtil.Run("AsyncLoadExample", name,
                 delegate()
                 {
@@ -138,9 +145,15 @@ namespace ACQ.Excel
             return asyncResult;
         }
 
+        /// <summary>
+        /// Native async functions just allow Excel to continue with different parts of the sheet calculation while your function is busy. You can't interact with Excel while it is calculating
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="asyncHandle"></param>
         [ExcelFunction(Description = "acq_async_load_example2", Category = AddInInfo.Category)]
         public static void acq_async_load_example2(string name, ExcelAsyncHandle asyncHandle)
         {
+            //Native Excel async functions, that work only in Excel 2010+ (this is when your function takes an ExcelAsyncHandle as parameter and has return type "void")
             int managedThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             System.Threading.ThreadPool.QueueUserWorkItem(delegate(object state)
             {

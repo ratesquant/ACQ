@@ -74,7 +74,7 @@ namespace ACQ.Excel
                     }
                 }catch(Exception e) //return null
                 {
-
+                    System.Diagnostics.Debug.Write(e.Message);
                 }
             }
 

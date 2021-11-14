@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ExcelDna.Integration">
-      <HintPath>..\..\3rd\ExcelDna\Distribution\ExcelDna.Integration.dll</HintPath>
+      <HintPath>..\..\ExcelDna\ExcelDna-1.1.0\Distribution\ExcelDna.Integration.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -100,14 +100,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy ACQ.Excel.dna ACQ.Excel64.dna
-copy ACQ.Excel.dna ACQ.Excel32.dna
-"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ64.xll
-"$(ProjectDir)..\..\3rd\ExcelDna\Distribution\ExcelDnaPack.exe" ACQ.Excel32.dna /Y /O ACQ32.xll
-copy ACQ64.xll $(ProjectDir)\..\Distribution\
-copy ACQ32.xll $(ProjectDir)\..\Distribution\
-copy $(ProjectDir)\Demo.Interpolation.xlsx $(ProjectDir)\..\Distribution\
-copy $(ProjectDir)\Demo.Regression.xlsx $(ProjectDir)\..\Distribution\</PostBuildEvent>
+    <PostBuildEvent>copy /Y ACQ.Excel.dna ACQ.Excel64.dna
+copy /Y ACQ.Excel.dna ACQ.Excel32.dna
+"$(ProjectDir)..\..\ExcelDna\ExcelDna-1.1.0\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ64.xll
+"$(ProjectDir)..\..\ExcelDna\ExcelDna-1.1.0\Distribution\ExcelDnaPack.exe" ACQ.Excel32.dna /Y /O ACQ32.xll
+copy /Y ACQ64.xll $(ProjectDir)\..\Distribution\
+copy /Y ACQ32.xll $(ProjectDir)\..\Distribution\
+copy /Y $(ProjectDir)\Demo.Interpolation.xlsx $(ProjectDir)\..\Distribution\
+copy /Y $(ProjectDir)\Demo.Regression.xlsx $(ProjectDir)\..\Distribution\</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
