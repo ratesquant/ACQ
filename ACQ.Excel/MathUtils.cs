@@ -58,7 +58,7 @@ namespace ACQ.Excel
                     double dy0 = (y[1] - y[0]) / dx0;
                     double dy1 = (y[2] - y[1]) / dx1;
 
-                    result = (dy1 - dy0) / dx;
+                    result = 0.5*(dy1 - dy0) / dx;
                 }
             }
             return result;
