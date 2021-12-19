@@ -90,8 +90,8 @@ Excel interface allows to initialize generator with single or array seed
 	3. acq_vector_element(vector, index) - get a random number from vector (random numbers are returned as vector)
 	4. acq_vector_size(vector) - get size of the vector 
 
-# Black european option greeks
-Black option pricing formulas for european options. Input arguments: forward (forward price - F), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts)
+# Black option pricing formulas for european options
+Input arguments: forward (forward price - F), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts)
 
 	1. acq_options_black_price - Price of the option 
 	2. acq_options_black_vol - Implied volatility of the black option 
@@ -104,8 +104,8 @@ Black option pricing formulas for european options. Input arguments: forward (fo
 	9. acq_options_black_rho - Rho of the option dP/dr
 	10. acq_options_black_theta - Theta of the option -dP/dt
 
-# Black-Scholes european option greeks
-Black-Scholes option pricing formulas for european options. Input arguments: spot (spot price - S), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), dividend (dividend yield - q), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts) 
+# Black-Scholes option pricing formulas for european options
+Input arguments: spot (spot price - S), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), dividend (dividend yield - q), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts) 
 
 	1. acq_options_blackscholes_price - Price of the option  
 	2. acq_options_blackscholes_vol - Implied volatility of the option 
