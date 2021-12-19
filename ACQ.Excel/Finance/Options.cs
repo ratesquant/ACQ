@@ -187,6 +187,39 @@ namespace ACQ.Excel.Finance
         }
 
         #endregion
+
+        #region Bachelier Option Greeks
+
+        [ExcelFunction(Description = "Bachelier option price", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_bachelier_price(double forward, double strike, double time, double rate, double sigma, bool isCall)
+        {
+            double price = ACQ.Quant.Options.Bachelier.Price(forward, strike, time, rate, sigma, isCall);
+            return ExcelHelper.CheckNan(price);
+        }
+
+        [ExcelFunction(Description = "Bachelier option implied vol", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_bachelier_vol(double forward, double strike, double time, double rate, double option_price, bool isCall)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+            else
+            {
+                double vol = ACQ.Quant.Options.Bachelier.ImpliedVol(forward, strike, time, rate, option_price, isCall);
+                return ExcelHelper.CheckNan(vol);
+            }
+        }
+
+        [ExcelFunction(Description = "Bachelier option greeks", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_bachelier_greeks(
+            [ExcelArgument(Description = "Name of the option greek: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho,Theta")] string greek_name,
+            double forward, double strike, double time, double rate, double sigma, bool isCall)
+        {
+            var greek = ExcelHelper.CheckEnum<ACQ.Quant.Options.enOptionGreeks>(greek_name, ACQ.Quant.Options.enOptionGreeks.Price);
+
+            double value = ACQ.Quant.Options.Bachelier.Greeks(greek, forward, strike, time, rate, sigma, isCall);
+            return ExcelHelper.CheckNan(value);
+        }
+        #endregion
     }
 }
 
