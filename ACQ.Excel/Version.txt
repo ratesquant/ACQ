@@ -13,5 +13,5 @@ v1.20 ():
 	3. Linear Regression
 v1.30 (2021-12-18): 
     1. Black Options Pricing formulas (Price, Implied vol and Greeks)
-    1. Black-Sholes Options Pricing formulas (Price, Implied vol and Greeks)
+    2. Black-Scholes Options Pricing formulas (Price, Implied vol and Greeks)
      
