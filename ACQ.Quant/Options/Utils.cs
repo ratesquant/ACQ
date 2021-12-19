@@ -5,15 +5,19 @@ using System.Text;
 
 namespace ACQ.Quant.Options
 {
+
+    /// <summary>
+    /// Option greeks (derivatives): here U - underlying, s - volatility, r - risk free rate,
+    /// </summary>
     public enum enOptionGreeks
     {
         Price,
         /// <summary>
-        /// dP/dF
+        /// dP/dU
         /// </summary>
         Delta,
         /// <summary>
-        /// d(dP/dF)/dF
+        /// d(dP/dU)/dU = d(Delta)/dU
         /// </summary>
         Gamma,
         /// <summary>
@@ -21,9 +25,12 @@ namespace ACQ.Quant.Options
         /// </summary>
         Vega,
         /// <summary>
-        /// d(dP/ds)/ds
+        /// Volga, d(dP/ds)/ds = d(Vega)/ds
         /// </summary>
         Vomma,
+        /// <summary>
+        /// d(dP/ds)/dU = d(Vega)/dU
+        /// </summary>
         Vanna,
         /// <summary>
         /// dP/dr
@@ -34,7 +41,7 @@ namespace ACQ.Quant.Options
         /// </summary>
         Theta,
         /// <summary>
-        /// -d(dP/dF)dt
+        /// -d(dP/dU)dt = d(Delta) / dt
         /// </summary>
         Charm,
         /// <summary>
@@ -47,7 +54,7 @@ namespace ACQ.Quant.Options
     {
         public static double ImpliedVol(Func<double, double> opt_price, double target_price)
         {
-            double min_sigma = 0;
+            double min_sigma = 1e-15;
             double max_sigma = 1;
             const double sigma_limit = 1e6;
             

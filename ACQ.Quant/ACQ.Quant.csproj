@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Options\Bachelier.cs" />
     <Compile Include="Options\Black.cs" />
     <Compile Include="Options\BlackScholes.cs" />
     <Compile Include="Options\Utils.cs" />

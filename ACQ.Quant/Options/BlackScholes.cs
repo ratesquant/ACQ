@@ -265,6 +265,17 @@ namespace ACQ.Quant.Options
             return theta;
         }
 
+        /// <summary>
+        ///  Rho  - derivative with respect to the risk free rate
+        /// </summary>
+        /// <param name="spot"></param>
+        /// <param name="strike"></param>
+        /// <param name="time"></param>
+        /// <param name="rate"></param>
+        /// <param name="dividend"></param>
+        /// <param name="sigma"></param>
+        /// <param name="isCall"></param>
+        /// <returns></returns>
         public static double Rho(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
         {
             double K = strike;

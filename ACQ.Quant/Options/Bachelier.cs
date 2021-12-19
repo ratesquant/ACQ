@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using static System.Math;
@@ -7,17 +8,17 @@ using static System.Math;
 namespace ACQ.Quant.Options
 {
     /// <summary>
-    /// Black option greeks, https://en.wikipedia.org/wiki/Greeks_(finance)
-    /// Reference implementation
+    /// Bachelier option pricing (same as Black but with Normal distribution instead of Log-Normal)
+    /// Kazuhiro Iwasawa, "Analytic Formula for the European Normal Black Scholes Formula". New York University. 2 December 2001.    
     /// </summary>
-    public class Black
-    {        
+    public class Bachelier
+    {
+
         public static double Greeks(enOptionGreeks greek, double forward, double strike, double time, double rate, double sigma, bool isCall)
         {
             double value = Double.NaN;
             
-            //TODO: redo using reflection
-            switch(greek)
+            switch (greek)
             {
                 case enOptionGreeks.Price:
                     value = Price(forward, strike, time, rate, sigma, isCall);
@@ -37,11 +38,11 @@ namespace ACQ.Quant.Options
                 case enOptionGreeks.Vanna:
                     value = Vanna(forward, strike, time, rate, sigma);
                     break;
-                case enOptionGreeks.Rho:
-                    value = Rho(forward, strike, time, rate, sigma, isCall);
-                    break;
                 case enOptionGreeks.Theta:
                     value = Theta(forward, strike, time, rate, sigma, isCall);
+                    break;
+                case enOptionGreeks.Rho:
+                    value = Rho(forward, strike, time, rate, sigma, isCall);
                     break;
             }
             return value;
@@ -54,28 +55,27 @@ namespace ACQ.Quant.Options
             double r = rate;
             double v = sigma * Sqrt(t);
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
-            double d2 = d1 - v;
+            double d = (F - K) / v;
             double df = Exp(-r * t);
 
             double price;
 
             if (isCall)
             {
-                price = df * (F * Math.Special.NormalCdf(d1) - K * Math.Special.NormalCdf(d2));
+                price = df * ((F - K) * Math.Special.NormalCdf(d) + v * Math.Special.NormalPdf(d));
             }
             else
             {
-                price = -df * (F * Math.Special.NormalCdf(-d1) - K * Math.Special.NormalCdf(-d2));
+                price = df *((K - F) * Math.Special.NormalCdf(-d) + v * Math.Special.NormalPdf(-d));
             }
             return price;
         }
 
         public static double ImpliedVol(double forward, double strike, double time, double rate, double option_price, bool isCall)
-        {            
+        {
             Func<double, double> opt_price = x => Price(forward, strike, time, rate, x, isCall);
 
-            double implied_vol = Utils.ImpliedVol(opt_price, option_price);          
+            double implied_vol = Utils.ImpliedVol(opt_price, option_price);
 
             return implied_vol;
         }
@@ -98,18 +98,18 @@ namespace ACQ.Quant.Options
             double r = rate;
             double v = sigma * Sqrt(t);
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;            
+            double d = (F - K) / v;
             double df = Exp(-r * t);
 
             double delta;
 
             if (isCall)
             {
-                delta = df * Math.Special.NormalCdf(d1);
+                delta = df * Math.Special.NormalCdf(d);
             }
             else
             {
-                delta = -df * Math.Special.NormalCdf(-d1);
+                delta = -df * Math.Special.NormalCdf(-d);
             }
             return delta;
         }
@@ -131,11 +131,11 @@ namespace ACQ.Quant.Options
             double r = rate;
             double v = sigma * Sqrt(t);
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
+            double d = (F - K) / v;
             double df = Exp(-r * t);
 
-            double gamma = df * Math.Special.NormalPdf(d1) / (F * v);
-            
+            double gamma = df * Math.Special.NormalPdf(d) / v;
+
             return gamma;
         }
 
@@ -157,10 +157,10 @@ namespace ACQ.Quant.Options
             double sqrt_t = Sqrt(t);
             double v = sigma * sqrt_t;
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
+            double d = (F - K) / v;
             double df = Exp(-r * t);
 
-            double vega = df * F * Math.Special.NormalPdf(d1) * sqrt_t;
+            double vega = df * Math.Special.NormalPdf(d) * sqrt_t;
 
             return vega;
         }
@@ -184,21 +184,46 @@ namespace ACQ.Quant.Options
             double sqrt_t = Sqrt(t);
             double v = sigma * sqrt_t;
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
-            double d2 = d1 - v;
+            double d = (F - K) / v;            
             double df = Exp(-r * t);
 
             double theta;
 
             if (isCall)
             {
-                theta = df * (-0.5 * F * Math.Special.NormalPdf(d1) * sigma/ sqrt_t - r * K * Math.Special.NormalCdf(d2) + r * F * Math.Special.NormalCdf(d1));
+                theta = r * df *((F-K)* Math.Special.NormalCdf(d) + v * Math.Special.NormalPdf(d)) - 0.5 * df * Math.Special.NormalPdf(d) * sigma / sqrt_t;
             }
             else
             {
-                theta = df * (-0.5 * F * Math.Special.NormalPdf(d1) * sigma / sqrt_t + r * K * Math.Special.NormalCdf(-d2) - r * F * Math.Special.NormalCdf(-d1));
+                theta = r * df * ((K - F) * Math.Special.NormalCdf(-d) + v * Math.Special.NormalPdf(d)) - 0.5 * df * Math.Special.NormalPdf(d) * sigma / sqrt_t;
             }
             return theta;
+        }
+
+        /// <summary>
+        /// Vomma (Volga) - second order derivative with respect to the volatility
+        /// </summary>
+        /// <param name="forward"></param>
+        /// <param name="strike"></param>
+        /// <param name="time"></param>
+        /// <param name="rate"></param>
+        /// <param name="sigma"></param>
+        /// <returns></returns>
+        public static double Vomma(double forward, double strike, double time, double rate, double sigma)
+        {
+            double K = strike;
+            double F = forward;
+            double t = time;
+            double r = rate;
+            double sqrt_t = Sqrt(t);
+            double v = sigma * sqrt_t;
+
+            double d = (F - K) / v;
+            double df = Exp(-r * t);
+
+            double vomma = df * sqrt_t * Math.Special.NormalPdf(d) * d * d / sigma;
+
+            return vomma;
         }
 
         /// <summary>
@@ -220,20 +245,20 @@ namespace ACQ.Quant.Options
             double sqrt_t = Sqrt(t);
             double v = sigma * sqrt_t;
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
-            double d2 = d1 - v;
+            double d = (F - K) / v;
             double df = Exp(-r * t);
 
             double rho;
 
             if (isCall)
             {
-                rho = -t * df * (F * Math.Special.NormalCdf(d1) - K * Math.Special.NormalCdf(d2));
+                rho = -t * df * ((F - K) * Math.Special.NormalCdf(d) + v * Math.Special.NormalPdf(d));
             }
             else
             {
-                rho = -t * df * (-F * Math.Special.NormalCdf(-d1) + K * Math.Special.NormalCdf(-d2));
+                rho = -t * df * ((K - F) * Math.Special.NormalCdf(-d) + v * Math.Special.NormalPdf(-d));
             }
+          
             return rho;
         }
 
@@ -255,40 +280,13 @@ namespace ACQ.Quant.Options
             double sqrt_t = Sqrt(t);
             double v = sigma * sqrt_t;
 
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
-            double d2 = d1 - v;
+            double d = (F - K) / v;
             double df = Exp(-r * t);
 
-            double vanna = - df * Math.Special.NormalPdf(d1) * d2 / sigma;
-            
+            double vanna = -df * d * Math.Special.NormalPdf(d) / sigma;
+
             return vanna;
         }
 
-        /// <summary>
-        /// Vomma (Volga) - second order derivative with respect to the volatility
-        /// </summary>
-        /// <param name="forward"></param>
-        /// <param name="strike"></param>
-        /// <param name="time"></param>
-        /// <param name="rate"></param>
-        /// <param name="sigma"></param>
-        /// <returns></returns>
-        public static double Vomma(double forward, double strike, double time, double rate, double sigma)
-        {
-            double K = strike;
-            double F = forward;
-            double t = time;
-            double r = rate;
-            double sqrt_t = Sqrt(t);
-            double v = sigma * sqrt_t;
-
-            double d1 = (Log(F / K) + 0.5 * v * v) / v;
-            double d2 = d1 - v;
-            double df = Exp(-r * t);
-
-            double vomma =  df * F * Math.Special.NormalPdf(d1) * sqrt_t * d2 * d1 / sigma;
-
-            return vomma;
-        }
     }
 }
