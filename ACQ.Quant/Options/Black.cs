@@ -6,23 +6,12 @@ using static System.Math;
 
 namespace ACQ.Quant.Options
 {
-    public enum enOptionGreeks
-    {
-        Price,
-        Delta,
-        Gamma,
-        Vega,
-        Vomma,
-        Vanna,
-        Rho,
-        Theta
-    }
     /// <summary>
     /// Black option greeks, https://en.wikipedia.org/wiki/Greeks_(finance)
     /// Reference implementation
     /// </summary>
     public class Black
-    {
+    {        
         public static double Greeks(enOptionGreeks greek, double forward, double strike, double time, double rate, double sigma, bool isCall)
         {
             double value = Double.NaN;
@@ -69,7 +58,7 @@ namespace ACQ.Quant.Options
             double d2 = d1 - v;
             double df = Exp(-r * t);
 
-            double price = Double.NaN;
+            double price;
 
             if (isCall)
             {
@@ -82,34 +71,13 @@ namespace ACQ.Quant.Options
             return price;
         }
 
-        public static double ImpliedVol(double forward, double strike, double time, double rate, double price, bool isCall)
-        {
-            double min_sigma = 0;
-            double max_sigma = 1;
-            const double sigma_limit = 1e6;
-
+        public static double ImpliedVol(double forward, double strike, double time, double rate, double option_price, bool isCall)
+        {            
             Func<double, double> opt_price = x => Price(forward, strike, time, rate, x, isCall);
 
-            if (opt_price(min_sigma) > price)
-                return Double.NaN;
+            double implied_vol = Utils.ImpliedVol(opt_price, option_price);          
 
-            //find right limit for volatility. 
-            while (opt_price(max_sigma) < price && max_sigma < sigma_limit)
-            {
-                max_sigma *= 2;
-            }
-
-            if (opt_price(max_sigma) < price)
-                return Double.NaN;
-
-            var solver = new ACQ.Math.Roots.Brent();
-
-            ACQ.Math.Roots.IterationResults results = solver.Solve(delegate (double x)
-            {
-                return opt_price(x) - price;
-            }, min_sigma, max_sigma);
-
-            return results.Root;
+            return implied_vol;
         }
 
         /// <summary>
@@ -133,7 +101,7 @@ namespace ACQ.Quant.Options
             double d1 = (Log(F / K) + 0.5 * v * v) / v;            
             double df = Exp(-r * t);
 
-            double delta = Double.NaN;
+            double delta;
 
             if (isCall)
             {
@@ -220,7 +188,7 @@ namespace ACQ.Quant.Options
             double d2 = d1 - v;
             double df = Exp(-r * t);
 
-            double theta = Double.NaN;
+            double theta;
 
             if (isCall)
             {
@@ -246,7 +214,7 @@ namespace ACQ.Quant.Options
             double d2 = d1 - v;
             double df = Exp(-r * t);
 
-            double rho = Double.NaN;
+            double rho;
 
             if (isCall)
             {

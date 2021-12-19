@@ -91,16 +91,32 @@ Excel interface allows to initialize generator with single or array seed
 	4. acq_vector_size(vector) - get size of the vector 
 
 # Black european option greeks
-	1. acq_options_black_price - Price of the black option 
+Black option pricing formulas for european options. Input arguments: forward (forward price - F), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts)
+	1. acq_options_black_price - Price of the option 
 	2. acq_options_black_vol - Implied volatility of the black option 
 	3. acq_options_black_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta
-	4. acq_options_black_delta - Delta of the option
-	5. acq_options_black_delta - Gamma of the option
-	6. acq_options_black_vega - Vega of the option
-	7. acq_options_black_vomma - Vomma of the option
-	8. acq_options_black_vanna - Vanna of the option
-	9. acq_options_black_rho - Rho of the option
-	10. acq_options_black_theta - Theta of the option
+	4. acq_options_black_delta - Delta of the option dP/dF
+	5. acq_options_black_gamma - Gamma of the option d(dP/dF)/dF
+	6. acq_options_black_vega - Vega of the option dP/ds
+	7. acq_options_black_vomma - Vomma of the option d(dP/ds)/ds
+	8. acq_options_black_vanna - Vanna of the option d(dP/ds)/dF
+	9. acq_options_black_rho - Rho of the option dP/dr
+	10. acq_options_black_theta - Theta of the option -dP/dt
+
+# Black-Scholes european option greeks
+Black-Scholes option pricing formulas for european options. Input arguments: spot (spot price - S), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), dividend (dividend yield - q), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts) 
+	1. acq_options_blackscholes_price - Price of the option  
+	2. acq_options_blackscholes_vol - Implied volatility of the option 
+	3. acq_options_blackscholes_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta, Charm, Epsilon
+	4. acq_options_blackscholes_delta - Delta of the option dP/dS
+	5. acq_options_blackscholes_gamma - Gamma of the option d(dP/dS)/dS
+	6. acq_options_blackscholes_vega - Vega of the option dP/ds
+	7. acq_options_blackscholes_vomma - Vomma of the option d(dP/ds)/ds
+	8. acq_options_blackscholes_vanna - Vanna of the option d(dP/ds)/dS
+	9. acq_options_blackscholes_rho - Rho of the option dP/dr
+	10. acq_options_blackscholes_theta - Theta of the option -dP/dt
+	11. acq_options_blackscholes_charm - Charm of the option d(dP/dS)/dt, second order derivative with respect to underlying and time
+	12. acq_options_blackscholes_epsilon - Epsilon of the option dP/dq)
 	
 # Shotcuts
 	1. Ctrl+Shift+H - shows ACQ log window

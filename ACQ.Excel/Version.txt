@@ -7,10 +7,11 @@ v1.10 (2016-04-20)(1.1.5954.35227):
 	3. Scattered Data Interpolation based on Radial basis functions: Linear, Cubic, Multiquadrics, Gaussian, Thinplate, InverseQuadratic, InverseMultiquadric   
 	4. Lowess smoothing based on locally-weighted linear regression (based on R code)
 	5. Mersenne Twister - Random number generator based on MT19937 by Takuji Nishimura and Makoto Matsumoto. 
-v1.20 ()(): 
+v1.20 (): 
     1. 1D interpolation: SteffenSoft, ExpTension (tension spline interpolation)
     2. 2D interpolation: BiSteffenSoft (softer version of steffen interpolation)
 	3. Linear Regression
-v1.30 (2021-12-18)(): 
-    1. Black Options Greeks
+v1.30 (2021-12-18): 
+    1. Black Options Pricing formulas (Price, Implied vol and Greeks)
+    1. Black-Sholes Options Pricing formulas (Price, Implied vol and Greeks)
      
