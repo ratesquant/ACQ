@@ -90,6 +90,17 @@ Excel interface allows to initialize generator with single or array seed
 	3. acq_vector_element(vector, index) - get a random number from vector (random numbers are returned as vector)
 	4. acq_vector_size(vector) - get size of the vector 
 
+# Black european option greeks
+	1. acq_options_black_price - Price of the black option 
+	2. acq_options_black_vol - Implied volatility of the black option 
+	3. acq_options_black_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta
+	4. acq_options_black_delta - Delta of the option
+	5. acq_options_black_delta - Gamma of the option
+	6. acq_options_black_vega - Vega of the option
+	7. acq_options_black_vomma - Vomma of the option
+	8. acq_options_black_vanna - Vanna of the option
+	9. acq_options_black_rho - Rho of the option
+	10. acq_options_black_theta - Theta of the option
 	
 # Shotcuts
 	1. Ctrl+Shift+H - shows ACQ log window

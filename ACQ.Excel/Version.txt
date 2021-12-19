@@ -11,4 +11,6 @@ v1.20 ()():
     1. 1D interpolation: SteffenSoft, ExpTension (tension spline interpolation)
     2. 2D interpolation: BiSteffenSoft (softer version of steffen interpolation)
 	3. Linear Regression
-	 
+v1.30 (2021-12-18)(): 
+    1. Black Options Greeks
+     

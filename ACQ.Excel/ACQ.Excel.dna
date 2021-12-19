@@ -1,4 +1,5 @@
 ﻿<DnaLibrary RuntimeVersion="v4.0">
   <ExternalLibrary Path="ACQ.Excel.dll" Pack="true" ExplicitExports="true"/>
+  <ExternalLibrary Path="ACQ.Quant.dll" Pack="true" ExplicitExports="true"/>
   <ExternalLibrary Path="ACQ.Math.dll" Pack="true" ExplicitExports="true"/>
 </DnaLibrary>

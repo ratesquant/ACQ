@@ -44,6 +44,8 @@ namespace ACQ.Math
         private const double SQRT2 = 1.41421356237309504880;
         private const double LOGPI = 1.14472988584940017414;
         private const double LS2PI = 0.91893853320467274178;// log( sqrt( 2*pi ) )
+        private const double SQT2PI_INV = 0.39894228040143267793994605993438; //1/sqrt(2*pi)
+
         private const double MAXLGM = 2.556348e305;
 
         private const double big = 4.503599627370496e15;
@@ -628,6 +630,10 @@ namespace ACQ.Math
         public static double NormalCdf(double x)
         {
             return ndtr(x); 
+        }
+        public static double NormalPdf(double x)
+        {
+            return Special.SQT2PI_INV * System.Math.Exp(-0.5* x * x);
         }
         /// <summary>
         /// Returns the area under the Gaussian probability density, integrated from minus infinity to a.

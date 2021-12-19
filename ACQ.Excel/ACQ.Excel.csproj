@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="ExcelHelper.cs" />
     <Compile Include="Examples.cs" />
+    <Compile Include="Finance\Options.cs" />
     <Compile Include="Handles\Handle.cs" />
     <Compile Include="Handles\HandleStorage.cs" />
     <Compile Include="Info.cs" />
@@ -78,6 +79,10 @@
       <Project>{92EBDA1C-6085-4A88-A0FB-757E2F375EBC}</Project>
       <Name>ACQ.Math</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ACQ.Quant\ACQ.Quant.csproj">
+      <Project>{2fe08747-12f4-4dfc-bd5f-168b231e2869}</Project>
+      <Name>ACQ.Quant</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="ACQ.Excel.dna">
@@ -100,8 +105,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y $(ProjectDir)ACQ.Excel.dna $(ProjectDir)ACQ.Excel64.dna
-copy /Y $(ProjectDir)ACQ.Excel.dna $(ProjectDir)ACQ.Excel32.dna
+    <PostBuildEvent>copy /Y $(ProjectDir)ACQ.Excel.dna $(TargetDir)ACQ.Excel64.dna
+copy /Y $(ProjectDir)ACQ.Excel.dna $(TargetDir)ACQ.Excel32.dna
 "$(ProjectDir)..\..\ExcelDna\ExcelDna-1.1.0\Distribution\ExcelDnaPack.exe" ACQ.Excel64.dna /Y /O ACQ64.xll
 "$(ProjectDir)..\..\ExcelDna\ExcelDna-1.1.0\Distribution\ExcelDnaPack.exe" ACQ.Excel32.dna /Y /O ACQ32.xll
 copy /Y ACQ64.xll $(ProjectDir)\..\Distribution\

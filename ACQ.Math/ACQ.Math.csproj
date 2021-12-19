@@ -85,6 +85,7 @@
     <Compile Include="Regression\LinearRegression.cs" />
     <Compile Include="Regression\Lowess.cs" />
     <Compile Include="Regression\RegressionBase.cs" />
+    <Compile Include="Roots.cs" />
     <Compile Include="Sort.cs" />
     <Compile Include="Special.cs" />
     <Compile Include="Stats.cs" />

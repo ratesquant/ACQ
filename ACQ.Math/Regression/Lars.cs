@@ -58,7 +58,7 @@ namespace ACQ.Math.Regression
                 }
             }
 
-            bool stop_flag = false;
+            //bool stop_flag = false;
 
             double[] mu = new double[n]; //lars regression vector
             double[] c = new double[p]; //correlations 

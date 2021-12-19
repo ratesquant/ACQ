@@ -27,7 +27,7 @@ namespace ACQ.Excel
         {
             string filename = acq_xllpath();
             FileVersionInfo info = FileVersionInfo.GetVersionInfo(filename);
-            return info.ProductVersion;
+            return info.FileVersion;
         }
 
         [ExcelFunction(Description = "Returns the version of the .NET", Category = AddInInfo.Category)]
