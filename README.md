@@ -92,6 +92,7 @@ Excel interface allows to initialize generator with single or array seed
 
 # Black european option greeks
 Black option pricing formulas for european options. Input arguments: forward (forward price - F), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts)
+
 	1. acq_options_black_price - Price of the option 
 	2. acq_options_black_vol - Implied volatility of the black option 
 	3. acq_options_black_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta
@@ -105,6 +106,7 @@ Black option pricing formulas for european options. Input arguments: forward (fo
 
 # Black-Scholes european option greeks
 Black-Scholes option pricing formulas for european options. Input arguments: spot (spot price - S), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), dividend (dividend yield - q), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts) 
+
 	1. acq_options_blackscholes_price - Price of the option  
 	2. acq_options_blackscholes_vol - Implied volatility of the option 
 	3. acq_options_blackscholes_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta, Charm, Epsilon
@@ -117,7 +119,8 @@ Black-Scholes option pricing formulas for european options. Input arguments: spo
 	10. acq_options_blackscholes_theta - Theta of the option -dP/dt
 	11. acq_options_blackscholes_charm - Charm of the option d(dP/dS)/dt, second order derivative with respect to underlying and time
 	12. acq_options_blackscholes_epsilon - Epsilon of the option dP/dq)
-	
+
+
 # Shotcuts
 	1. Ctrl+Shift+H - shows ACQ log window
 	2. Ctrl+Shift+A - shows ACQ introspection window (for ACQ handles)
