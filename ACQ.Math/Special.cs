@@ -35,6 +35,7 @@ namespace ACQ.Math
     public class Special
     {
         #region const
+        private const double TWOPI = 6.283185307179586476925286766559;
         private const double MACHEP = 1.11022302462515654042E-16;
         private const double MAXLOG = 7.09782712893383996732E2;
         private const double MINLOG = -7.451332191019412076235E2;
@@ -146,8 +147,45 @@ namespace ACQ.Math
 		4.59432382970980127987E3,
 		2.26290000613890934246E4,
 		4.92673942608635921086E4};
-        #endregion 
+        #endregion
 
+        #region coefs used in BVND
+        private static readonly double[] BVND_WN20 = {
+            0.01761400713915212, 0.04060142980038694,
+            0.06267204833410906, 0.08327674157670475,
+            0.1019301198172404,  0.1181945319615184,
+            0.1316886384491766,  0.1420961093183821,
+            0.1491729864726037,  0.1527533871307259  };
+
+        private static readonly double[] BVND_XN20 = {
+            -0.9931285991850949, -0.9639719272779138,
+            -0.9122344282513259, -0.8391169718222188,
+            -0.7463319064601508, -0.6360536807265150,
+            -0.5108670019508271, -0.3737060887154196,
+            -0.2277858511416451, -0.07652652113349733};
+
+        private static readonly double[] BVND_WN12 =     {
+            0.04717533638651177, 0.1069393259953183, 0.1600783285433464,
+            0.2031674267230659,  0.2334925365383547, 0.2491470458134029};
+
+        private static readonly double[] BVND_XN12 ={
+            -0.9815606342467191, -0.9041172563704750, -0.7699026741943050,
+            -0.5873179542866171, -0.3678314989981802, -0.1252334085114692 };
+
+        private static readonly double[] BVND_WN6 =
+        {
+            0.1713244923791705,
+            0.3607615730481384,
+            0.4679139345726904
+        };
+
+        private static readonly double[] BVND_XN6 =
+        {
+            -0.9324695142031522,
+            -0.6612093864662647,
+            -0.2386191860831970
+        };
+#endregion
 
 
         /// <summary>
@@ -635,6 +673,152 @@ namespace ACQ.Math
         {
             return Special.SQT2PI_INV * System.Math.Exp(-0.5* x * x);
         }
+
+        /// <summary>
+        /// The cumulative bivariate normal distribution function,
+        /// his function is based on the method described by
+        ///  Drezner, Z and G.O. Wesolowsky, (1990),
+        ///  On the computation of the bivariate normal integral,
+        ///  Journal of Statist. Comput. Simul. 35, pp. 101-107,
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="rho"></param>
+        /// <returns></returns>
+        public static double CBND(double x, double y, double rho)
+        {
+            return BVND(-x, -y, rho);
+        }
+        /// <summary>
+        ///  A function for computing bivariate normal probabilities. 
+        ///   BVND calculates the probability that X > DH and Y > DK.
+        ///   
+        /// This method is based on the work done by Alan Genz, Department of 
+        ///   Mathematics, Washington State University. Pullman, WA 99164-3113
+        ///   Email: alangenz@wsu.edu. This work was shared under a 3-clause BSD
+        ///   license. Please see source file for more details and the actual
+        ///   license text.
+        ///   
+        /// </summary>
+        /// <param name="dh"></param>
+        /// <param name="dk"></param>
+        /// <param name="r"></param>
+        /// <returns></returns>
+        public static double BVND(double dh, double dk, double r)
+        {           
+            double[] x;
+            double[] w;
+
+            if (System.Math.Abs(r) < 0.3)
+            {
+                // Gauss Legendre Points and Weights N =  6
+                x = BVND_XN6;
+                w = BVND_WN6;
+            }
+            else if (System.Math.Abs(r) < 0.75)
+            {
+                // Gauss Legendre Points and Weights N =  12
+                x = BVND_XN12;
+                w = BVND_WN12;
+            }
+            else
+            {
+                // Gauss Legendre Points and Weights N =  20
+                x = BVND_XN20;
+                w = BVND_WN20;
+            }
+
+            double h = dh;
+            double k = dk;
+            double hk = h * k;
+            double bvn = 0;
+
+            if (System.Math.Abs(r) < 0.925)
+            {
+                if (System.Math.Abs(r) > 0)
+                {
+                    double sh = (h * h + k * k) / 2;
+                    double asr = System.Math.Asin(r);
+
+                    for (int i = 0; i < x.Length; i++)
+                    {
+                        for (int j = -1; j <= 1; j += 2)
+                        {
+                            double sn = System.Math.Sin(asr * (j * x[i] + 1) / 2);
+                            bvn = bvn + w[i] * System.Math.Exp((sn * hk - sh) / (1 - sn * sn));
+                        }
+                    }
+                    bvn = bvn * asr / (2 * TWOPI);
+                }
+
+                return bvn + NormalCdf(-h) * NormalCdf(-k);
+            }
+
+
+            if (r < 0)
+            {
+                k = -k;
+                hk = -hk;
+            }
+
+            if (System.Math.Abs(r) < 1)
+            {
+                double sa = (1 - r) * (1 + r);
+                double A = System.Math.Sqrt(sa);
+                double sb = (h - k);
+                sb = sb * sb;
+                double c = (4 - hk) / 8;
+                double d = (12 - hk) / 16;
+                double asr = -(sb / sa + hk) / 2;
+
+                if (asr > -100)
+                    bvn = A * System.Math.Exp(asr) * (1 - c * (sb - sa) * (1 - d * sb / 5) / 3 + c * d * sa * sa / 5);
+
+                if (-hk < 100)
+                {
+                    double B = System.Math.Sqrt(sb);
+                    bvn = bvn - System.Math.Exp(-hk / 2) * System.Math.Sqrt(TWOPI) * NormalCdf(-B / A) * B
+                              * (1 - c * sb * (1 - d * sb / 5) / 3);
+                }
+
+                A = A / 2;
+
+                for (int i = 0; i < x.Length; i++)
+                {
+                    for (int j = -1; j <= 1; j += 2)
+                    {
+                        double xs = (A * (j * x[i] + 1));
+                        xs = xs * xs;
+                        double rs = System.Math.Sqrt(1 - xs);
+                        asr = -(sb / xs + hk) / 2;
+
+                        if (asr > -100)
+                        {
+                            bvn = bvn + A * w[i] * System.Math.Exp(asr)
+                                * (System.Math.Exp(-hk * xs / (2 * (1 + rs) * (1 + rs))) / rs
+                                - (1 + c * xs * (1 + d * xs)));
+                        }
+                    }
+                }
+
+                bvn = -bvn / TWOPI;
+            }
+
+            if (r > 0)
+                return bvn + NormalCdf(-System.Math.Max(h, k));
+
+            bvn = -bvn;
+
+            if (k <= h)
+                return bvn;
+
+            if (h < 0)
+                return bvn + NormalCdf(k) - NormalCdf(h);
+
+            return bvn + NormalCdf(-h) - NormalCdf(-k);
+        }
+
+
         /// <summary>
         /// Returns the area under the Gaussian probability density, integrated from minus infinity to a.
         /// </summary>

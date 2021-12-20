@@ -220,6 +220,16 @@ namespace ACQ.Excel.Finance
             return ExcelHelper.CheckNan(value);
         }
         #endregion
+
+        #region Bjerksund and Stensland (2002) Approximation for American options
+        [ExcelFunction(Description = "Bjerksund and Stensland (2002) Approximation for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_bjerksund_price_approx(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
+        {
+            double price = ACQ.Quant.Options.BjerksundStensland.Price(spot, strike, time, rate, dividend, sigma, isCall);
+            return ExcelHelper.CheckNan(price);
+        }
+
+        #endregion
     }
 }
 
