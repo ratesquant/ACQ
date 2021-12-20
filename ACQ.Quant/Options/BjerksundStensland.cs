@@ -14,16 +14,33 @@ namespace ACQ.Quant.Options
     /// </summary>
     public class BjerksundStensland
     {
+        /// <summary>
+        /// Compute finite difference greeks 
+        /// </summary>
+        /// <param name="greek"></param>
+        /// <param name="spot"></param>
+        /// <param name="strike"></param>
+        /// <param name="time"></param>
+        /// <param name="rate"></param>
+        /// <param name="dividend"></param>
+        /// <param name="sigma"></param>
+        /// <param name="isCall"></param>
+        /// <returns></returns>
         public static double Greeks(enOptionGreeks greek, double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
         {
             double value = Double.NaN;
-            
-            switch (greek)
+
+            if (greek == enOptionGreeks.Price)
             {
-                case enOptionGreeks.Price:
-                    value = Price(spot, strike, time, rate, dividend, sigma, isCall);
-                    break;
+                value = Price(spot, strike, time, rate, dividend, sigma, isCall);
+            } else
+            { 
+                Utils.OptionPriceDelegate price_function = delegate (double S, double K, double t, double r, double q, double v) {
+                    return BjerksundStensland.Price(S, K, t, r, q, v, isCall); };
+
+                value = Utils.NumericalGreeks(price_function, greek, spot, strike, time, rate, dividend, sigma);
             }
+
             return value;
         }
         public static double Price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)

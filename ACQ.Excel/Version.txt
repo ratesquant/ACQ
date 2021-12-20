@@ -16,4 +16,5 @@ v1.30 (2021-12-18):
     2. Black-Scholes Options Pricing formulas (Price, Implied vol and Greeks)
 v1.40 (): 
     1. Bachelier option pricing formulas (Price, Implied vol and Greeks)
+    2. Bjerksund-Stensland(2002) approximation for american options
      

@@ -229,6 +229,16 @@ namespace ACQ.Excel.Finance
             return ExcelHelper.CheckNan(price);
         }
 
+        [ExcelFunction(Description = "Numerical Greeks using Bjerksund and Stensland (2002) Approximation for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_bjerksund_greeks(
+           [ExcelArgument(Description = "Name of the option greek: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho,Theta")] string greek_name,
+           double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
+        {
+            var greek = ExcelHelper.CheckEnum<ACQ.Quant.Options.enOptionGreeks>(greek_name, ACQ.Quant.Options.enOptionGreeks.Price);
+
+            double value = ACQ.Quant.Options.BjerksundStensland.Greeks(greek, spot, strike, time, rate, dividend, sigma, isCall);
+            return ExcelHelper.CheckNan(value);
+        }
         #endregion
     }
 }

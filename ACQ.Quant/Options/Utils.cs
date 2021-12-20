@@ -52,6 +52,7 @@ namespace ACQ.Quant.Options
 
     public class Utils
     {
+        public delegate double OptionPriceDelegate(double underlying, double strike, double time, double rate, double dividend, double sigma);
         public static double ImpliedVol(Func<double, double> opt_price, double target_price)
         {
             double min_sigma = 1e-15;
@@ -80,6 +81,52 @@ namespace ACQ.Quant.Options
             }, min_sigma, max_sigma);
 
             return results.Root;
+        }
+
+        
+        public static double NumericalGreeks(OptionPriceDelegate price, enOptionGreeks greek, double underlying, double strike, double time, double rate, double dividend, double sigma)
+        {
+            const double dx = 1e-4; //shifts to compute numeric greeks
+            
+            double value = Double.NaN;
+            double q = dividend;
+            double S = underlying;
+            double K = strike;
+            double t = time;
+            double r = rate;
+
+            switch (greek)
+            {
+                case enOptionGreeks.Price:
+                    value = price(S, K, time, r, q, sigma);
+                    break;
+                case enOptionGreeks.Delta:
+                    value = (price(S + dx, K, t, r, q, sigma) - price(S - dx, K, t, r, q, sigma)) / (2 * dx);
+                    break;
+                case enOptionGreeks.Gamma:
+                    value = (price(S + dx, K, t, r, q, sigma) + price(S - dx, K, t, r, q, sigma) - 2*price(S, K, t, r, q, sigma)) / (dx * dx);
+                    break;
+                case enOptionGreeks.Vega:
+                    double sigma_up = sigma + dx;
+                    double sigma_dn = System.Math.Max(1e-12, sigma - dx);
+                    value = (price(S, K, t, r, q, sigma_up) - price(S, K, t, r, q, sigma_dn)) / (sigma_up - sigma_dn);
+                    break;
+                case enOptionGreeks.Vomma:
+                    value = (price(S, K, t, r, q, sigma + dx) + price(S, K, t, r, q, sigma - dx) - 2 * price(S, K, t, r, q, sigma)) / (dx * dx); ;
+                    break;
+                case enOptionGreeks.Rho:
+                    value = (price(S, K, t, r + dx, q + dx, sigma) - price(S, K, t, r - dx, q + dx, sigma)) / (2 * dx);
+                    break;
+                case enOptionGreeks.Theta:
+                    double dt = System.Math.Min(dx, t);
+                    value = (price(S, K, t - dt, r, q, sigma) - price(S, K, t, r, q, sigma)) / (dt);
+                    break;
+                case enOptionGreeks.Vanna:                    
+                    value = (price(S+dx, K, t, r, q, sigma+dx) - price(S+dx, K, t, r, q, sigma-dx) - price(S - dx, K, t, r, q, sigma + dx) + price(S - dx, K, t, r, q, sigma - dx)) / (4 * dx * dx);
+                    break;
+
+            }
+            return value;
         }
     }
 
