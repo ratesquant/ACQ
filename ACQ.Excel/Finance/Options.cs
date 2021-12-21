@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define EXPORT_GREEKS_FUNCTIONS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,7 +43,8 @@ namespace ACQ.Excel.Finance
             double value = ACQ.Quant.Options.Black.Greeks(greek, forward, strike, time, rate, sigma, isCall);
             return ExcelHelper.CheckNan(value);
         }
-
+        
+        #if EXPORT_GREEKS_FUNCTIONS
         [ExcelFunction(Description = "Black option delta (dP/dF)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_options_black_delta(double forward, double strike, double time, double rate, double sigma, bool isCall)
         {
@@ -89,8 +91,9 @@ namespace ACQ.Excel.Finance
             double rho = ACQ.Quant.Options.Black.Rho(forward, strike, time, rate, sigma, isCall);
             return ExcelHelper.CheckNan(rho);
         }
+        #endif
         #endregion
-
+        
         #region Black-Scholes Option Greeks        
 
         [ExcelFunction(Description = "Black-Scholes option price", Category = AddInInfo.Category, IsThreadSafe = true)]
@@ -122,7 +125,7 @@ namespace ACQ.Excel.Finance
             double value = ACQ.Quant.Options.BlackScholes.Greeks(greek, spot, strike, time, rate, dividend, sigma, isCall);
             return ExcelHelper.CheckNan(value);
         }
-
+        #if EXPORT_GREEKS_FUNCTIONS
         [ExcelFunction(Description = "Black-Scholes option delta (dP/dS)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_options_blackscholes_delta(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
         {
@@ -185,9 +188,10 @@ namespace ACQ.Excel.Finance
             double vanna = ACQ.Quant.Options.BlackScholes.Vanna(spot, strike, time, rate, dividend, sigma);
             return ExcelHelper.CheckNan(vanna);
         }
-
+        #endif
+        
         #endregion
-
+        
         #region Bachelier Option Greeks
 
         [ExcelFunction(Description = "Bachelier option price", Category = AddInInfo.Category, IsThreadSafe = true)]
@@ -219,8 +223,9 @@ namespace ACQ.Excel.Finance
             double value = ACQ.Quant.Options.Bachelier.Greeks(greek, forward, strike, time, rate, sigma, isCall);
             return ExcelHelper.CheckNan(value);
         }
+        
         #endregion
-
+        
         #region Bjerksund and Stensland (2002) Approximation for American options
         [ExcelFunction(Description = "Bjerksund and Stensland (2002) Approximation for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_options_bjerksund_price_approx(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
