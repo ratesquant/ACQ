@@ -46,21 +46,32 @@ namespace ACQ.Quant.Options
         public static double Price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
         {
             double price;
+                     
             if (isCall)
-                price = PriceCall(spot, strike, time, rate, dividend, sigma);
+                price = PriceCall(spot, strike, time, rate, rate - dividend, sigma);
             else
-                price = PriceCall(strike,spot, time, rate- dividend, -dividend, sigma);
+                price = PriceCall(strike, spot, time, dividend, dividend - rate, sigma);
             return price;
         }
+        
 
-
-        private static double PriceCall(double spot, double strike, double time, double rate, double dividend, double sigma)
+        /// <summary>
+        /// Note that formula takes cost of carry b = (r - q), instead of dividend
+        /// </summary>
+        /// <param name="spot"></param>
+        /// <param name="strike"></param>
+        /// <param name="time"></param>
+        /// <param name="rate"></param>
+        /// <param name="carry_cost">r - dividend</param>
+        /// <param name="sigma"></param>
+        /// <returns></returns>
+        private static double PriceCall(double spot, double strike, double time, double rate, double carry_cost, double sigma)
         {
             double K = strike;
             double S = spot;
             double t = time;
             double r = rate;
-            double b = dividend;
+            double b = carry_cost;
             double v = sigma;
             double v2 = v * v;
             
@@ -87,8 +98,8 @@ namespace ACQ.Quant.Options
                 I1 = B0 + (BInfinity - B0) * (1 - Exp(ht1));
                 I2 = B0 + (BInfinity - B0) * (1 - Exp(ht2));
                 alfa1 = (I1 - K) * Pow(I1, -Beta);
-                alfa2 = (I2 - K) * Pow(I2, -Beta);
-
+                alfa2 = (I2 - K) * Pow(I2, -Beta); //I2 can become negative
+                
                 if (S >= I2)
                     price = S - K;
                 else
@@ -108,7 +119,7 @@ namespace ACQ.Quant.Options
                 }
             }
           
-            return price;
+            return price < 0 ? Double.NaN : price ;
         }
 
         private static double phi(double S, double t, double gamma, double h, double i, double r, double b, double v)
