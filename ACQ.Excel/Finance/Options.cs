@@ -228,7 +228,7 @@ namespace ACQ.Excel.Finance
         
         #region Bjerksund and Stensland (2002) Approximation for American options
         [ExcelFunction(Description = "Bjerksund and Stensland (2002) Approximation for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
-        public static object acq_options_bjerksund_price_approx(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
+        public static object acq_options_bjerksund_price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
         {
             double price = ACQ.Quant.Options.BjerksundStensland.Price(spot, strike, time, rate, dividend, sigma, isCall);
             return ExcelHelper.CheckNan(price);
@@ -245,6 +245,26 @@ namespace ACQ.Excel.Finance
             return ExcelHelper.CheckNan(value);
         }
         #endregion
+
+        [ExcelFunction(Description = "Binomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_binomial_american_price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
+        {
+            int n_steps = (int)ExcelHelper.CheckValue<double>(time_steps, 500);
+            double price = ACQ.Quant.Options.BinomialAmerican.Price(spot, strike, time, rate, dividend, sigma, isCall, n_steps);
+            return ExcelHelper.CheckNan(price);
+        }
+
+        [ExcelFunction(Description = "Numerical Greeks using Binomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_binomial_american_greeks(
+   [ExcelArgument(Description = "Name of the option greek: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho,Theta")] string greek_name,
+   double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
+        {
+            var greek = ExcelHelper.CheckEnum<ACQ.Quant.Options.enOptionGreeks>(greek_name, ACQ.Quant.Options.enOptionGreeks.Price);
+            int n_steps = ExcelHelper.CheckValue<int>(time_steps, 500);
+
+            double value = ACQ.Quant.Options.BinomialAmerican.Greeks(greek, spot, strike, time, rate, dividend, sigma, isCall, n_steps);
+            return ExcelHelper.CheckNan(value);
+        }
     }
 }
 

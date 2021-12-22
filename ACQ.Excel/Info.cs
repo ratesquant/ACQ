@@ -36,6 +36,18 @@ namespace ACQ.Excel
             return System.Environment.Version.ToString();
         }
 
+        [ExcelFunction(Description = "Returns current time", Category = AddInInfo.Category)]
+        public static object acq_now(object optional)
+        {
+            return DateTime.Now.ToString();
+        }
+
+        [ExcelFunction(Description = "Returns current ticks", Category = AddInInfo.Category)]
+        public static object acq_ticks(object optional)
+        {
+            return DateTime.Now.Ticks.ToString();
+        }
+
 
         [ExcelFunction(Description = "Returns the location of the ACQ add-in", Category = AddInInfo.Category)]
         public static string acq_xllpath()
