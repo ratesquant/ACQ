@@ -95,16 +95,18 @@ namespace ACQ.Quant.Options
             double t = time;
             double r = rate;
 
+            double ds = System.Math.Max(dx, S * dx);
+
             switch (greek)
             {
                 case enOptionGreeks.Price:
                     value = price(S, K, time, r, q, sigma);
                     break;
-                case enOptionGreeks.Delta:
-                    value = (price(S + dx, K, t, r, q, sigma) - price(S - dx, K, t, r, q, sigma)) / (2 * dx);
+                case enOptionGreeks.Delta:                    
+                    value = (price(S + ds, K, t, r, q, sigma) - price(S - ds, K, t, r, q, sigma)) / (2 * ds);
                     break;
-                case enOptionGreeks.Gamma:
-                    value = (price(S + dx, K, t, r, q, sigma) + price(S - dx, K, t, r, q, sigma) - 2*price(S, K, t, r, q, sigma)) / (dx * dx);
+                case enOptionGreeks.Gamma:                    
+                    value = (price(S + ds, K, t, r, q, sigma) + price(S - ds, K, t, r, q, sigma) - 2*price(S, K, t, r, q, sigma)) / (ds * ds);
                     break;
                 case enOptionGreeks.Vega:
                     double sigma_up = sigma + dx;
