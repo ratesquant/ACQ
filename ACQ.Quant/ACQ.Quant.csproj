@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Options\Bachelier.cs" />
+    <Compile Include="Options\BinomialAmerican.cs" />
     <Compile Include="Options\BjerksundStensland.cs" />
     <Compile Include="Options\Black.cs" />
     <Compile Include="Options\BlackScholes.cs" />

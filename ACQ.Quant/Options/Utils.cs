@@ -86,7 +86,7 @@ namespace ACQ.Quant.Options
         
         public static double NumericalGreeks(OptionPriceDelegate price, enOptionGreeks greek, double underlying, double strike, double time, double rate, double dividend, double sigma)
         {
-            const double dx = 1e-4; //shifts to compute numeric greeks
+            const double dx = 1e-3; //shifts to compute numeric greeks
             
             double value = Double.NaN;
             double q = dividend;
@@ -115,7 +115,7 @@ namespace ACQ.Quant.Options
                     value = (price(S, K, t, r, q, sigma + dx) + price(S, K, t, r, q, sigma - dx) - 2 * price(S, K, t, r, q, sigma)) / (dx * dx); ;
                     break;
                 case enOptionGreeks.Rho:
-                    value = (price(S, K, t, r + dx, q + dx, sigma) - price(S, K, t, r - dx, q + dx, sigma)) / (2 * dx);
+                    value = (price(S, K, t, r + dx, q, sigma) - price(S, K, t, r - dx, q, sigma)) / (2 * dx);
                     break;
                 case enOptionGreeks.Theta:
                     double dt = System.Math.Min(dx, t);

@@ -28,7 +28,7 @@ namespace ACQ.Quant.Options
         /// <returns></returns>
         public static double Greeks(enOptionGreeks greek, double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall)
         {
-            double value = Double.NaN;
+            double value = Double.NaN;           
 
             if (greek == enOptionGreeks.Price)
             {
@@ -86,7 +86,7 @@ namespace ACQ.Quant.Options
             t1 = 0.5 * (Sqrt(5) - 1) * t;
 
             if (b >= r)// Never optimal to exercise before maturity
-                price = ACQ.Quant.Options.BlackScholes.Price(S, K, t, r, b, sigma, true);
+                price = ACQ.Quant.Options.BlackScholes.Price(S, K, t, r, r-b, sigma, true);
             else
             {
                 Beta = (0.5 - b / v2) + Sqrt((b / v2 - 0.5) * (b / v2 - 0.5) + 2 * r / v2);
