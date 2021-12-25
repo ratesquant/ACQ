@@ -64,12 +64,27 @@ namespace ACQ.Excel
             return result;
         }
 
-        [ExcelFunction(Description = "Check if number is prime", Category = AddInInfo.Category, IsThreadSafe = true)]
-        public static bool acq_isprime(int n)
+        [ExcelFunction(Description = "Check if number is prime (returns false for non-integer numbers and strings)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static bool acq_isprime(object item)
         {
-            bool result = ACQ.Math.Primes.is_prime(n);
+            bool result = false;
+
+            int n;
+            if (ExcelHelper.IsInteger(item, out n))
+            {
+                result = ACQ.Math.Primes.is_prime(n);
+            }
 
             return result;
+        }
+
+        [ExcelFunction(Description = "Check if number is integer", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static bool acq_isinteger(object item)
+        {
+            int result;
+            bool isint =ExcelHelper.IsInteger(item, out result);
+
+            return isint;
         }
     }
 

@@ -44,7 +44,40 @@ namespace ACQ.Excel
                 result = value;
             }
 
-            return result;
+            return result;        
+        }
+
+        public static bool IsInteger(object item, out int result)
+        {
+            bool is_integer = false;
+            result = 0; //only valid if is_integer == true
+
+            if (item == null || item is ExcelError || item is ExcelMissing || item is ExcelEmpty)
+                is_integer = false;
+            else if (item is string)
+            {
+                double float_number;
+                if (int.TryParse(item as string, out result))
+                    is_integer = true;
+                else if (double.TryParse(item as string, out float_number) && (float_number - System.Math.Floor(float_number)) == 0)
+                {
+                    result = (int)System.Math.Floor(float_number);
+                    is_integer = true;
+                }
+            }
+            else if (item is double)
+            {
+                double float_number = (double) item;
+                if ((float_number - System.Math.Floor(float_number)) == 0)
+                {
+                    result = (int)System.Math.Floor(float_number);
+                    is_integer = true;
+                }
+            }
+            else
+                is_integer = false;
+
+            return is_integer;
         }
 
 
