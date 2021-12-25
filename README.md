@@ -1,4 +1,4 @@
-# ACQ - Excel Add-in for interpolation
+# ACQ - Excel Add-in for interpolation (and other things)
 uses Excel-DNA, https://exceldna.codeplex.com/ (https://github.com/Excel-DNA)
 
 # Abstract 
@@ -90,20 +90,48 @@ Excel interface allows to initialize generator with single or array seed
 	3. acq_vector_element(vector, index) - get a random number from vector (random numbers are returned as vector)
 	4. acq_vector_size(vector) - get size of the vector 
 
+
 # Black option pricing formulas for european options
-Input arguments: forward (forward price - F), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts)
+Input arguments: forward: forward price of the underlying, strike : option strike, time: time until expiration in years, rate: risk free rate, dividend: (dividend yield continuously compounded), sigma: implied volatility (annual), isCall: TRUE for call options, FALSE for puts
 
 	1. acq_options_black_price - Price of the option 
 	2. acq_options_black_vol - Implied volatility of the black option 
-	3. acq_options_black_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta
+	3. acq_options_black_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
+	
+	
+# Bachelier pricing formulas for european options
+Input arguments: same as for Black options pricing formulas, but implied volatility (sigma) is normal
+
+	1. acq_options_black_price - Price of the option 
+	2. acq_options_bachelier_vol - Implied volatility of the black option 
+	3. acq_options_bachelier_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
+
 
 # Black-Scholes option pricing formulas for european options
-Input arguments: spot (spot price - S), strike (option strike - K), time (time until expiration - t), rate (risk free rate - r), dividend (dividend yield - q), sigma (implied volatility - s), isCall (TRUE for call options, FALSE for puts) 
+Input arguments: same as for Black options pricing formulas, but uses spot: spot price of the underlying, instead of forward.
 
 	1. acq_options_blackscholes_price - Price of the option  
 	2. acq_options_blackscholes_vol - Implied volatility of the option 
-	3. acq_options_blackscholes_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta, Charm, Epsilon	
+	3. acq_options_blackscholes_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta, Charm, Epsilon (analytical)	
 
+
+# Bjerksund and Stensland (2002) Approximation for American options
+	1. acq_options_bjerksund_price - Price of the option  
+	2. acq_options_bjerksund_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
+
+
+# Binomial option pricing tree for American options
+Input arguments: same as for Black-Scholes with additional optional argument -  time_steps: number of times steps 
+
+	1. acq_options_binomial_american_price - Price of the option  	
+	2. acq_options_binomial_american_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
+
+
+# Trinomial option pricing tree for American options
+Input arguments: same as for Binomial option pricing 
+
+	1. acq_options_trinomial_american_price - Price of the option  	
+	2. acq_options_trinomial_american_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
 
 # Shotcuts
 	1. Ctrl+Shift+H - shows ACQ log window
