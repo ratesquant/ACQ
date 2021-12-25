@@ -9,6 +9,19 @@ namespace ACQ.Excel
 {
     public static class DateUtils
     {
+        /// <summary>
+        /// Checks if a the year is a leap year (days in year is about 365.2425)
+        /// Any year that is evenly divisible by 4 is a leap year, year that is evenly divisible by 100 (for example, 1900) is a leap year only if it is also evenly divisible by 400
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public static bool IsLeapYear(int year)
+        {
+            bool isLeap = (year % 400 == 0) || (year % 4 == 0 && year % 100 != 0);
+
+            return isLeap;
+        }
+
         [ExcelFunction(Description = "acq_convert_todate", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_convert_todate(object date)
         {
@@ -101,6 +114,20 @@ namespace ACQ.Excel
             }            
 
             return businessday;
+        }
+
+        [ExcelFunction(Description = "Check if Year is a leap year", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_isleap_year(object year)
+        {
+            object result = ExcelError.ExcelErrorValue;
+
+            int n_year;
+            if (ExcelHelper.IsInteger(year, out n_year))
+            {
+                result = IsLeapYear(n_year);
+            }
+
+            return result;
         }
 
         public static bool IsHoliday(DateTime date)
