@@ -17,6 +17,6 @@ v1.30 (2021-12-18):
 v1.40 (): 
     1. Bachelier option pricing formulas (Price, Implied vol and Greeks)
     2. Bjerksund-Stensland(2002) approximation for american options
-    3. Binomial (CRR) pricer for amerian options 
+    3. Binomial (CRR) and Trinomial pricers for amerian options 
     3. Added utils to count number of unique elements (acq_count_unique) and concatenate the elements to string (acq_join)
      

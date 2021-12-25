@@ -63,6 +63,14 @@ namespace ACQ.Excel
             }
             return result;
         }
+
+        [ExcelFunction(Description = "Check if number is prime", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static bool acq_isprime(int n)
+        {
+            bool result = ACQ.Math.Primes.is_prime(n);
+
+            return result;
+        }
     }
 
     /// <summary>

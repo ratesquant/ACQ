@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using ExcelDna.Integration;
+using ExcelDna.Logging;
 
 using ACQ.Quant;
 
@@ -250,8 +251,14 @@ namespace ACQ.Excel.Finance
         [ExcelFunction(Description = "Binomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_options_binomial_american_price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
         {
+            //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            //timer.Restart();
+
             int n_steps = (int)ExcelHelper.CheckValue<double>(time_steps, 500);
             double price = ACQ.Quant.Options.BinomialAmerican.Price(spot, strike, time, rate, dividend, sigma, isCall, n_steps);
+
+            //LogDisplay.WriteLine("Binomial American Price: {0}, {1}", n_steps, timer.Elapsed.TotalMilliseconds);            
+
             return ExcelHelper.CheckNan(price);
         }
 
@@ -274,6 +281,7 @@ namespace ACQ.Excel.Finance
         {
             int n_steps = (int)ExcelHelper.CheckValue<double>(time_steps, 500);
             double price = ACQ.Quant.Options.TrinomialAmerican.Price(spot, strike, time, rate, dividend, sigma, isCall, n_steps);
+            
             return ExcelHelper.CheckNan(price);
         }
 
@@ -289,6 +297,10 @@ namespace ACQ.Excel.Finance
             return ExcelHelper.CheckNan(value);
         }
         #endregion
+                
+         //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+         //timer.Restart();
+         //LogDisplay.WriteLine("Elapsed: {0}, {1}", n_steps, timer.Elapsed.TotalMilliseconds);                    
     }
 }
 
