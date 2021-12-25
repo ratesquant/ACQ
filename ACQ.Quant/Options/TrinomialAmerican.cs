@@ -7,12 +7,11 @@ using static System.Math;
 
 namespace ACQ.Quant.Options
 {
-
     /// <summary>
     /// Implements original Cox, Ross, & Rubinstein (CRR) method for pricing american options on binomial tree (log-normal)
     /// https://en.wikipedia.org/wiki/Binomial_options_pricing_model
     /// </summary>
-    public class BinomialAmerican
+    public class TrinomialAmerican
     {
         /// <summary>
         /// 
@@ -33,51 +32,59 @@ namespace ACQ.Quant.Options
             double K = strike;
 
             int n = time_steps; //number of time steps
-            double dt= time / n;
+            double dt = time / n;
             double df = Exp(-r * dt);
-            double up = Exp(sigma * Sqrt(dt));
+            double up = Exp(sigma * Sqrt(2 * dt));
             double up2 = up * up; //up/dn ratio
             double dn = 1d / up;
-            double p_up = df*(up * Exp((r - q) * dt) - 1d) / (up2 - 1d);
-            //double p_up = (up * Exp(- q* dt) - df) / (up2 - 1d);
-            double p_dn = df - p_up;
+            double k_up = Sqrt(up);
+            double k_dn = 1d/ k_up;
+            double carry = Exp(0.5 * (r - q) * dt);
 
-            if (p_up < 0 || p_dn < 0)
+            double p_up = (k_up * carry - 1d) / (up - 1d);
+            double p_dn = (up - k_up * carry) / (up - 1d);
+            p_up = df * p_up * p_up;
+            p_dn = df * p_dn * p_dn;
+            double p_md = df - (p_up + p_dn);
+
+            if (p_up < 0 || p_dn < 0 || p_md < 0)
             {
                 //number of steps needs to be increased to keep dt below the following threshold,
                 //we are not going to do this inside the function - since it is computationaly costly, 
-                //dt < sigma^2 /(r - q)^2
+                //dt < 2*sigma^2 /(r - q)^2
 
                 return Double.NaN;
             }
 
 
-            double[] v = new double[n + 1]; //option values
-            double[] p = new double[n + 1]; //underlying asset prices
-         
+            double[] v = new double[2 * n + 1]; //option values
+            double[] p = new double[2 * n + 1]; //underlying asset prices
+
             p[0] = S * Pow(up, -n);
-            for (int i = 1; i <= n; i++)
+            for (int i = 1; i <= 2 * n; i++)
             {
-                p[i] = up2 * p[i - 1]; //compute terminal distribution of prices, (there might be some error accumulation)
+                p[i] = up * p[i - 1]; //compute terminal distribution of prices, (there might be some error accumulation)
             }
             // options values at expiration
-            for (int i = 0; i <= n; i++)
+            for (int i = 0; i <= 2 * n; i++)
             {
                 v[i] = isCall ? Max(0d, p[i] - K) : Max(0d, K - p[i]);
             }
 
-            for (int j = n - 1; j >= 0; j--)
+            for (int j = 2 * n - 1; j >= n; j--)
             {
-                for (int i = 0; i <= j; i++)
-                {
-                    v[i] = p_up * v[i + 1] + p_dn * v[i];
-                    p[i] = dn * p[i + 1];
+                double v_dn = v[2 * n - j - 1]; //dn price
+                for (int i = 2 * n - j; i <= j; i++)
+                {                    
+                    double v_i = p_up * v[i + 1] + p_dn * v_dn + p_md * v[i];
+                    
+                    v_dn = v[i]; //save mid-price, it will be used as down price on next iteration
 
-                    v[i] = isCall ? Max(v[i],  p[i] - K) : Max(v[i], K - p[i]);                    
+                    v[i] = isCall ? Max(v_i, p[i] - K) : Max(v_i, K - p[i]);
                 }
             }
 
-            return v[0];
+            return v[n];
         }
 
         public static double Greeks(enOptionGreeks greek, double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, int time_steps)
@@ -91,7 +98,7 @@ namespace ACQ.Quant.Options
             else
             {
                 Utils.OptionPriceDelegate price_function = delegate (double S, double K, double t, double r, double q, double v) {
-                    return BinomialAmerican.Price(S, K, t, r, q, v, isCall, time_steps);
+                    return TrinomialAmerican.Price(S, K, t, r, q, v, isCall, time_steps);
                 };
 
                 value = Utils.NumericalGreeks(price_function, greek, spot, strike, time, rate, dividend, sigma);
