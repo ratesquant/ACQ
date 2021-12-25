@@ -246,6 +246,7 @@ namespace ACQ.Excel.Finance
         }
         #endregion
 
+        #region Binomial Price for American options
         [ExcelFunction(Description = "Binomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_options_binomial_american_price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
         {
@@ -256,8 +257,8 @@ namespace ACQ.Excel.Finance
 
         [ExcelFunction(Description = "Numerical Greeks using Binomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_options_binomial_american_greeks(
-   [ExcelArgument(Description = "Name of the option greek: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho,Theta")] string greek_name,
-   double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
+            [ExcelArgument(Description = "Name of the option greek: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho,Theta")] string greek_name,
+            double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
         {
             var greek = ExcelHelper.CheckEnum<ACQ.Quant.Options.enOptionGreeks>(greek_name, ACQ.Quant.Options.enOptionGreeks.Price);
             int n_steps = ExcelHelper.CheckValue<int>(time_steps, 500);
@@ -265,6 +266,29 @@ namespace ACQ.Excel.Finance
             double value = ACQ.Quant.Options.BinomialAmerican.Greeks(greek, spot, strike, time, rate, dividend, sigma, isCall, n_steps);
             return ExcelHelper.CheckNan(value);
         }
+        #endregion
+
+        #region Trinomial Price for American options
+        [ExcelFunction(Description = "Trinomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_trinomial_american_price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
+        {
+            int n_steps = (int)ExcelHelper.CheckValue<double>(time_steps, 500);
+            double price = ACQ.Quant.Options.TrinomialAmerican.Price(spot, strike, time, rate, dividend, sigma, isCall, n_steps);
+            return ExcelHelper.CheckNan(price);
+        }
+
+        [ExcelFunction(Description = "Numerical Greeks using Trinomial Price for American options", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_trinomial_american_greeks(
+            [ExcelArgument(Description = "Name of the option greek: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho,Theta")] string greek_name,
+            double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, object time_steps)
+        {
+            var greek = ExcelHelper.CheckEnum<ACQ.Quant.Options.enOptionGreeks>(greek_name, ACQ.Quant.Options.enOptionGreeks.Price);
+            int n_steps = ExcelHelper.CheckValue<int>(time_steps, 500);
+
+            double value = ACQ.Quant.Options.TrinomialAmerican.Greeks(greek, spot, strike, time, rate, dividend, sigma, isCall, n_steps);
+            return ExcelHelper.CheckNan(value);
+        }
+        #endregion
     }
 }
 
