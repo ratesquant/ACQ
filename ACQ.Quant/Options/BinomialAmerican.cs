@@ -14,6 +14,29 @@ namespace ACQ.Quant.Options
     /// </summary>
     public class BinomialAmerican
     {
+        public static double Price(double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, int time_steps = 1024)
+        {
+            Binomial.OptionPayoff payoff;
+
+            if (isCall)
+                payoff = (price, K) => Max(0d, price - K);
+            else
+                payoff = (price, K) => Max(0d, K - price);
+
+            return Binomial.Price(spot, strike, time, rate, dividend, sigma, payoff, true, time_steps);
+        }
+        public static double Greeks(enOptionGreeks greek, double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, int time_steps)
+        {
+            Binomial.OptionPayoff payoff;
+
+            if (isCall)
+                payoff = (price, K) => Max(0d, price - K);
+            else
+                payoff = (price, K) => Max(0d, K - price);
+
+            return Binomial.Greeks(greek, spot, strike, time, rate, dividend, sigma, payoff, true, time_steps);
+        }
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -50,11 +73,17 @@ namespace ACQ.Quant.Options
 
                 return Double.NaN;
             }
+            Func<double, double> payoff;
+
+            if (isCall)
+                payoff = price => Max(0d, price - K);
+            else
+                payoff = price => Max(0d, K - price);
 
 
             double[] v = new double[n + 1]; //option values
             double[] p = new double[n + 1]; //underlying asset prices
-         
+
             p[0] = S * Pow(up, -n);
             for (int i = 1; i <= n; i++)
             {
@@ -63,7 +92,7 @@ namespace ACQ.Quant.Options
             // options values at expiration
             for (int i = 0; i <= n; i++)
             {
-                v[i] = isCall ? Max(0d, p[i] - K) : Max(0d, K - p[i]);
+                v[i] = payoff( p[i] );
             }
 
             for (int j = n - 1; j >= 0; j--)
@@ -73,31 +102,32 @@ namespace ACQ.Quant.Options
                     v[i] = p_up * v[i + 1] + p_dn * v[i];
                     p[i] = dn * p[i + 1];
 
-                    v[i] = isCall ? Max(v[i],  p[i] - K) : Max(v[i], K - p[i]);                    
+                    v[i] = Max(v[i], payoff(p[i]));                    
                 }
             }
 
             return v[0];
         }
 
-        public static double Greeks(enOptionGreeks greek, double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, int time_steps)
+    public static double Greeks(enOptionGreeks greek, double spot, double strike, double time, double rate, double dividend, double sigma, bool isCall, int time_steps)
+    {
+        double value = Double.NaN;
+
+        if (greek == enOptionGreeks.Price)
         {
-            double value = Double.NaN;
-
-            if (greek == enOptionGreeks.Price)
-            {
-                value = Price(spot, strike, time, rate, dividend, sigma, isCall, time_steps);
-            }
-            else
-            {
-                Utils.OptionPriceDelegate price_function = delegate (double S, double K, double t, double r, double q, double v) {
-                    return BinomialAmerican.Price(S, K, t, r, q, v, isCall, time_steps);
-                };
-
-                value = Utils.NumericalGreeks(price_function, greek, spot, strike, time, rate, dividend, sigma);
-            }
-
-            return value;
+            value = Price(spot, strike, time, rate, dividend, sigma, isCall, time_steps);
         }
+        else
+        {
+            Utils.OptionPriceDelegate price_function = delegate (double S, double K, double t, double r, double q, double v) {
+                return BinomialAmerican.Price(S, K, t, r, q, v, isCall, time_steps);
+            };
+
+            value = Utils.NumericalGreeks(price_function, greek, spot, strike, time, rate, dividend, sigma);
+        }
+
+        return value;
+    }*/
+
     }
 }
