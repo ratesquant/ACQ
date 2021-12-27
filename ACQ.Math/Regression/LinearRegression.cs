@@ -198,9 +198,9 @@ namespace ACQ.Math.Regression
             Linalg.Matrix residuals = fit - b;
 
 
-            double mss = m_intercept ? Math.Stats.SumOfSquaredDev(fit.RowPackedData(), w) : Math.Stats.SumOfSquares(fit.RowPackedData());
-            double tss = m_intercept ? Math.Stats.SumOfSquaredDev(y, w) : Math.Stats.SumOfSquares(y);
-            double rss = Math.Stats.SumOfSquares(residuals.RowPackedData()); //without intercept residuals dont add up to zero
+            double mss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w) : Math.Stats.Utils.SumOfSquares(fit.RowPackedData());
+            double tss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(y, w) : Math.Stats.Utils.SumOfSquares(y);
+            double rss = Math.Stats.Utils.SumOfSquares(residuals.RowPackedData()); //without intercept residuals dont add up to zero
 
             m_observations = A.Rows;
             m_coeffs = coeffs.RowPackedData();

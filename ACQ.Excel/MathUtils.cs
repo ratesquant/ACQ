@@ -64,7 +64,7 @@ namespace ACQ.Excel
             return result;
         }
 
-        [ExcelFunction(Description = "Check if number is prime (returns false for non-integer numbers and strings)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        [ExcelFunction(Description = "Check if number is prime (returns false for non-integer numbers and strings not convertable to integers)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static bool acq_isprime(object item)
         {
             bool result = false;
@@ -86,7 +86,7 @@ namespace ACQ.Excel
 
             return isint;
         }
-    }
+    }    
 
     /// <summary>
     /// Excel has some special function, here we expose function for testing purposes 

@@ -113,13 +113,22 @@ namespace ACQ.Excel
                     int n = array.GetLength(0);
                     int m = array.GetLength(1);
 
-                    result = new T[n]; //TODO: convert first column, think about how to do it in more general way
-
-                    for (int i = 0; i < n; i++)
+                    if (n > 0)
                     {
-                        result[i] = (T)array[i, 0];
+                        var temp = new List<T>(n); //TODO: convert first column, think about how to do it in more general way
+
+                        for (int i = 0; i < n; i++)
+                        {
+                            object item = array[i, 0];
+                            if (!IsMissingOrEmpty(item)) //this is what excel does, it excludes empty cell from the selected range
+                            {
+                                temp.Add((T)item);
+                            }
+                        }
+                        result = temp.ToArray();
                     }
-                }catch(Exception e) //return null
+                }
+                catch(Exception e) //return null
                 {
                     System.Diagnostics.Debug.Write(e.Message);
                 }

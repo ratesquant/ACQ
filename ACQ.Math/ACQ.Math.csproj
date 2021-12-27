@@ -89,7 +89,7 @@
     <Compile Include="Roots.cs" />
     <Compile Include="Sort.cs" />
     <Compile Include="Special.cs" />
-    <Compile Include="Stats.cs" />
+    <Compile Include="Stats\Utils.cs" />
     <Compile Include="Sudoku.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="Linalg\Vector.cs" />
