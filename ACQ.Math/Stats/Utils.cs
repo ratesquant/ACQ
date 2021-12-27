@@ -66,7 +66,7 @@ namespace ACQ.Math.Stats
         /// <returns></returns>
         public static double Std(double[] x)
         {
-            return Math.Sqrt(Var(x));
+            return Sqrt(Var(x));
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace ACQ.Math.Stats
             if (dVar == 0)
                 dSkew = Double.NaN;
             else
-                dSkew /= (n*dVar*Math.Sqrt(dVar));
+                dSkew /= (n*dVar*Sqrt(dVar));
 
             return dSkew;
         }
@@ -201,7 +201,7 @@ namespace ACQ.Math.Stats
             dMoment = 0;
             for (int i = 0; i < n; i++)
             {                
-                dMoment += Math.Pow(x[i] - mean, order);
+                dMoment += Pow(x[i] - mean, order);
             }
 
 

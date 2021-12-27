@@ -18,7 +18,10 @@ namespace ACQ.Excel
         /// <param name="ignore_na"></param>
         /// <returns></returns>
         [ExcelFunction(Description = "Compute mean (optionaly weighted)", Category = AddInInfo.Category, IsThreadSafe = true)]
-        public static object acq_mean(object x, object w, object ignore_na)
+        public static object acq_mean(
+            [ExcelArgument(Description = "Array")] object x,
+            [ExcelArgument(Description = "Array of Weights [optional]")] object w,
+            [ExcelArgument(Description = "Ignore NA flag [optional] (default: false)")] object ignore_na)
         {
             double[] x_input = ExcelHelper.CheckArray<double>(x);
             double[] w_input = ExcelHelper.CheckArray<double>(w);
