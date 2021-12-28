@@ -178,14 +178,22 @@ namespace ACQ.Excel.Objects
                 return ExcelError.ExcelErrorRef;
             else
             {
+                bool include_intercept = ExcelHelper.CheckValue(intercept, true);
+                double[] reg_weights = ExcelHelper.CheckArray<double>(weights);
 
-                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, intercept, weights, "acq_regression_linear_create" },
+                return ACQ.Excel.Handles.GlobalCache.CreateHandle(m_tag, new object[] { x, y, reg_weights, include_intercept, "acq_regression_linear_create" },
                    (objectType, parameters) =>
                    {
-                       bool include_intercept = ExcelHelper.CheckValue(intercept, true);
-                       double[] reg_weights = ExcelHelper.CheckArray<double>(weights);                     
+                       ACQ.Math.Regression.LinearRegression regression = null;
 
-                       ACQ.Math.Regression.LinearRegression regression = new Math.Regression.LinearRegression(x, y, reg_weights, include_intercept);
+                       try
+                       {
+                           regression = new Math.Regression.LinearRegression(x, y, reg_weights, include_intercept);
+                       }
+                       catch (Exception ex)
+                       {
+                           LogDisplay.WriteLine("Error: " + ex.ToString());      
+                       }
 
                        if (regression == null)
                            return ExcelError.ExcelErrorNull;

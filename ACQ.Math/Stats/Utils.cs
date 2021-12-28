@@ -28,12 +28,13 @@ namespace ACQ.Math.Stats
                 dSum = t;
             }
             return dSum; 
-        }
+        } 
+        /*
         public static double KahanMean(double[] x)
         {
             return KahanSum(x) / x.Length;
         }
-
+       
         public static double Sum(double[] x)
         {
             double dSum = x.Length == 0 ? Double.NaN : x[0];
@@ -46,15 +47,22 @@ namespace ACQ.Math.Stats
         public static double Mean(double[] x)
         {
             return Sum(x) / x.Length;
-        }
+        }*/
 
         public static double Max(double[] x)
         {
-            double max = x.Length == 0 ? Double.NaN : x[0];
+            if (x == null || x.Length == 0)
+                return Double.NaN;
+
+            double max = x[0];
 
             for (int i = 1; i < x.Length; i++)
-                if(x[i] > max)
+            {
+                if (x[i] > max)
+                {
                     max = x[i];
+                }
+            }
 
             return max;
         }
@@ -231,7 +239,7 @@ namespace ACQ.Math.Stats
         }
 
         /// <summary>
-        /// Implements Kahan sum
+        /// Uses Kahan summation
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
@@ -271,6 +279,12 @@ namespace ACQ.Math.Stats
             return sum;
         }
 
+        /// <summary>
+        /// Uses Kahan summation
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="ignore_na"></param>
+        /// <returns></returns>
         public static double Mean(double[] x, bool ignore_na = false)
         {
             if (x == null || x.Length == 0)
@@ -299,15 +313,7 @@ namespace ACQ.Math.Stats
             }
             else
             {
-                for (int i = 0; i < x.Length; i++)
-                {
-                    double y = x[i] - c;
-                    double t = sum + y;
-
-                    c = (t - sum) - y;
-                    sum = t;
-                }
-                mean = sum / x.Length;
+                mean = Sum(x) / x.Length;
             }
             return mean;
         }
@@ -378,6 +384,14 @@ namespace ACQ.Math.Stats
             double ssd = SumOfSquaredDev(x, out mean);
             return ssd + mean * mean * x.Length;
         }
+
+        public static double SumOfSquares(double[] x, double[] w)
+        {
+            double mean;
+            double ssd = SumOfSquaredDev(x, w, out mean);
+            return ssd + mean * mean * x.Length;
+        }
+
 
         public static double SumOfSquaredDev(double[] x)
         {

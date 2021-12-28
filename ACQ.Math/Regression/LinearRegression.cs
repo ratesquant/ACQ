@@ -9,6 +9,7 @@ namespace ACQ.Math.Regression
     {
         readonly bool m_intercept;
         readonly string[] m_names;
+        readonly bool m_weighted;
 
         //paramaters
         double[] m_coeffs;
@@ -30,14 +31,14 @@ namespace ACQ.Math.Regression
         {
             if (x == null || y == null || x.Length != y.Length)            
             {
-                throw new ArgumentException("LinearRegression: check input arguments");
+                throw new ArgumentException("LinearRegression: check input arguments (x and y can't be null and must have the same size)");
             }
 
-            bool use_weights = (w != null);
+            m_weighted = (w != null);
 
-            if (use_weights && w.Length != y.Length)            
+            if (m_weighted && w.Length != y.Length)            
             {
-                throw new ArgumentException("LinearRegression: array of weights should have the same length");
+                throw new ArgumentException("LinearRegression: array of weights should have the same length as x and y");
             }
 
             m_intercept = intercept;
@@ -55,6 +56,16 @@ namespace ACQ.Math.Regression
 
             int n = x.Length;
 
+            //check input for NaN
+            for (int i = 0; i < x.Length; i++)
+            { 
+                if(Double.IsNaN(x[i]) || Double.IsNaN(y[i]))
+                    throw new ArgumentException("LinearRegression: there should not be NaN values in x or y");
+
+                if(m_weighted && Double.IsNaN(w[i]))
+                    throw new ArgumentException("LinearRegression: weights vector should not have NaN values");
+            }
+
             if (m_intercept)
             {               
                 int m = 1;
@@ -63,13 +74,13 @@ namespace ACQ.Math.Regression
 
                 for (int i = 0; i < n; i++)
                 {
-                    A[i, 0] = x[0];
+                    A[i, 0] = x[i];
                     A[i, 1] = 1.0; //intercept
                 }
             }
             else
             {
-                A = new Linalg.Matrix(x, false);
+                A = new Linalg.Matrix(x);
             }  
 
             compute_coefficients(A, y, w);
@@ -79,17 +90,20 @@ namespace ACQ.Math.Regression
         {
             if (x == null || y == null || x.GetLength(0) != y.Length)
             {
-                throw new ArgumentException("LinearRegression: check input arguments");
+                throw new ArgumentException("LinearRegression: check input arguments (x and y can't be null and length of y should be the same as number of x rows)");
             }
-            
-            if ((w != null) && w.Length != y.Length)
+
+            m_weighted = (w != null);
+
+            if (m_weighted && w.Length != y.Length)
             {
-                throw new ArgumentException("LinearRegression: array of weights should have the same length");
+                throw new ArgumentException("LinearRegression: array of weights should have the same length as y");
             }
 
             m_intercept = intercept;
 
             //init variable names
+            int n = x.GetLength(0);
             int m = x.GetLength(1);            
             
             m_names = new string[m + (m_intercept ? 1 : 0)];
@@ -103,6 +117,24 @@ namespace ACQ.Math.Regression
             {
                 m_names[m] = "(intercept)";
             }
+
+            //check input for NaN
+            for (int i = 0; i < n; i++)
+            {
+                if (Double.IsNaN(y[i]))
+                    throw new ArgumentException("LinearRegression: there should not be NaN values in y");
+
+                if (m_weighted && Double.IsNaN(w[i]))
+                    throw new ArgumentException("LinearRegression: weights vector should not have NaN values");
+
+                for (int j = 0; j < m; j++)
+                {
+                    if (Double.IsNaN(x[i, j]))
+                        throw new ArgumentException("LinearRegression: there should not be NaN values in x");
+
+                }
+            }
+
 
             compute_regression(x, y, w);
         }        
@@ -169,7 +201,7 @@ namespace ACQ.Math.Regression
             }
             else
             {
-                A = new Linalg.Matrix(x, false);
+                A = new Linalg.Matrix(x);
             }
 
             compute_coefficients(A, y, w);
@@ -178,6 +210,23 @@ namespace ACQ.Math.Regression
         private void compute_coefficients(Linalg.Matrix A, double[] y, double[] w)
         {
             Linalg.Matrix b = new Linalg.Matrix(y, false);
+
+            double[] w_sqrt = null;
+            if (m_weighted)
+            {
+                w_sqrt = new double[b.Rows];
+                for (int i = 0; i < b.Rows; i++)
+                {
+                    w_sqrt[i] = System.Math.Sqrt(w[i]);
+
+                    b[i, 0] = b[i, 0] * w_sqrt[i]; //here we assume that specified weights are sigmas (i.e. not sigma square)
+
+                    for (int j = 0; j < A.Columns; j++)
+                    {
+                       A[i, j] = A[i, j] * w_sqrt[i];
+                    }
+                }
+            }
 
             Linalg.Matrix coeffs;
             Linalg.Matrix cov;
@@ -197,10 +246,21 @@ namespace ACQ.Math.Regression
             Linalg.Matrix fit = A * coeffs;
             Linalg.Matrix residuals = fit - b;
 
+            if (m_weighted)
+            {
+                for (int i = 0; i < fit.Rows; i++)
+                {
+                    fit[i, 0] = fit[i, 0] / w_sqrt[i];
+                    residuals[i, 0] = fit[i, 0] - b[i, 0] / w_sqrt[i];
+                }
+            }
 
-            double mss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w) : Math.Stats.Utils.SumOfSquares(fit.RowPackedData());
-            double tss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(y, w) : Math.Stats.Utils.SumOfSquares(y);
-            double rss = Math.Stats.Utils.SumOfSquares(residuals.RowPackedData()); //without intercept residuals dont add up to zero
+
+            //double mss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w) : Math.Stats.Utils.SumOfSquares(fit.RowPackedData());
+            //double tss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(y, w) : Math.Stats.Utils.SumOfSquares(y);
+            double mss = Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w);
+            double tss = Math.Stats.Utils.SumOfSquaredDev(y, w);
+            double rss = Math.Stats.Utils.SumOfSquares(residuals.RowPackedData(), w); //without intercept residuals dont add up to zero
 
             m_observations = A.Rows;
             m_coeffs = coeffs.RowPackedData();
@@ -223,6 +283,7 @@ namespace ACQ.Math.Regression
             double r2_adj = 1.0 - (n - dof_intercept) * (1.0 - r2) / dof;
             double fvalue = (mss / (p - dof_intercept)) / (rss / dof);
             double aic = n + n * System.Math.Log(2 * System.Math.PI) + n * System.Math.Log(rss / n) + 2 * (m_coeffs.Length + 1); // sum(log(w))
+            double bic = n + n * System.Math.Log(2 * System.Math.PI) + n * System.Math.Log(rss / n) + System.Math.Log(m_observations) * (m_coeffs.Length + 1); // sum(log(w))
 
             //generate summary
             m_summary = new Dictionary<string, double>();
@@ -237,7 +298,8 @@ namespace ACQ.Math.Regression
             m_summary["r2"] = r2;
             m_summary["r2_adj"] = r2_adj;
             m_summary["fvalue"] = fvalue;
-            m_summary["aic"] = aic;            
+            m_summary["aic"] = aic;
+            m_summary["bic"] = bic;
 
             for (int i = 0; i < p; i++)
             {
