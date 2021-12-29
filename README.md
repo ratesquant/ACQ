@@ -74,7 +74,7 @@ the list of excel functions for scattered data interpolation:
 	3. acq_interpolator_scattered_eval_x5 - evaluates RBF interpolator at specified point, coordinates are specified individually (up to 5D)
 
 # Linear Regression
-Weighted Linear regression (with and without intercept). Compared to LINEST Excel function it allows to specify weights, does not use array formula and allows to directly compute regression estimate. 
+Weighted Linear regression (with and without intercept). Compared to LINEST Excel function it allows to specify weights, and compute regression estimate without using array formulas. 
 
 	1. acq_regression_linear_create - creates linear regression (returns regression object)
 	2. acq_regression_eval - computes regression estimate (using regression object)
@@ -142,12 +142,13 @@ Input arguments: same as for Binomial option pricing
 
 # Misc Utils
 Various convenience functions to compute min/max/mean ignoring non-numerical values (mean can be weighted) 
+
 	1. acq_mean - Compute mean(x) (with optional weighted, can ignore non-numerical values)  	
 	2. acq_max,acq_min, acq_absmax and acq_absmin - Compute max(x), min(x), max(abs(x)) and  min(abs(x)) (ignores non-numerical values)  
-    3. acq_tostring - converts a value to string representation
-    4. acq_isinteger - checks if value is integer
-    5. acq_isprime - checks if number is prime
-    6. acq_join	 - concatenate the elements of the range to string (with specified separator)	
+	3. acq_tostring - converts a value to string representation
+	4. acq_isinteger - checks if value is integer
+	5. acq_isprime - checks if number is prime
+	6. acq_join	 - concatenate the elements of the range to string (with specified separator)	
 	
 
 # Shotcuts
