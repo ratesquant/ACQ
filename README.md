@@ -141,17 +141,17 @@ Input arguments: same as for Binomial option pricing
 	2. acq_options_trinomial_american_greeks -  Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
 
 # Misc Utils
-Compute min/max/mean while ignoring non-numerical values (mean can be weighted). 
+Compute min/max/mean while ignoring non-numeric values (mean can be weighted). 
 
-	1. acq_mean - Compute mean(x) (with optional weighted, can ignore non-numerical values)  	
-	2. acq_max,acq_min, acq_absmax and acq_absmin - Compute max(x), min(x), max(abs(x)) and  min(abs(x)) (ignores non-numerical values)  
+	1. acq_mean - Compute mean(x) (with optional weighted, can ignore non-numeric values)  	
+	2. acq_max,acq_min, acq_absmax and acq_absmin - Compute max(x), min(x), max(abs(x)) and  min(abs(x)) (ignores non-numeric values)  
 	3. acq_tostring - converts a value to string representation
 	4. acq_isinteger - checks if value is integer
 	5. acq_isprime - checks if number is prime
 	6. acq_join	 - concatenate the elements of the range to string (with specified separator)	
 	
 
-# Shotcuts
+# Shortcuts
 	1. Ctrl+Shift+H - shows ACQ log window
 	2. Ctrl+Shift+A - shows ACQ introspection window (for ACQ handles)
 	
