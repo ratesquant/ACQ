@@ -141,7 +141,7 @@ Input arguments: same as for Binomial option pricing
 	2. acq_options_trinomial_american_greeks -  Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
 
 # Misc Utils
-Various convenience functions to compute min/max/mean ignoring non-numerical values (mean can be weighted) 
+Compute min/max/mean while ignoring non-numerical values (mean can be weighted). 
 
 	1. acq_mean - Compute mean(x) (with optional weighted, can ignore non-numerical values)  	
 	2. acq_max,acq_min, acq_absmax and acq_absmin - Compute max(x), min(x), max(abs(x)) and  min(abs(x)) (ignores non-numerical values)  
