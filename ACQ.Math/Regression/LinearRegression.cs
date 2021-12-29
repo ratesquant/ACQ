@@ -246,21 +246,28 @@ namespace ACQ.Math.Regression
             Linalg.Matrix fit = A * coeffs;
             Linalg.Matrix residuals = fit - b;
 
+            double aic_weight_correction = 0;
+            double weight_sum = fit.Rows;
             if (m_weighted)
             {
                 for (int i = 0; i < fit.Rows; i++)
                 {
                     fit[i, 0] = fit[i, 0] / w_sqrt[i];
                     residuals[i, 0] = fit[i, 0] - b[i, 0] / w_sqrt[i];
+
+                    aic_weight_correction += System.Math.Log(w[i]);
                 }
+                weight_sum = Math.Stats.Utils.Sum(w);
             }
 
-
-            //double mss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w) : Math.Stats.Utils.SumOfSquares(fit.RowPackedData());
-            //double tss = m_intercept ? Math.Stats.Utils.SumOfSquaredDev(y, w) : Math.Stats.Utils.SumOfSquares(y);
             double mss = Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w);
-            double tss = Math.Stats.Utils.SumOfSquaredDev(y, w);
             double rss = Math.Stats.Utils.SumOfSquares(residuals.RowPackedData(), w); //without intercept residuals dont add up to zero
+            
+            //double mss = Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w);            
+            //double rss = Math.Stats.Utils.SumOfSquaredDev(residuals.RowPackedData(), w); //without intercept residuals dont add up to zero
+            
+            double tss = Math.Stats.Utils.SumOfSquaredDev(y, w);
+
 
             m_observations = A.Rows;
             m_coeffs = coeffs.RowPackedData();
@@ -282,8 +289,9 @@ namespace ACQ.Math.Regression
             double r2 = mss / (mss + rss);
             double r2_adj = 1.0 - (n - dof_intercept) * (1.0 - r2) / dof;
             double fvalue = (mss / (p - dof_intercept)) / (rss / dof);
-            double aic = n + n * System.Math.Log(2 * System.Math.PI) + n * System.Math.Log(rss / n) + 2 * (m_coeffs.Length + 1); // sum(log(w))
-            double bic = n + n * System.Math.Log(2 * System.Math.PI) + n * System.Math.Log(rss / n) + System.Math.Log(m_observations) * (m_coeffs.Length + 1); // sum(log(w))
+            double aic_bic = n + n * System.Math.Log(2 * System.Math.PI) + n * System.Math.Log(rss / n) -aic_weight_correction;
+            double aic = aic_bic + 2 * (m_coeffs.Length + 1);
+            double bic = aic_bic + System.Math.Log(m_observations) * (m_coeffs.Length + 1);
 
             //generate summary
             m_summary = new Dictionary<string, double>();

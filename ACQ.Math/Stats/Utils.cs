@@ -389,7 +389,13 @@ namespace ACQ.Math.Stats
         {
             double mean;
             double ssd = SumOfSquaredDev(x, w, out mean);
-            return ssd + mean * mean * x.Length;
+
+            if (w == null)
+                ssd = ssd + mean * mean * x.Length;
+            else
+                ssd = ssd + mean * mean * Sum(w);
+
+            return ssd;
         }
 
 
