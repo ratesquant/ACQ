@@ -7,7 +7,7 @@ namespace ACQ.Math.Regression
 {
     public interface IRegression
     {
-        double Estimate(params double[] x);
+        double Eval(params double[] x);
     }
 
     public interface IRegressionParam

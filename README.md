@@ -73,6 +73,11 @@ the list of excel functions for scattered data interpolation:
 	2. acq_interpolator_scattered_eval - evaluates RBF interpolator at specified point
 	3. acq_interpolator_scattered_eval_x5 - evaluates RBF interpolator at specified point, coordinates are specified individually (up to 5D)
 
+# Linear Regression
+Weighted Linear regression (with and without intercept). Compared to LINEST Excel function it allows to specify weights, does not use array formula and allows to directly compute regression estimate. 
+	1. acq_regression_linear_create - creates linear regression (returns regression object)
+	2. acq_regression_eval - computes regression estimate (using regression object)
+
 # Lowess
 Lowess is scatter plot smoothing based on locally-weighted linear regression (based on R code)
 
@@ -91,47 +96,57 @@ Excel interface allows to initialize generator with single or array seed
 	4. acq_vector_size(vector) - get size of the vector 
 
 
-# Black option pricing formulas for european options
+# Black pricing formulas for European options
 Input arguments: forward: forward price of the underlying, strike : option strike, time: time until expiration in years, rate: risk free rate, dividend: (dividend yield continuously compounded), sigma: implied volatility (annual), isCall: TRUE for call options, FALSE for puts
 
-	1. acq_options_black_price - Price of the option 
-	2. acq_options_black_vol - Implied volatility of the black option 
-	3. acq_options_black_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
+	1. acq_options_black_price - Compute option price  
+	2. acq_options_black_vol - Compute implied volatility (to match specified price)
+	3. acq_options_black_greeks - Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
 	
 	
-# Bachelier pricing formulas for european options
+# Bachelier pricing formulas for European options
 Input arguments: same as for Black options pricing formulas, but implied volatility (sigma) is normal
 
-	1. acq_options_black_price - Price of the option 
-	2. acq_options_bachelier_vol - Implied volatility of the black option 
-	3. acq_options_bachelier_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
+	1. acq_options_black_price - Compute option price  
+	2. acq_options_bachelier_vol - Compute implied volatility (to match specified price) 
+	3. acq_options_bachelier_greeks - Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
 
 
-# Black-Scholes option pricing formulas for european options
+# Black-Scholes pricing formulas for European options
 Input arguments: same as for Black options pricing formulas, but uses spot: spot price of the underlying, instead of forward.
 
-	1. acq_options_blackscholes_price - Price of the option  
-	2. acq_options_blackscholes_vol - Implied volatility of the option 
-	3. acq_options_blackscholes_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta, Charm, Epsilon (analytical)	
+	1. acq_options_blackscholes_price - Compute option price  
+	2. acq_options_blackscholes_vol - Compute implied volatility (to match specified price) 
+	3. acq_options_blackscholes_greeks - Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta, Charm, Epsilon (analytical)	
 
 
-# Bjerksund and Stensland (2002) Approximation for American options
-	1. acq_options_bjerksund_price - Price of the option  
-	2. acq_options_bjerksund_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
+# Bjerksund and Stensland (2002) approximation for American options
+	1. acq_options_bjerksund_price - Compute option price  
+	2. acq_options_bjerksund_greeks - Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
 
 
-# Binomial option pricing tree for American options
+# Binomial option pricing method for American options
 Input arguments: same as for Black-Scholes with additional optional argument -  time_steps: number of times steps 
 
-	1. acq_options_binomial_american_price - Price of the option  	
-	2. acq_options_binomial_american_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
+	1. acq_options_binomial_american_price - Compute option price   	
+	2. acq_options_binomial_american_greeks - Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
 
 
-# Trinomial option pricing tree for American options
+# Trinomial option pricing method for American options
 Input arguments: same as for Binomial option pricing 
 
-	1. acq_options_trinomial_american_price - Price of the option  	
-	2. acq_options_trinomial_american_greeks - Greeks of the option: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
+	1. acq_options_trinomial_american_price - Compute option price  	
+	2. acq_options_trinomial_american_greeks -  Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (numerical)	
+
+# Misc Utils
+Various convenience functions to compute min/max/mean ignoring non-numerical values (mean can be weighted) 
+	1. acq_mean - Compute mean(x) (with optional weighted, can ignore non-numerical values)  	
+	2. acq_max,acq_min, acq_absmax and acq_absmin - Compute max(x), min(x), max(abs(x)) and  min(abs(x)) (ignores non-numerical values)  
+    3. acq_tostring - converts a value to string representation
+    4. acq_isinteger - checks if value is integer
+    5. acq_isprime - checks if number is prime
+    6. acq_join	 - concatenate the elements of the range to string (with specified separator)	
+	
 
 # Shotcuts
 	1. Ctrl+Shift+H - shows ACQ log window

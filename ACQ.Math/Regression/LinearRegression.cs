@@ -139,7 +139,7 @@ namespace ACQ.Math.Regression
             compute_regression(x, y, w);
         }        
 
-        public double Estimate(params double[] x)
+        public double Eval(params double[] x)
         {
             double result = Double.NaN;
 

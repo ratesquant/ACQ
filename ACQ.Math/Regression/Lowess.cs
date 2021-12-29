@@ -130,7 +130,7 @@ namespace ACQ.Math.Regression
             }
         }
 
-        public double Estimate(params double[] xp)
+        public double Eval(params double[] xp)
         {
             double result = m_interpolator.Eval(xp[0]);
             return result;

@@ -39,14 +39,14 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Estimate Regression value at specified point", Category = AddInInfo.Category)]
-        public static object acq_regression_estimate1d(
+        [ExcelFunction(Description = "Evaluate Regression value at specified point", Category = AddInInfo.Category)]
+        public static object acq_regression_eval1d(
             [ExcelArgument(Description = "Regression object")] string handle, double x)
         {
             Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegression, double, double>(handle, 
                 (regression, point) =>
             {
-                return regression.Estimate(point);
+                return regression.Eval(point);
             }, x);
 
             if (results.Item1)
@@ -59,14 +59,14 @@ namespace ACQ.Excel.Objects
             }
         }
 
-        [ExcelFunction(Description = "Estimate Regression value at specified point", Category = AddInInfo.Category,IsThreadSafe = true)]
-        public static object acq_regression_estimate(
+        [ExcelFunction(Description = "Evaluate Regression value at specified point", Category = AddInInfo.Category,IsThreadSafe = true)]
+        public static object acq_regression_eval(
             [ExcelArgument(Description = "Regression object")] string handle, double[] x)
         {
             Tuple<bool, double> results = ACQ.Excel.Handles.GlobalCache.TryReadObject<ACQ.Math.Regression.IRegression, double, double[]>(handle,
                 (regression, point) =>
                 {
-                    return regression.Estimate(point);
+                    return regression.Eval(point);
                 }, x);
 
             if (results.Item1)
@@ -139,7 +139,7 @@ namespace ACQ.Excel.Objects
             {   
                 ACQ.Math.Regression.Lowess lowess = construct_lowess(x, y, span, nsteps, delta);
 
-                return ExcelHelper.CheckNan(lowess.Estimate(xp));
+                return ExcelHelper.CheckNan(lowess.Eval(xp));
             }
         }
 
