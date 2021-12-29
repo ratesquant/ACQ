@@ -28,43 +28,78 @@ namespace ACQ.Math.Stats
                 dSum = t;
             }
             return dSum; 
-        } 
-        /*
-        public static double KahanMean(double[] x)
-        {
-            return KahanSum(x) / x.Length;
-        }
-       
-        public static double Sum(double[] x)
-        {
-            double dSum = x.Length == 0 ? Double.NaN : x[0];
+        }         
 
-            for (int i = 1; i < x.Length; i++)
-                dSum += x[i];
-
-            return dSum;
-        }
-        public static double Mean(double[] x)
-        {
-            return Sum(x) / x.Length;
-        }*/
-
-        public static double Max(double[] x)
+        public static double Max(double[] x, bool ignore_na = false)
         {
             if (x == null || x.Length == 0)
                 return Double.NaN;
 
-            double max = x[0];
+            double max = Double.NegativeInfinity;
 
-            for (int i = 1; i < x.Length; i++)
+            if (ignore_na)
             {
-                if (x[i] > max)
+                for (int i = 0; i < x.Length; i++)
                 {
-                    max = x[i];
+                    if (!Double.IsNaN(x[i]))
+                    {
+                        if (x[i] > max)
+                        {
+                            max = x[i];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                max = x[0];
+
+                for (int i = 1; i < x.Length; i++)
+                {
+                    if (x[i] > max)
+                    {
+                        max = x[i];
+                    }
                 }
             }
 
             return max;
+        }
+
+        public static double Min(double[] x, bool ignore_na = false)
+        {
+            if (x == null || x.Length == 0)
+                return Double.NaN;
+
+            double min = Double.PositiveInfinity;
+
+            if (ignore_na)
+            {
+                for (int i = 0; i < x.Length; i++)
+                {
+                    if (!Double.IsNaN(x[i]))
+                    {
+                        if (x[i] < min)
+                        {
+                            min = x[i];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                min = x[0];
+
+                for (int i = 1; i < x.Length; i++)
+                {
+                    if (x[i] < min)
+                    {
+                        min = x[i];
+                    }
+                }
+            }
+
+            return min;
         }
 
         /// <summary>
@@ -378,14 +413,7 @@ namespace ACQ.Math.Stats
             return result;
         }
 
-        public static double SumOfSquares(double[] x)
-        {
-            double mean;
-            double ssd = SumOfSquaredDev(x, out mean);
-            return ssd + mean * mean * x.Length;
-        }
-
-        public static double SumOfSquares(double[] x, double[] w)
+        public static double SumOfSquares(double[] x, double[] w = null)
         {
             double mean;
             double ssd = SumOfSquaredDev(x, w, out mean);
@@ -398,49 +426,7 @@ namespace ACQ.Math.Stats
             return ssd;
         }
 
-
-        public static double SumOfSquaredDev(double[] x)
-        {
-            double mean;
-            return SumOfSquaredDev(x, out mean);
-        }
-
-        public static double SumOfSquaredDev(double[] x, out double mean)
-        {
-            double tss;
-
-            if (x != null && x.Length > 0)
-            {
-                int n = x.Length;
-
-                double sum = 0.0;
-
-                for (int i = 0; i < n; i++)
-                {
-                    sum += x[i];
-                }
-
-                mean = sum / n;
-                double sum2 = 0.0;
-                double sum3 = 0.0;
-
-                for (int i = 0; i < n; i++)
-                {
-                    double dx = (x[i] - mean);
-                    sum2 += dx * dx;
-                    sum3 += dx;
-                }
-
-                tss = sum2 - sum3 * sum3 / n;
-            }
-            else
-            {
-                tss = mean = Double.NaN;
-            }
-            return tss;
-        }
-
-        public static double SumOfSquaredDev(double[] x, double[] w)
+        public static double SumOfSquaredDev(double[] x, double[] w = null)
         {
             double mean;
             return SumOfSquaredDev(x, w, out mean);
@@ -448,42 +434,42 @@ namespace ACQ.Math.Stats
 
         public static double SumOfSquaredDev(double[] x, double[] w, out double mean)
         {
-            double tss;
+            double tss = mean = Double.NaN;         
 
-            if (w == null)
-            {
-                return SumOfSquaredDev(x, out mean); //unweighted version
-            }
-
-            if (x != null && x.Length > 0 && w.Length == x.Length)
+            if (x != null && x.Length > 0)
             {
                 int n = x.Length;
 
-                double sum = 0.0;
-                double sw = 0.0;
-
-                for (int i = 0; i < n; i++)
-                {
-                    sum += x[i] * w[i];
-                    sw += w[i];
-                }
-
-                mean = sum / sw;
                 double sum2 = 0.0;
                 double sum3 = 0.0;
 
-                for (int i = 0; i < n; i++)
-                {
-                    double dx = (x[i] - mean);
-                    sum2 += w[i] * dx * dx;
-                    sum3 += w[i] * dx;
-                }
+                if (w != null && w.Length == x.Length)
+                {                    
+                    mean = WeightedMean(x, w); //weighted version
+                    double sw = Sum(w);
+                
+                    for (int i = 0; i < n; i++)
+                    {
+                        double dx = (x[i] - mean);
+                        sum2 += w[i] * dx * dx;
+                        sum3 += w[i] * dx;
+                    }
 
-                tss = sum2 - sum3 * sum3 / sw;
-            }
-            else
-            {
-                tss = mean = Double.NaN;
+                    tss = sum2 - sum3 * sum3 / sw;
+                }
+                else
+                {                   
+                    mean = Mean(x);  //unweighted version
+
+                    for (int i = 0; i < n; i++)
+                    {
+                        double dx = (x[i] - mean);
+                        sum2 += dx * dx;
+                        sum3 += dx;
+                    }
+
+                    tss = sum2 - sum3 * sum3 / n;
+                }
             }
             return tss;
         }

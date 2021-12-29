@@ -261,11 +261,7 @@ namespace ACQ.Math.Regression
             }
 
             double mss = Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w);
-            double rss = Math.Stats.Utils.SumOfSquares(residuals.RowPackedData(), w); //without intercept residuals dont add up to zero
-            
-            //double mss = Math.Stats.Utils.SumOfSquaredDev(fit.RowPackedData(), w);            
-            //double rss = Math.Stats.Utils.SumOfSquaredDev(residuals.RowPackedData(), w); //without intercept residuals dont add up to zero
-            
+            double rss = Math.Stats.Utils.SumOfSquares(residuals.RowPackedData(), w); //without intercept residuals dont add up to zero            
             double tss = Math.Stats.Utils.SumOfSquaredDev(y, w);
 
 
