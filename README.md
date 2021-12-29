@@ -75,8 +75,10 @@ the list of excel functions for scattered data interpolation:
 
 # Linear Regression
 Weighted Linear regression (with and without intercept). Compared to LINEST Excel function it allows to specify weights, does not use array formula and allows to directly compute regression estimate. 
+
 	1. acq_regression_linear_create - creates linear regression (returns regression object)
 	2. acq_regression_eval - computes regression estimate (using regression object)
+
 
 # Lowess
 Lowess is scatter plot smoothing based on locally-weighted linear regression (based on R code)
