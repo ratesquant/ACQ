@@ -15,8 +15,14 @@ v1.30 (2021-12-18):
     1. Black Options Pricing formulas (Price, Implied vol and Greeks)
     2. Black-Scholes Options Pricing formulas (Price, Implied vol and Greeks)
 v1.40 (): 
-    1. Bachelier option pricing formulas (Price, Implied vol and Greeks)
-    2. Bjerksund-Stensland(2002) approximation for american options
-    3. Binomial (CRR) and Trinomial pricers for american options 
-    3. Added utils to count number of unique elements in excel range (acq_count_unique), concatenate the elements to string (acq_join), check if number is integer (acq_isinteger) and check if number is prime (acq_isprime)
+    1. Bachelier option pricing formulas (Price, Implied vol and Greeks): acq_options_bachelier_price, acq_options_bachelier_vol, acq_options_bachelier_greeks
+    2. Bjerksund-Stensland(2002) approximation for american options: acq_options_bjerksund_price, acq_options_bjerksund_greeks
+    3. Binomial (CRR) and Trinomial pricers for american options: acq_options_binomial_american_greeks, acq_options_trinomial_american_greeks 
+    4. Added weighted linear regression: acq_regression_linear_create, acq_regression_estimate 
+    5. Added functions to 
+        - count number of unique elements in excel range: acq_count_unique
+        - concatenate the elements to string: acq_join 
+        - check if number is integer: acq_isinteger
+        - check if number is prime: acq_isprime 
+        - compute max(x), min(x), max(abs(x)), min(abs(x)), mean(x) while ignoring non-numeric values: acq_max, acq_min, acq_absmax, acq_absmin, acq_mean
      

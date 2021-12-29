@@ -32,6 +32,153 @@ namespace ACQ.Excel
 
             return ExcelHelper.CheckNan(result);
         }
-       
+
+        /// <summary>
+        /// Compute Max
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute max(x) (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_max(
+            [ExcelArgument(Description = "Array")] object x)
+        {   
+            double max = Double.NegativeInfinity;
+
+            object[,] array = x as object[,];
+
+            if (array != null)
+            {
+                int n = array.GetLength(0);
+                int m = array.GetLength(1);
+                
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < m; j++)
+                    { 
+                        object item = array[i, j];
+                        if (item is Double)
+                        {
+                            double temp = (Double)item;
+                            if (temp > max)
+                            {
+                                max = temp;
+                            }
+                        }                 
+                    }
+                }
+            }
+            return ExcelHelper.CheckNan(max);
+        }
+
+        /// <summary>
+        /// Compute Max
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute max(abs(x)) (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_absmax(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double max = Double.NegativeInfinity;
+
+            object[,] array = x as object[,];
+
+            if (array != null)
+            {
+                int n = array.GetLength(0);
+                int m = array.GetLength(1);
+
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < m; j++)
+                    {
+                        object item = array[i, j];
+                        if (item is Double)
+                        {
+                            double temp = System.Math.Abs( (Double)item);
+                            if (temp > max)
+                            {
+                                max = temp;
+                            }
+                        }
+                    }
+                }
+            }
+            return ExcelHelper.CheckNan(max);
+        }
+
+        /// <summary>
+        /// Compute Min
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute min(x) (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_min(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double min = Double.PositiveInfinity;
+
+            object[,] array = x as object[,];
+
+            if (array != null)
+            {
+                int n = array.GetLength(0);
+                int m = array.GetLength(1);
+
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < m; j++)
+                    {
+                        object item = array[i, j];
+                        if (item is Double)
+                        {
+                            double temp = (Double)item;
+                            if (temp < min)
+                            {
+                                min = temp;
+                            }
+                        }
+                    }
+                }
+            }
+            return ExcelHelper.CheckNan(min);
+        }
+
+        /// <summary>
+        /// Compute Min
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute min(abs(x)) (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_absmin(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double min = Double.PositiveInfinity;
+
+            object[,] array = x as object[,];
+
+            if (array != null)
+            {
+                int n = array.GetLength(0);
+                int m = array.GetLength(1);
+
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < m; j++)
+                    {
+                        object item = array[i, j];
+                        if (item is Double)
+                        {
+                            double temp = System.Math.Abs((Double)item);
+                            if (temp < min)
+                            {
+                                min = temp;
+                            }
+                        }
+                    }
+                }
+            }
+            return ExcelHelper.CheckNan(min);
+        }
     }
 }
