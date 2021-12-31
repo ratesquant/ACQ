@@ -29,7 +29,7 @@ The following functions for interpolation are currently implemented:
 	2. acq_interpolator_eval - evaluates interpolation at specified point
 	3. acq_interpolation - evaluates interpolation at specified point(in-situ without constructing interpolator object)
 	
-Interpolaton method is specified using method argument. The argument is optional, linear interpolation is used by default. Currently implemented methods are
+Interpolation  method is specified using method argument. The argument is optional, linear interpolation is used by default. Currently implemented methods are
 
 	0. Nearest - nearest point interpolation (also Backward and Forward)
 	1. Linear - linear spline interpolation
@@ -43,7 +43,7 @@ Interpolaton method is specified using method argument. The argument is optional
 
 Bounds is optional argument that controls interpolation outside of interpolation range. When interpolating outside of range num Excel error will be returned if bounds is false, while closest point is returned when bounds is true (default).  
 
-# 2D Interpolaton
+# 2D Interpolation 
 	1. BiLinear - interpolation on rectangular grid (linear in each dimension)
 	2. BiCubic - cubic interpolation on rectangular grid (natural cubic spline in each dimension)
 	3. BiSteffen - Steffen interpolation on rectangular grid (Steffen in each dimension)
@@ -56,7 +56,7 @@ Bounds is optional argument that controls interpolation outside of interpolation
 	3. acq_interpolation2d - evaluates interpolation at specified point(in-situ without constructing interpolator object)
 
 	
-# Scattered Data Interpolaton (ND)
+# Scattered Data Interpolation  (ND)
 Scattered data interpolation is based on radial basis functions and currently limited to 512 interpolation nodes. The following radial basis functions are implemented (first three are the most common). Optional scale factors can be provided for each dimension
 
 	1. Linear

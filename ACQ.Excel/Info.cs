@@ -36,8 +36,8 @@ namespace ACQ.Excel
             return System.Environment.Version.ToString();
         }
 
-        [ExcelFunction(Description = "Returns current time", Category = AddInInfo.Category)]
-        public static object acq_now(object optional)
+        [ExcelFunction(Description = "Returns current time", Category = AddInInfo.Category, IsVolatile = true)]
+        public static object acq_now()
         {
             return DateTime.Now.ToString();
         }

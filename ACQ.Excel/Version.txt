@@ -14,7 +14,7 @@ v1.20 ():
 v1.30 (2021-12-18): 
     1. Black Options Pricing formulas (Price, Implied vol and Greeks)
     2. Black-Scholes Options Pricing formulas (Price, Implied vol and Greeks)
-v1.40 (): 
+v1.40 (2021-12-31)(1.4.8035.227): 
     1. Bachelier option pricing formulas (Price, Implied vol and Greeks): acq_options_bachelier_price, acq_options_bachelier_vol, acq_options_bachelier_greeks
     2. Bjerksund-Stensland(2002) approximation for american options: acq_options_bjerksund_price, acq_options_bjerksund_greeks
     3. Binomial (CRR) and Trinomial pricers for american options: acq_options_binomial_american_greeks, acq_options_trinomial_american_greeks 
