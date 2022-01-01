@@ -89,6 +89,7 @@
     <Compile Include="Roots.cs" />
     <Compile Include="Sort.cs" />
     <Compile Include="Special.cs" />
+    <Compile Include="Stats\BinomTest.cs" />
     <Compile Include="Stats\Utils.cs" />
     <Compile Include="Sudoku.cs" />
     <Compile Include="Utils.cs" />
