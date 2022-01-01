@@ -41,32 +41,11 @@ namespace ACQ.Excel
         [ExcelFunction(Description = "Compute max(x) (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_max(
             [ExcelArgument(Description = "Array")] object x)
-        {   
-            double max = Double.NegativeInfinity;
+        {               
+            double[] array = ExcelHelper.CheckArray<double>(x);
 
-            object[,] array = x as object[,];
+            double max = ACQ.Math.Stats.Utils.Max(array);
 
-            if (array != null)
-            {
-                int n = array.GetLength(0);
-                int m = array.GetLength(1);
-                
-                for (int i = 0; i < n; i++)
-                {
-                    for (int j = 0; j < m; j++)
-                    { 
-                        object item = array[i, j];
-                        if (item is Double)
-                        {
-                            double temp = (Double)item;
-                            if (temp > max)
-                            {
-                                max = temp;
-                            }
-                        }                 
-                    }
-                }
-            }
             return ExcelHelper.CheckNan(max);
         }
 
@@ -79,32 +58,11 @@ namespace ACQ.Excel
         public static object acq_absmax(
             [ExcelArgument(Description = "Array")] object x)
         {
-            double max = Double.NegativeInfinity;
+            double[] array = ExcelHelper.CheckArray<double>(x);
 
-            object[,] array = x as object[,];
+            double absmax = ACQ.Math.Stats.Utils.AbsMax(array);
 
-            if (array != null)
-            {
-                int n = array.GetLength(0);
-                int m = array.GetLength(1);
-
-                for (int i = 0; i < n; i++)
-                {
-                    for (int j = 0; j < m; j++)
-                    {
-                        object item = array[i, j];
-                        if (item is Double)
-                        {
-                            double temp = System.Math.Abs( (Double)item);
-                            if (temp > max)
-                            {
-                                max = temp;
-                            }
-                        }
-                    }
-                }
-            }
-            return ExcelHelper.CheckNan(max);
+            return ExcelHelper.CheckNan(absmax);
         }
 
         /// <summary>
@@ -116,31 +74,10 @@ namespace ACQ.Excel
         public static object acq_min(
             [ExcelArgument(Description = "Array")] object x)
         {
-            double min = Double.PositiveInfinity;
+            double[] array = ExcelHelper.CheckArray<double>(x);
 
-            object[,] array = x as object[,];
+            double min = ACQ.Math.Stats.Utils.Min(array);
 
-            if (array != null)
-            {
-                int n = array.GetLength(0);
-                int m = array.GetLength(1);
-
-                for (int i = 0; i < n; i++)
-                {
-                    for (int j = 0; j < m; j++)
-                    {
-                        object item = array[i, j];
-                        if (item is Double)
-                        {
-                            double temp = (Double)item;
-                            if (temp < min)
-                            {
-                                min = temp;
-                            }
-                        }
-                    }
-                }
-            }
             return ExcelHelper.CheckNan(min);
         }
 
@@ -179,6 +116,68 @@ namespace ACQ.Excel
                 }
             }
             return ExcelHelper.CheckNan(min);
+        }
+
+        /// <summary>
+        /// Compute Min
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute sum(x) (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_sum(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double[] array = ExcelHelper.CheckArray<double>(x);
+
+            double sum = ACQ.Math.Stats.Utils.Sum(array);
+
+            return ExcelHelper.CheckNan(sum);
+        }
+
+        /// <summary>
+        /// Compute standard deviation
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute standard deviation of x (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_stdev(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double[] array = ExcelHelper.CheckArray<double>(x);
+
+            double stdev = ACQ.Math.Stats.Utils.Std(array);
+
+            return ExcelHelper.CheckNan(stdev);
+        }
+
+
+        /// <summary>
+        /// Compute standard deviation
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute sum of squares of x (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_sumofsquares(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double[] array = ExcelHelper.CheckArray<double>(x);
+
+            double sum_sqr = ACQ.Math.Stats.Utils.SumOfSquares(array);
+
+            return ExcelHelper.CheckNan(sum_sqr);
+        }
+
+        [ExcelFunction(Description = "Binomial proportion confidence interval (Wilson - method)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_binomtest(
+            [ExcelArgument(Description = "Vector of number of successes in the binomial experiment")] int x,
+            [ExcelArgument(Description = "Vector of number of independent trials in the binomial experiment.")] int n,
+            [ExcelArgument(Description = "Confidence level (e.g. 0.95)")] double conf_level,
+            [ExcelArgument(Description = "Lower (TRUE) or Upper bound (FALSE)")] bool isLower)
+        {
+            
+            var result = ACQ.Math.Stats.BinomTest.ConfidenceInterval(x, n, conf_level);
+
+            return ExcelHelper.CheckNan(isLower ? result.Item1 : result.Item2);
         }
     }
 }

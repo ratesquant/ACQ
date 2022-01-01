@@ -27,4 +27,7 @@ v1.40 (2021-12-31)(1.4.8035.227):
         - check if year is a leap year: acq_isleap_year
         - convert to string: acq_tostring
         - compute max(x), min(x), max(abs(x)), min(abs(x)), mean(x) while ignoring non-numeric values: acq_max, acq_min, acq_absmax, acq_absmin, acq_mean
+v1.50 ():
+   1. acq_binomtest - Binomial proportion confidence interval (Wilson - method)
+
      

@@ -66,6 +66,43 @@ namespace ACQ.Math.Stats
             return max;
         }
 
+        public static double AbsMax(double[] x, bool ignore_na = false)
+        {
+            if (x == null || x.Length == 0)
+                return Double.NaN;
+
+            double absmax = 0;
+
+            if (ignore_na)
+            {
+                for (int i = 0; i < x.Length; i++)
+                {
+                    if (!Double.IsNaN(x[i]))
+                    {
+                        double abs_x = Abs(x[i]);
+                        if (abs_x > absmax)
+                        {
+                            absmax = abs_x;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < x.Length; i++)
+                {
+                    double abs_x = Abs(x[i]);
+
+                    if (abs_x > absmax)
+                    {
+                        absmax = abs_x;
+                    }
+                }
+            }
+
+            return absmax;
+        }
+
         public static double Min(double[] x, bool ignore_na = false)
         {
             if (x == null || x.Length == 0)

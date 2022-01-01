@@ -100,6 +100,12 @@ namespace ACQ.Excel
             return result;
         }
 
+        /// <summary>
+        /// Convert range to column packed array (skips missing value)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <returns></returns>
         internal static T[] CheckArray<T>(object value) where T : struct
         {
             T[] result = null;
@@ -113,16 +119,22 @@ namespace ACQ.Excel
                     int n = array.GetLength(0);
                     int m = array.GetLength(1);
 
-                    if (n > 0)
+                    if (n > 0 && m > 0)
                     {
-                        var temp = new List<T>(n); //TODO: convert first column, think about how to do it in more general way
+                        var temp = new List<T>(n * m); //TODO: convert first column, think about how to do it in more general way
 
-                        for (int i = 0; i < n; i++)
+                        for (int j = 0; j < m; j++)
                         {
-                            object item = array[i, 0];
-                            if (!IsMissingOrEmpty(item)) //this is what excel does, it excludes empty cell from the selected range
-                            {
-                                temp.Add((T)item);
+                            for (int i = 0; i < n; i++)
+                            {                           
+                                object item = array[i, j];
+                                if (item is T)
+                                {
+                                    if (!IsMissingOrEmpty(item)) //this is what excel does, it excludes empty cell from the selected range
+                                    {
+                                        temp.Add((T)item);
+                                    }
+                                }
                             }
                         }
                         result = temp.ToArray();

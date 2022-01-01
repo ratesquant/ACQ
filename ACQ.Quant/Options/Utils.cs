@@ -7,7 +7,7 @@ namespace ACQ.Quant.Options
 {
 
     /// <summary>
-    /// Option greeks (derivatives): here U - underlying, s - volatility, r - risk free rate,
+    /// Option greeks (derivatives): here U - underlying, s - volatility, r - risk free rate, q - dividend yield
     /// </summary>
     public enum enOptionGreeks
     {
@@ -45,7 +45,7 @@ namespace ACQ.Quant.Options
         /// </summary>
         Charm,
         /// <summary>
-        /// dP/d(dividend)
+        /// dP/dq
         /// </summary>
         Epsilon
     }

@@ -30,7 +30,7 @@ namespace ACQ.Excel
         }
 
         [ExcelFunction(Description = "Count number of unique elements in the array", Category = AddInInfo.Category, IsThreadSafe = true)]
-        public static object acq_count_unique(object[] x,
+        public static object acq_count_unique(object[,] x,
              [ExcelArgument(Description = "Optional flag if TRUE (default) ignores differences between error codes")] object ignore_error_codes)
         {
             object result = ExcelError.ExcelErrorNA;
@@ -41,14 +41,24 @@ namespace ACQ.Excel
             }
             else
             {
-                bool ignore_errors = ExcelHelper.CheckValue<bool>(ignore_error_codes, true);
+                int n = x.GetLength(0);
+                int m = x.GetLength(1);
 
-                HashSet<string> unique_values = new HashSet<string>();
-                for (int i = 0; i < x.Length; i++)
+                if (n > 0 && m > 0)
                 {
-                    unique_values.Add(Excel_ToString(x[i], ignore_errors));
+
+                    bool ignore_errors = ExcelHelper.CheckValue<bool>(ignore_error_codes, true);
+
+                    HashSet<string> unique_values = new HashSet<string>();
+                    for (int i = 0; i < n; i++)
+                    {
+                        for (int j = 0; j < m; j++)
+                        {
+                            unique_values.Add(Excel_ToString(x[i, j], ignore_errors));
+                        }
+                    }
+                    result = unique_values.Count;
                 }
-                result = unique_values.Count;
             }
             return result;
         }

@@ -122,5 +122,11 @@ namespace ACQ.Excel
         {
             return ExcelHelper.CheckNan(ACQ.Math.Special.NormalCdf(x));
         }
+
+        [ExcelFunction(Description = "Inverse Normal cdf", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_special_invnormalcdf(double x)
+        {
+            return ExcelHelper.CheckNan(ACQ.Math.Special.InverseNormalCdf(x));
+        }
     }
 }
