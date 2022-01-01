@@ -90,31 +90,10 @@ namespace ACQ.Excel
         public static object acq_absmin(
             [ExcelArgument(Description = "Array")] object x)
         {
-            double min = Double.PositiveInfinity;
+            double[] array = ExcelHelper.CheckArray<double>(x);
 
-            object[,] array = x as object[,];
+            double min = ACQ.Math.Stats.Utils.AbsMin(array);
 
-            if (array != null)
-            {
-                int n = array.GetLength(0);
-                int m = array.GetLength(1);
-
-                for (int i = 0; i < n; i++)
-                {
-                    for (int j = 0; j < m; j++)
-                    {
-                        object item = array[i, j];
-                        if (item is Double)
-                        {
-                            double temp = System.Math.Abs((Double)item);
-                            if (temp < min)
-                            {
-                                min = temp;
-                            }
-                        }
-                    }
-                }
-            }
             return ExcelHelper.CheckNan(min);
         }
 
