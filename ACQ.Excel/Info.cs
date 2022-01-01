@@ -22,6 +22,24 @@ namespace ACQ.Excel
             return ExcelDnaUtil.ExcelVersion;
         }
 
+        [ExcelFunction(Description = "Checks if Excel process is 64bit", Category = AddInInfo.Category)]
+        public static bool acq_is64bit()
+        {            
+            return System.Environment.Is64BitProcess;
+        }
+
+        [ExcelFunction(Description = "Returns the number of logical CPU cores", Category = AddInInfo.Category)]
+        public static int acq_cpu_cores()
+        {
+            return System.Environment.ProcessorCount;
+        }
+
+        [ExcelFunction(Description = "Username", Category = AddInInfo.Category)]
+        public static string acq_username()
+        {
+            return System.Environment.UserName;
+        }
+
         [ExcelFunction(Description = "Returns the version of the Excel-DNA library", Category = AddInInfo.Category)]
         public static object acq_exceldna_version()
         {

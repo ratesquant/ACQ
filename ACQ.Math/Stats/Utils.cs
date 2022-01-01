@@ -139,6 +139,43 @@ namespace ACQ.Math.Stats
             return min;
         }
 
+        public static double AbsMin(double[] x, bool ignore_na = false)
+        {
+            if (x == null || x.Length == 0)
+                return Double.NaN;
+
+            double min = Double.PositiveInfinity;
+
+            if (ignore_na)
+            {
+                for (int i = 0; i < x.Length; i++)
+                {
+                    if (!Double.IsNaN(x[i]))
+                    {
+                        double abs_x = Abs(x[i]);
+
+                        if (abs_x < min)
+                        {
+                            min = abs_x;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < x.Length; i++)
+                {
+                    double abs_x = Abs(x[i]);
+                    if (abs_x < min)
+                    {
+                        min = abs_x;
+                    }
+                }
+            }
+
+            return min;
+        }
+
         /// <summary>
         /// Standard deviation of a sample(unbiased), normalized by n-1 where n is the length of sample. 
         /// </summary>

@@ -64,7 +64,7 @@ namespace ACQ.Excel
         }
 
         [ExcelFunction(Description = "Concatenates the elements of a specified array using the specified separator (optional) between each element", Category = AddInInfo.Category, IsThreadSafe = true)]
-        public static object acq_join(object[] x,
+        public static object acq_join(object[,] x,
             [ExcelArgument(Description = "Optional separator: default is comma")] object separator)
         {
             object result = ExcelError.ExcelErrorNA;
@@ -77,18 +77,27 @@ namespace ACQ.Excel
             {
                 string sep = ExcelHelper.Check<string>(separator, ",");
 
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < x.Length; i++)
+                int n = x.GetLength(0);
+                int m = x.GetLength(1);
+
+                if (n > 0 && m > 0)
                 {
-                    if (i != 0)
+                    StringBuilder sb = new StringBuilder();
+                    for (int j = 0; j < m; j++)
                     {
-                        sb.Append(sep);
+                        for (int i = 0; i < n; i++)
+                        {
+                            if (!(i == 0 && j == 0))
+                            {
+                                sb.Append(sep);
+                            }
+                            string item_str = Excel_ToString(x[i, j]);
+
+                            sb.Append(item_str);
+                        }
                     }
-                    string item_str = Excel_ToString(x[i]);
-                    
-                    sb.Append(item_str);                    
-                }
-                result = sb.ToString();
+                    result = sb.ToString();
+                }                
             }
             return result;
         }

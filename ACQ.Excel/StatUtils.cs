@@ -114,6 +114,20 @@ namespace ACQ.Excel
         }
 
         /// <summary>
+        /// Compute Min
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Total number of numeric elements in x (ignores non-numeric values)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_count(
+            [ExcelArgument(Description = "Array")] object x)
+        {
+            double[] array = ExcelHelper.CheckArray<double>(x); //it is a bit wasteful to create a new array, just to count number of numeric values, but it keeps code cleaner 
+
+            return array.Length;
+        }
+
+        /// <summary>
         /// Compute standard deviation
         /// </summary>
         /// <param name="x"></param>
