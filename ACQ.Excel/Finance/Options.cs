@@ -297,10 +297,33 @@ namespace ACQ.Excel.Finance
             return ExcelHelper.CheckNan(value);
         }
         #endregion
-                
-         //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-         //timer.Restart();
-         //LogDisplay.WriteLine("Elapsed: {0}, {1}", n_steps, timer.Elapsed.TotalMilliseconds);                    
+
+        //System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+        //timer.Restart();
+        //LogDisplay.WriteLine("Elapsed: {0}, {1}", n_steps, timer.Elapsed.TotalMilliseconds);                    
+
+
+        [ExcelFunction(Description = "SABR Black vol (using Hagan approximation)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_sabr_blackvol(double forward, double strike, double time, double alpha, double beta, double rho, double nu)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+
+            var sabr_params = new Quant.Options.SABRParams(alpha, beta, rho,nu );
+            double vol = ACQ.Quant.Options.HaganSABR.BlackVol(forward, strike, time, sabr_params);
+            return ExcelHelper.CheckNan(vol);
+        }
+
+        [ExcelFunction(Description = "SABR Normal vol (using Hagan approximation)", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_options_sabr_normvol(double forward, double strike, double time, double alpha, double beta, double rho, double nu)
+        {
+            if (ExcelDnaUtil.IsInFunctionWizard())
+                return ExcelError.ExcelErrorRef;
+
+            var sabr_params = new Quant.Options.SABRParams(alpha, beta, rho, nu);
+            double vol = ACQ.Quant.Options.HaganSABR.NormalVol(forward, strike, time, sabr_params);
+            return ExcelHelper.CheckNan(vol);
+        }
     }
 }
 
