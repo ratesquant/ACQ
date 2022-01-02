@@ -46,6 +46,7 @@
     <Compile Include="Options\BjerksundStensland.cs" />
     <Compile Include="Options\Black.cs" />
     <Compile Include="Options\BlackScholes.cs" />
+    <Compile Include="Options\SABR.cs" />
     <Compile Include="Options\TrinomialAmerican.cs" />
     <Compile Include="Options\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
