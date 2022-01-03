@@ -109,7 +109,7 @@ Input arguments: forward: forward price of the underlying, strike : option strik
 # Bachelier pricing formulas for European options
 Input arguments: same as for Black options pricing formulas, but implied volatility (sigma) is normal
 
-	1. acq_options_black_price - Compute option price  
+	1. acq_options_bachelier_price - Compute option price  
 	2. acq_options_bachelier_vol - Compute implied volatility (to match specified price) 
 	3. acq_options_bachelier_greeks - Compute option greeks: Price, Delta, Gamma, Vega, Vomma, Vanna, Rho, Theta (analytical)
 

@@ -23,7 +23,7 @@ namespace ACQ.Excel
             [ExcelArgument(Description = "Array of Weights [optional]")] object w,
             [ExcelArgument(Description = "Ignore NA flag [optional] (default: false)")] object ignore_na)
         {
-            double[] x_input = ExcelHelper.CheckArray<double>(x);
+            double[] x_input = ExcelHelper.CheckArray<double>(x); //TODO: we need to check that correspondance between x and w is preserved
             double[] w_input = ExcelHelper.CheckArray<double>(w);
 
             bool na_rm = ExcelHelper.CheckValue<bool>(ignore_na, false);            
@@ -162,8 +162,8 @@ namespace ACQ.Excel
 
         [ExcelFunction(Description = "Binomial proportion confidence interval (Wilson - method)", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_binomtest(
-            [ExcelArgument(Description = "Vector of number of successes in the binomial experiment")] int x,
-            [ExcelArgument(Description = "Vector of number of independent trials in the binomial experiment.")] int n,
+            [ExcelArgument(Description = "number of successes in the binomial experiment")] int x,
+            [ExcelArgument(Description = "number of independent trials in the binomial experiment")] int n,
             [ExcelArgument(Description = "Confidence level (e.g. 0.95)")] double conf_level,
             [ExcelArgument(Description = "Lower (TRUE) or Upper bound (FALSE)")] bool isLower)
         {
