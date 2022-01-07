@@ -29,6 +29,7 @@ v1.40 (2021-12-31)(1.4.8035.227):
         - compute max(x), min(x), max(abs(x)), min(abs(x)), mean(x) while ignoring non-numeric values: acq_max, acq_min, acq_absmax, acq_absmin, acq_mean
 v1.50 ():
    1. acq_binomtest - Binomial proportion confidence interval (Wilson - method)
-   2. acq_options_sabr_blackvol, acq_options_sabr_normvol - SABR Hagan approximation formulas
+   2. acq_metric_auc,  acq_metric_gini, acq_metric_ks, acq_metric_logloss; Compute AUC - Area Under ROC Curve, Gini coefficient (2*AUC -1), Kolmogorov-Smirnov and logloss metrics
+   3. acq_options_sabr_blackvol, acq_options_sabr_normvol - SABR Hagan approximation formulas
 
      

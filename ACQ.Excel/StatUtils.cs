@@ -172,5 +172,54 @@ namespace ACQ.Excel
 
             return ExcelHelper.CheckNan(isLower ? result.Item1 : result.Item2);
         }
+
+
+        /// <summary>
+        /// AUC - computes the area under the receiver-operator characteristic (ROC) curve (AUC).A perfect classifier has AUC = 1 and a completely random classifier has AUC = 0.5
+        /// actual != 0 indicates an event
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="w"></param>
+        /// <param name="ignore_na"></param>
+        /// <returns></returns>
+        [ExcelFunction(Description = "Compute AUC - Area Under ROC Curve. A perfect classifier has AUC = 1 and a completely random classifier has AUC = 0.5", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_metric_auc(
+            [ExcelArgument(Description = "Array of actual observations")] double[] actual,
+            [ExcelArgument(Description = "Array of predicted probabilities")] double[] predicted)
+        {
+            double result = ACQ.Math.Metrics.AUC(actual, predicted);
+
+            return ExcelHelper.CheckNan(result);
+        }
+
+        [ExcelFunction(Description = "Compute Gini Coefficient: 2*AUC – 1", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_metric_gini(
+        [ExcelArgument(Description = "Array of actual observations")] double[] actual,
+        [ExcelArgument(Description = "Array of predicted probabilities")] double[] predicted)
+        {
+            double result = ACQ.Math.Metrics.Gini(actual, predicted);
+
+            return ExcelHelper.CheckNan(result);
+        }
+
+        [ExcelFunction(Description = "Compute LogLoss", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_metric_logloss(
+            [ExcelArgument(Description = "Array of actual observations")] double[] actual,
+            [ExcelArgument(Description = "Array of predicted probabilities")] double[] predicted)
+        {
+            double result = ACQ.Math.Metrics.LogLoss(actual, predicted);
+
+            return ExcelHelper.CheckNan(result);
+        }
+
+        [ExcelFunction(Description = "Compute Kolmogorov-Smirnov statistics", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static object acq_metric_ks(
+          [ExcelArgument(Description = "Array of actual observations")] double[] actual,
+          [ExcelArgument(Description = "Array of predicted probabilities")] double[] predicted)
+        {
+            double result = ACQ.Math.Metrics.KS(actual, predicted);
+
+            return ExcelHelper.CheckNan(result);
+        }
     }
 }

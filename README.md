@@ -156,8 +156,17 @@ Compute min/max/mean while ignoring non-numeric values (mean can be weighted).
 	4. acq_isinteger - checks if value is integer
 	5. acq_isprime - checks if number is prime
 	6. acq_join	 - concatenate the elements of the range to string (with specified separator)	
-	7. acq_sum, acq_stdev, acq_sumofsquares -   Compute sum(x), standard deviation of x and sum(x*x) 
-	8. acq_binomtest - Binomial proportion confidence interval (using Wilson method)
+	7. acq_sum, acq_stdev, acq_sumofsquares -   Compute sum(x), standard deviation of x and sum(x*x) 	
+
+
+# Binomial Metrics 
+
+	1. acq_binomtest - Binomial proportion confidence interval (Wilson - method)
+	2. acq_metric_auc - AUC, Area Under ROC Curve
+	3. acq_metric_gini -  Gini coefficient (2*AUC - 1)
+	4. acq_metric_ks -  Kolmogorov-Smirnov statistics 
+	5. acq_metric_logloss - log-loss metric
+
 	
 
 # Shortcuts
