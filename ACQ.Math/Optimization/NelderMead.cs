@@ -5,11 +5,49 @@ using System.Text;
 
 namespace ACQ.Math.Optimization
 {
-	/// <summary>
+	public class OptimizationResult
+	{
+		int m_iterations;
+		double[] m_result;
+		double m_objective_value;
+
+		public OptimizationResult(int iterations, double[] result, double objective_value)
+		{
+			m_iterations = iterations;
+			m_result = result;
+			m_objective_value = objective_value;
+		}
+
+		public double[] Result
+		{
+			get 
+			{
+				return m_result;
+			}
+		}
+	}
+
+	public class IterationEventArgs
+	{
+		int m_iteration;
+		public IterationEventArgs(int iteration) { m_iteration = iteration; }
+		public int Iteration 
+		{ 
+			get
+			{
+				return m_iteration;
+			}
+		}
+	}
+
+	/// <summary>	
+	/// Nelder-Mead optimization method
+	/// Nelder, J A, and R Mead. 1965. A Simplex Method for Function Minimization. The Computer Journal 7: 308-13.
 	/// Gao, F. and Han, L.	Implementing the Nelder-Mead simplex algorithm with adaptive	parameters. 2012. Computational Optimization and Applications.  51:1, pp. 259-277
-	/// https://github.com/yw5aj/nelder_mead_scipy/blob/master/nelder_mead_scipy.py
+	/// Wright, M.H. (1996), "Direct Search Methods: Once Scorned, Now	Respectable", in Numerical Analysis 1995, Proceedings of the           1995 Dundee Biennial Conference in Numerical Analysis, D.F.	   Griffiths and G.A.Watson(Eds.), Addison Wesley Longman,           Harlow, UK, pp. 191-208.
 	/// https://www.mathworks.com/help/matlab/ref/fminsearch.html
 	/// https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
+	/// https://github.com/scipy/scipy/blob/main/scipy/optimize/_optimize.py
 	/// </summary>
 	public class NelderMead
     {
@@ -20,10 +58,21 @@ namespace ACQ.Math.Optimization
 		int m_maxItPerDim = 200;
 		double m_alpha = 1d; // alpha > 0  (reflection)
 		double m_gamma = 2d; // gamma > 1 (expansion)
-		double m_rho = 0.5;
-		double m_sigma = 0.5;
+		double m_rho = 0.5; // 0 < rho =< 0.5 (contraction)
+		double m_sigma = 0.5; // (shrink)
 
 		public delegate double ObjectiveFunction(double[] x);
+
+        #region IterationEvent
+        public delegate void IterationEventHandler(object sender, IterationEventArgs e);
+		public event IterationEventHandler IterationEvent;
+
+		protected virtual void OnIterationEvent(IterationEventArgs args)
+		{
+			// Raise the event in a thread-safe manner using the ?. operator.
+			IterationEvent?.Invoke(this, args);
+		}
+		#endregion
 
 		public NelderMead(bool adaptive = false)
 		{
@@ -53,7 +102,7 @@ namespace ACQ.Math.Optimization
 			return max_size;
 		}
 
-		public double[] FindMinimum(double[] x0, ObjectiveFunction obj)
+		public OptimizationResult FindMinimum(double[] x0, ObjectiveFunction obj)
 		{
 			int N = x0.Length;
 
@@ -116,11 +165,12 @@ namespace ACQ.Math.Optimization
 			double[] x_expansion = new double[N];
 			double[] x_contraction = new double[N];
 
-			for(int iter = 0; iter < maxiter; iter++)			
+			int iter;
+			for (iter = 0; iter < maxiter; iter++)			
 			{
 				Array.Sort(fsim, indices);
 
-				//Console.WriteLine("{0}: {1}", iter, String.Join(",", fsim.Select(p => p.ToString()).ToArray()));
+				//Console.WriteLine("it: {0}, f:{1}, x:{2}", iter, String.Join(",", fsim.Select(p => p.ToString()).ToArray()), String.Join(",", simplex[indices[0]].Select(p => p.ToString()).ToArray()));
 
 				double[] x_worst = simplex[indices[N]];
 
@@ -255,7 +305,7 @@ namespace ACQ.Math.Optimization
 				}
 			}
 
-			return simplex[indices[0]];
+			return new OptimizationResult(iter, simplex[indices[0]], fsim[0]);
 
 		}
 
