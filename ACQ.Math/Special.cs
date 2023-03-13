@@ -1094,6 +1094,49 @@ namespace ACQ.Math
             u = exp(u) * exp(u1);
             return(u);
         }
+
+        private static readonly double[] a_coefs_BSM = new double[] { -25.44106049637, 41.39119773534, -18.61500062529, 2.50662823884 };
+        private static readonly double[] b_coefs_BSM = new double[] { 3.13082909833, -21.06224101826, 23.08336743743, -8.47351093090, 1 };
+        private static readonly double[] c_coefs_BSM = new double[] { 0.0000003960315187, 0.0000002888167364, 0.0000321767881768, 0.0003951896511919, 0.0038405729373609, 0.0276438810333863, 0.1607979714918209, 0.9761690190917186, 0.3374754822726147 };
+
+        /// <summary>
+        /// % Beasley-Springer-Moro algorithm for approximating the inverse normal.
+        /// Reference:
+        /// Paul Glasserman, Monte Carlo methods in financial engineering, vol. 53 of Applications of Mathematics(New York),  Springer-Verlag, new York, 2004, p.67-68
+        /// </summary>
+        /// <returns></returns>
+        public static double InverseNormalCdfBSM(double u)
+        {
+            if (u < 0 || u > 1)
+            {
+                return Double.NaN;
+            }
+            if (u == 0.0)
+            {
+                return Double.NegativeInfinity;
+            }
+            if (u == 1.0)
+            {
+                return Double.PositiveInfinity;
+            }
+
+            double y = u - 0.5;
+            double abs_y = System.Math.Abs(y);
+            double res;
+
+            if (abs_y <= 0.42)
+            {
+                double r = abs_y * abs_y;
+                res = y * polevl(r, a_coefs_BSM) / polevl(r, b_coefs_BSM);
+            } else
+            {               
+                double r = System.Math.Min(u, 1 - u);
+                r = System.Math.Log(-System.Math.Log(r));
+                res = polevl(r, c_coefs_BSM) * System.Math.Sign(y);                
+            }
+            return res;
+
+        }
         #endregion 
 
         #region incbet
@@ -1456,6 +1499,20 @@ namespace ACQ.Math
             ans = coef[0];
 
             for (int i = 1; i <= n; i++)
+            {
+                ans = ans * x + coef[i];
+            }
+
+            return ans;
+        }
+
+        private static double polevl(double x, double[] coef)
+        {
+            double ans;
+
+            ans = coef[0];
+
+            for (int i = 1; i < coef.Length; i++)
             {
                 ans = ans * x + coef[i];
             }
