@@ -281,6 +281,34 @@ namespace ACQ.Math
             return x;
         }
         #endregion
+
+        /// <summary>
+        /// Returns number of iterations needed to diverge or maximum when it is reached 
+        /// </summary>
+        /// <param name="re"></param>
+        /// <param name="im"></param>
+        /// <param name="max_it"></param>
+        /// <returns></returns>
+        public static int Mandelbrot(double re, double im, int max_it = 2000)
+        {
+            double z_real = re;
+            double z_imag = im;
+         
+            for (int k = 0; k < max_it; ++k)
+            {
+                double r2 = z_real * z_real;
+                double i2 = z_imag * z_imag;
+
+                if (r2 + i2 > 4.0)
+                {
+                    return k;
+                }
+
+                z_imag = 2.0 * z_real * z_imag + im;
+                z_real = r2 - i2 + re;
+            }
+            return max_it;
+        }
     }
 
     /// <summary>
