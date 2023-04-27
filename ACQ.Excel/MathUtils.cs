@@ -9,6 +9,12 @@ namespace ACQ.Excel
 {
     public static class MathUtils
     {
+        [ExcelFunction(Description = "Compute number Mandelbrot iterations from the specified starting point", Category = AddInInfo.Category, IsThreadSafe = true)]
+        public static int acq_mandelbrot(double x0, double y0, int max_it)
+        {            
+            return ACQ.Math.Utils.Mandelbrot(x0, y0, max_it);
+        }
+
         [ExcelFunction(Description = "Compute first derivative: finite difference central 3pt", Category = AddInInfo.Category, IsThreadSafe = true)]
         public static object acq_diff1_c3pt(double[] x, double[] y)
         {
