@@ -34,6 +34,28 @@ namespace ACQ.Excel.Handles
                 return handle;
 
             });
+        }
+
+        internal object CreateHandleAsync(string tag, object[] parameters, Func<string, object[], Task<object>> maker)
+        {
+            return ExcelAsyncUtil.Observe(tag, parameters, () =>
+            {
+                var value = maker(tag, parameters);
+                var handle = new HandleAsync(this, tag, value);
+
+                m_lock.EnterWriteLock();
+
+                try
+                {
+                    m_storage.Add(handle.Name, handle);
+                }
+                finally
+                {
+                    m_lock.ExitWriteLock();
+                }
+                return handle;
+
+            });
 
         }
 

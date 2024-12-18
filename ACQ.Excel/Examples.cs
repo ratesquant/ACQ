@@ -163,24 +163,27 @@ namespace ACQ.Excel
             });
         }
 
-        /*
+        
         [ExcelFunction(Description = "acq_async_load_example3", Category = AddInInfo.Category)]
         public static object acq_async_load_example3(string name)
         {
             var callingCell = (ExcelReference)XlCall.Excel(XlCall.xlfCaller);
 
-            return ExcelAsyncUtil.Observe("acq_async_load_example3", new object[] { name },
-                () =>
+            var result = ACQ.Excel.Handles.GlobalCache.CreateHandleAsync("acq_async_load_example3", new object[] { name },
+                (objectType, parameters) =>
                 {
-                    //var longTask = Task.Run(delegate
-                    var longTask = System.Threading.Tasks.Task.Factory.StartNew(()=>
+                    return System.Threading.Tasks.Task.Factory.StartNew<object>(() =>
                     {
                         System.Threading.Thread.Sleep(3000);
                         return String.Format("{0} was loaded", name);
                     });
-                    return longTask.ToExcelObservable();
                 });
-        }*/
+
+            if (result.Equals(ExcelError.ExcelErrorNA))
+                return "Processing ...";
+            else
+                return result;
+        }
 
         /*
         [ExcelFunction(Description = "acq_sum", Category = AddInInfo.Category)]

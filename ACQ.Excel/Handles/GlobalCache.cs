@@ -18,6 +18,11 @@ namespace ACQ.Excel.Handles
             return m_storage.CreateHandle(objectType, parameters, maker); 
         }
 
+        internal static object CreateHandleAsync(string objectType, object[] parameters, Func<string, object[], Task<object>> maker)
+        {
+            return m_storage.CreateHandleAsync(objectType, parameters, maker);
+        }
+
         internal static bool TryGetObject<T>(string name, out T value) where T : class
         {
             return m_storage.TryGetObject<T>(name, out value);
