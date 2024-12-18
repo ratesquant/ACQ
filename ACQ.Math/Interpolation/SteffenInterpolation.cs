@@ -47,7 +47,7 @@ namespace ACQ.Math.Interpolation
 
                 //steffen conditions that limit derivatives (eq. 11 from the article)
 
-                if (dy0 * dy0 <= 0.0)
+                if (dy0 * dy1 <= 0.0)
                 {
                     a[i] = 0.0;
                 }
